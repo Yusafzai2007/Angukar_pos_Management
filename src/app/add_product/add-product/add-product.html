@@ -229,17 +229,51 @@
                       name="serialNo"
                       class="sr-only peer"
                     />
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                    <div
+                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"
+                    ></div>
                   </div>
                   <span class="text-sm text-slate-600">
                     {{ add_product.serialNo ? 'Yes' : 'No' }}
                   </span>
                 </div>
+                <div class="pt-2 border-t border-slate-100 space-y-4">
+                  <h2 class="text-lg font-semibold tracking-tight text-slate-900">
+                    Stock Management
+                  </h2>
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                      <label class="flex items-center text-sm font-medium text-slate-700">
+                        Opening Stock
+                        <span class="ml-0.5 text-red-500">*</span>
+                        <span class="ml-0.5 text-slate-400 text-xs font-normal"> * </span>
+                      </label>
+                      <input
+                        type="number"
+                        value="4"
+                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      />
+                    </div>
+
+                    <div class="space-y-1.5">
+                      <label class="flex items-center text-sm font-medium text-slate-700">
+                        Remaining Stock
+                      </label>
+                      <input
+                        type="number"
+                        value="4"
+                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Form Buttons -->
               <div class="px-5 sm:px-6 py-5 border-t border-slate-100">
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+                <div
+                  class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3"
+                >
                   <button
                     type="button"
                     (click)="resetForm()"
@@ -261,9 +295,7 @@
 
           <!-- Right Side Panel (Optional - you can remove if not needed) -->
           <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 sm:p-6">
-            <h2 class="text-lg font-semibold tracking-tight text-slate-900 mb-4">
-              Instructions
-            </h2>
+            <h2 class="text-lg font-semibold tracking-tight text-slate-900 mb-4">Instructions</h2>
             <ul class="space-y-3 text-sm text-slate-600">
               <li class="flex items-start gap-2">
                 <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
@@ -271,7 +303,9 @@
               </li>
               <li class="flex items-start gap-2">
                 <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
-                <span>Final price is automatically calculated from selling price minus discount</span>
+                <span
+                  >Final price is automatically calculated from selling price minus discount</span
+                >
               </li>
               <li class="flex items-start gap-2">
                 <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>

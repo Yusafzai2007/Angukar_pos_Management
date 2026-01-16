@@ -1,13 +1,13 @@
 export interface AddProducttypescript {
-  itemGroupName: string;         // ID from dropdown
+  itemGroupName: string;         
   itemName: string;
   itemDescription: string;
   actualItemPrice: number;
   sellingItemPrice: number;
-  itemDiscountPrice: number;  // optional, default 0
+  itemDiscountPrice: number;  
   itemFinalPrice: number;
-  isActive?: boolean;          // optional, default true
+  isActive?: boolean;         
   modelNoSKU: string;
-  serialNo: boolean;          // optional, default false
+  serialNo: boolean;         
   unit: string;
 }
