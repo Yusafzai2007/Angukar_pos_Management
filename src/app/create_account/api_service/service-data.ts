@@ -6,7 +6,8 @@ import { ItemGroupResponse, productGroup } from '../../Typescript/product_group'
 import { stockIn_category, StockInCategoryResponse } from '../../Typescript/category/stockIn';
 import { StockOutCategoryResponse } from '../../Typescript/category/stockout_category';
 import { AddProduct } from '../../add_product/add-product/add-product';
-import { AddProducttypescript } from '../../Typescript/add_product/add_product';
+import { AddProducttypescript, barcode_serila } from '../../Typescript/add_product/add_product';
+import { productstock_record } from '../../Typescript/product_record';
 export interface ProductPayload {
   itemGroupName: string;
   item_Name: string;
@@ -112,6 +113,47 @@ export class ServiceData {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////   add_product_stock_record /////////////////////////////////////////////////
+
+
+
+// Update the add_product_record method to accept productId
+add_product_record(data: { productId: string; openingStock: number }): Observable<any> {
+  // Note: Update the API endpoint according to your backend
+  // If your backend expects productId in params, you might need to adjust
+  return this.http.post(`${this.apiUrl}/product_stock_record/${data.productId}`, {
+    openingStock: data.openingStock
+  });
+}
+
+
+
+
+
+
+
+  add_barcode_serillla( stock_productId:string,data:barcode_serila){
+   return this.http.post(`${this.apiUrl}/product_barcode/${stock_productId}`,data)
+  }
+
+
+
+
+   
 
 
 

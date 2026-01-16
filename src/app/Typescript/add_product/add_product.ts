@@ -11,3 +11,33 @@ export interface AddProducttypescript {
   serialNo: boolean;         
   unit: string;
 }
+
+
+
+export interface productstock_record {
+  openingStock:string
+}
+
+export interface barcode_serila {
+  barcode_serila: string[];
+  stockInId: string | null;
+  stockoutId: string | null;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

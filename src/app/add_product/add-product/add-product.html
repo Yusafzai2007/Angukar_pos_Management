@@ -2,18 +2,56 @@
   <div class="min-h-screen flex flex-col">
     <main class="flex-1">
       <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <!-- Dynamic grid based on serial number -->
+        <div class="grid gap-6" [ngClass]="{
+          'lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]': !add_product.serialNo,
+          'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]': add_product.serialNo
+        }">
+          
           <!-- Add New Item Card -->
           <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
             <div class="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-slate-100">
-              <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Add New Item</h1>
-              <p class="mt-1 text-base font-normal text-slate-500">
-                Please fill out the details below to add a new item.
-              </p>
+              <div class="flex items-center justify-between">
+                <div>
+                  <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Add New Item</h1>
+                  <p class="mt-1 text-base font-normal text-slate-500">
+                    Please fill out the details below to add a new item.
+                  </p>
+                </div>
+                <div *ngIf="add_product.serialNo" class="flex items-center gap-2">
+                  <span class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-800">
+                    <i class="lucide lucide-barcode stroke-[1.5] h-3 w-3 mr-1"></i>
+                    Serial Tracking
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <form (ngSubmit)="adding_product()" #productForm="ngForm">
+            <form #productForm="ngForm">
               <div class="px-5 sm:px-6 py-5 space-y-6">
+                <!-- Debug Information (temporary) -->
+                <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <h3 class="text-sm font-medium text-yellow-800 mb-2">Debug Information:</h3>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span class="text-yellow-600">Form Valid:</span>
+                      <span class="font-medium ml-1">{{ productForm.form?.valid ? 'Yes' : 'No' }}</span>
+                    </div>
+                    <div>
+                      <span class="text-yellow-600">Item Group:</span>
+                      <span class="font-medium ml-1">{{ add_product.itemGroupName ? 'Selected' : 'Not Selected' }}</span>
+                    </div>
+                    <div>
+                      <span class="text-yellow-600">Serial No:</span>
+                      <span class="font-medium ml-1">{{ add_product.serialNo ? 'Yes' : 'No' }}</span>
+                    </div>
+                    <div>
+                      <span class="text-yellow-600">Barcodes:</span>
+                      <span class="font-medium ml-1">{{ barcodes.length }}/{{ add_product.openingStock }}</span>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Row 1 -->
                 <div class="grid gap-4 sm:grid-cols-3">
                   <!-- Item Name -->
@@ -117,31 +155,31 @@
 
                 <!-- Status Row -->
                 <div class="flex flex-wrap items-center gap-4">
-                  <button
-                    type="button"
-                    (click)="add_product.isActive = !add_product.isActive"
-                    [class.bg-indigo-600]="add_product.isActive"
-                    [class.bg-slate-300]="!add_product.isActive"
-                    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
-                  >
+                  <div class="flex items-center gap-3">
+                    <div class="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        [(ngModel)]="add_product.isActive"
+                        name="isActive"
+                        class="sr-only peer"
+                      />
+                      <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"
+                      ></div>
+                    </div>
+                    <span class="text-base font-medium text-slate-700">Status</span>
                     <span
-                      [class.translate-x-5]="add_product.isActive"
-                      [class.translate-x-0.5]="!add_product.isActive"
-                      class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200"
-                    ></span>
-                  </button>
-                  <span class="text-base font-medium text-slate-700">Status</span>
-                  <span
-                    [class.bg-emerald-50]="add_product.isActive"
-                    [class.bg-red-50]="!add_product.isActive"
-                    [class.text-emerald-700]="add_product.isActive"
-                    [class.text-red-700]="!add_product.isActive"
-                    [class.border-emerald-200]="add_product.isActive"
-                    [class.border-red-200]="!add_product.isActive"
-                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
-                  >
-                    {{ add_product.isActive ? 'Active' : 'Inactive' }}
-                  </span>
+                      [class.bg-emerald-50]="add_product.isActive"
+                      [class.bg-red-50]="!add_product.isActive"
+                      [class.text-emerald-700]="add_product.isActive"
+                      [class.text-red-700]="!add_product.isActive"
+                      [class.border-emerald-200]="add_product.isActive"
+                      [class.border-red-200]="!add_product.isActive"
+                      class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                    >
+                      {{ add_product.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </div>
                 </div>
 
                 <!-- Row 3: Item Group and Unit -->
@@ -218,105 +256,460 @@
                 </div>
 
                 <!-- Serial Number Toggle -->
-                <div class="flex items-center gap-4">
-                  <label class="flex items-center text-sm font-medium text-slate-700">
-                    Serial Number Required
-                  </label>
-                  <div class="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      [(ngModel)]="add_product.serialNo"
-                      name="serialNo"
-                      class="sr-only peer"
-                    />
-                    <div
-                      class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"
-                    ></div>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-sm font-medium text-slate-700">Serial Number Required</span>
+                      <p class="text-xs text-slate-500 mt-1">
+                        Enable for individual item tracking with unique barcodes
+                      </p>
+                    </div>
+                    <div class="flex items-center">
+                      <span class="mr-3 text-sm font-medium" [ngClass]="{
+                        'text-slate-500': !add_product.serialNo,
+                        'text-indigo-600': add_product.serialNo
+                      }">
+                        {{ add_product.serialNo ? 'Enabled' : 'Disabled' }}
+                      </span>
+                      <button
+                        type="button"
+                        (click)="add_product.serialNo = !add_product.serialNo"
+                        [class.bg-indigo-600]="add_product.serialNo"
+                        [class.bg-slate-300]="!add_product.serialNo"
+                        class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      >
+                        <span
+                          [class.translate-x-5]="add_product.serialNo"
+                          [class.translate-x-0]="!add_product.serialNo"
+                          class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                        ></span>
+                      </button>
+                    </div>
                   </div>
-                  <span class="text-sm text-slate-600">
-                    {{ add_product.serialNo ? 'Yes' : 'No' }}
-                  </span>
                 </div>
+
+                <!-- Stock Management Section -->
                 <div class="pt-2 border-t border-slate-100 space-y-4">
-                  <h2 class="text-lg font-semibold tracking-tight text-slate-900">
-                    Stock Management
-                  </h2>
+                  <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">
+                      Stock Management
+                    </h2>
+                    <div *ngIf="add_product.serialNo" class="flex items-center gap-2">
+                      <span class="text-xs font-medium px-2 py-1 rounded bg-indigo-50 text-indigo-700">
+                        Barcodes: {{ barcodes.length }}/{{ add_product.openingStock }}
+                      </span>
+                    </div>
+                  </div>
+                  
                   <div class="grid gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5">
                       <label class="flex items-center text-sm font-medium text-slate-700">
                         Opening Stock
                         <span class="ml-0.5 text-red-500">*</span>
-                        <span class="ml-0.5 text-slate-400 text-xs font-normal"> * </span>
                       </label>
-                      <input
-                        type="number"
-                        value="4"
-                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                      />
+                      <div class="flex items-center gap-2">
+                        <input
+                          [(ngModel)]="add_product.openingStock"
+                          name="openingStock"
+                          type="number"
+                          min="0"
+                          (input)="updateRemainingStock()"
+                          class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                          required
+                        />
+                        <button 
+                          *ngIf="add_product.serialNo && add_product.openingStock > 0"
+                          type="button"
+                          (click)="generateBarcodes()"
+                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-3 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+                        >
+                          <i class="lucide lucide-refresh-ccw stroke-[1.5] h-3 w-3 mr-1"></i>
+                          Gen
+                        </button>
+                      </div>
+                      <p class="text-xs text-slate-500 mt-1">
+                        Initial quantity available
+                      </p>
                     </div>
 
                     <div class="space-y-1.5">
                       <label class="flex items-center text-sm font-medium text-slate-700">
-                        Remaining Stock
+                        Remaining Stock (Auto)
                       </label>
                       <input
+                        [(ngModel)]="add_product.remainingStock"
+                        name="remainingStock"
                         type="number"
-                        value="4"
-                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                        readonly
+                        class="block w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-base font-normal text-slate-900"
                       />
+                      <p class="text-xs text-slate-500 mt-1">
+                        Will be updated automatically
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <!-- Warning for serial number -->
+                  <div *ngIf="add_product.serialNo" class="space-y-2">
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <p class="text-sm text-blue-700 flex items-start">
+                        <i class="lucide lucide-info stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
+                        <span>
+                          Serial number tracking enabled. 
+                          <span *ngIf="add_product.openingStock > 0">
+                            Please add exactly <strong>{{ add_product.openingStock }}</strong> unique barcodes.
+                          </span>
+                          <span *ngIf="add_product.openingStock === 0">
+                            Set opening stock to enable barcode management.
+                          </span>
+                        </span>
+                      </p>
+                    </div>
+                    
+                    <!-- Progress bar for barcodes -->
+                    <div *ngIf="add_product.serialNo && add_product.openingStock > 0" class="space-y-1">
+                      <div class="flex justify-between text-xs text-slate-600">
+                        <span>Barcode Progress</span>
+                        <span>{{ barcodes.length }}/{{ add_product.openingStock }}</span>
+                      </div>
+                      <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          class="h-full transition-all duration-300"
+                          [ngClass]="{
+                            'bg-emerald-500': barcodes.length === add_product.openingStock,
+                            'bg-indigo-500': barcodes.length !== add_product.openingStock
+                          }"
+                          [style.width.%]="(barcodes.length / add_product.openingStock) * 100"
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Form Buttons -->
-              <div class="px-5 sm:px-6 py-5 border-t border-slate-100">
-                <div
-                  class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3"
-                >
+              <!-- Form Buttons - Show here only when serial number is NO -->
+              <div *ngIf="!add_product.serialNo" class="px-5 sm:px-6 py-5 border-t border-slate-100">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                   <button
                     type="button"
                     (click)="resetForm()"
-                    class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50"
+                    class="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
                   >
                     CANCEL
                   </button>
                   <button
-                    type="submit"
-                    [disabled]="!productForm.form.valid || !add_product.itemGroupName"
-                    class="inline-flex items-center justify-center rounded-md border border-emerald-600 bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="button"
+                    (click)="onSaveClick()"
+                    [disabled]="isButtonDisabled()"
+                    class="inline-flex items-center justify-center rounded-md border border-emerald-600 bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    SAVE
+                    <span *ngIf="isLoading" class="flex items-center">
+                      <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      PROCESSING...
+                    </span>
+                    <span *ngIf="!isLoading">SAVE ITEM</span>
                   </button>
                 </div>
               </div>
             </form>
           </section>
 
-          <!-- Right Side Panel (Optional - you can remove if not needed) -->
-          <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 sm:p-6">
-            <h2 class="text-lg font-semibold tracking-tight text-slate-900 mb-4">Instructions</h2>
-            <ul class="space-y-3 text-sm text-slate-600">
-              <li class="flex items-start gap-2">
-                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
-                <span>Fields marked with <span class="text-red-500">*</span> are required</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
-                <span
-                  >Final price is automatically calculated from selling price minus discount</span
-                >
-              </li>
-              <li class="flex items-start gap-2">
-                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
-                <span>Model No/SKU must be unique for each item</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
-                <span>Select "Serial Number Required" if this item needs individual tracking</span>
-              </li>
-            </ul>
-          </section>
+          <!-- Right Side Panel - Dynamic based on serial number -->
+          <div [ngSwitch]="add_product.serialNo">
+            
+            <!-- Barcode Management Section (when serial number is Yes) -->
+            <section *ngSwitchCase="true" class="rounded-xl border border-slate-200 bg-white shadow-sm flex flex-col">
+              <div class="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-slate-100 flex items-start justify-between gap-3">
+                <div>
+                  <h2 class="text-xl font-semibold tracking-tight text-slate-900">
+                    Barcode Management
+                  </h2>
+                  <p class="mt-1 text-sm text-slate-500">
+                    Add unique barcodes for serial number tracking
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">
+                    {{ barcodes.length }} barcode{{ barcodes.length !== 1 ? 's' : '' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="px-5 sm:px-6 py-4 space-y-4 flex-1 flex flex-col">
+                <!-- Quick Actions -->
+                <div *ngIf="add_product.openingStock > 0" class="flex flex-col sm:flex-row gap-2">
+                  <div class="flex-1">
+                    <p class="text-sm text-slate-600 mb-1">Quick Actions</p>
+                    <div class="flex flex-wrap gap-2">
+                      <button 
+                        type="button" 
+                        (click)="generateBarcodes()"
+                        class="inline-flex items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+                      >
+                        <i class="lucide lucide-plus-circle stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        Generate {{ add_product.openingStock }} Barcodes
+                      </button>
+                      <button 
+                        type="button" 
+                        (click)="clearAllBarcodes()"
+                        class="inline-flex items-center justify-center rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
+                      >
+                        <i class="lucide lucide-trash-2 stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Input Row -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-slate-700">
+                    Add Barcode
+                  </label>
+                  <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex-1">
+                      <input 
+                        [(ngModel)]="barcodeInput" 
+                        name="barcodeInput"
+                        type="text" 
+                        placeholder="Enter barcode (e.g., ABC123456)" 
+                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                        (keyup.enter)="addBarcode()"
+                      />
+                    </div>
+                    <div class="flex gap-2">
+                      <button 
+                        type="button" 
+                        (click)="addBarcode()"
+                        [disabled]="barcodes.length >= add_product.openingStock"
+                        class="inline-flex items-center justify-center rounded-md border border-emerald-500 bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4"></i>
+                        ADD
+                      </button>
+                      <button 
+                        type="button" 
+                        (click)="scanBarcode()"
+                        [disabled]="barcodes.length >= add_product.openingStock"
+                        class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <i class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4"></i>
+                        SCAN
+                      </button>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-500">
+                    Press Enter to add barcode. Each barcode must be unique.
+                  </p>
+                </div>
+
+                <!-- Validation message -->
+                <div *ngIf="add_product.serialNo && barcodes.length !== add_product.openingStock && barcodes.length > 0" 
+                     class="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                  <p class="text-sm text-amber-700 flex items-start">
+                    <i class="lucide lucide-alert-triangle stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
+                    <span>Need {{ add_product.openingStock - barcodes.length }} more barcode(s) to match opening stock.</span>
+                  </p>
+                </div>
+
+                <!-- Success message -->
+                <div *ngIf="add_product.serialNo && barcodes.length === add_product.openingStock && add_product.openingStock > 0" 
+                     class="p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+                  <p class="text-sm text-emerald-700 flex items-start">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
+                    <span>Perfect! All {{ add_product.openingStock }} barcodes added. Ready to save.</span>
+                  </p>
+                </div>
+
+                <!-- Barcode List -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <label class="block text-sm font-medium text-slate-700">
+                      Barcode List
+                    </label>
+                    <span class="text-xs text-slate-500">
+                      {{ barcodes.length }}/{{ add_product.openingStock }}
+                    </span>
+                  </div>
+                  
+                  <div class="flex-1 rounded-md border border-slate-200 bg-slate-50/60">
+                    <!-- Empty State -->
+                    <div *ngIf="barcodes.length === 0" class="px-4 py-8 text-center">
+                      <i class="lucide lucide-barcode mx-auto h-10 w-10 text-slate-300"></i>
+                      <p class="mt-3 text-sm font-medium text-slate-700">No barcodes added yet</p>
+                      <p class="mt-1 text-xs text-slate-500">
+                        Add barcodes manually or generate them automatically
+                      </p>
+                      <button 
+                        *ngIf="add_product.openingStock > 0"
+                        type="button"
+                        (click)="generateBarcodes()"
+                        class="mt-4 inline-flex items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+                      >
+                        <i class="lucide lucide-zap stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        Generate {{ add_product.openingStock }} Barcodes
+                      </button>
+                    </div>
+
+                    <!-- Barcode Items -->
+                    <div *ngIf="barcodes.length > 0" class="max-h-64 overflow-y-auto divide-y divide-slate-200">
+                      <div *ngFor="let barcode of barcodes; let i = index" 
+                           class="flex items-center justify-between px-4 py-3 bg-white hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100">
+                            <span class="text-sm font-medium text-slate-700">{{ i + 1 }}</span>
+                          </div>
+                          <div>
+                            <p class="text-base font-medium tracking-tight text-slate-900">
+                              {{ barcode }}
+                            </p>
+                            <p class="text-xs font-normal text-slate-500">
+                              Serial {{ i + 1 }} of {{ add_product.openingStock }}
+                            </p>
+                          </div>
+                        </div>
+                        <button 
+                          type="button" 
+                          (click)="removeBarcode(i)"
+                          class="inline-flex items-center justify-center rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors"
+                          title="Remove barcode"
+                        >
+                          <i class="lucide lucide-trash-2 stroke-[1.5] h-4 w-4"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="pt-4 border-t border-slate-200 space-y-3">
+                  <h3 class="text-sm font-semibold text-slate-700">Summary</h3>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                      <p class="text-xs text-slate-500">Opening Stock</p>
+                      <p class="text-lg font-semibold text-slate-900">{{ add_product.openingStock }}</p>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-xs text-slate-500">Barcodes Added</p>
+                      <p class="text-lg font-semibold" [ngClass]="{
+                        'text-emerald-600': barcodes.length === add_product.openingStock,
+                        'text-amber-600': barcodes.length !== add_product.openingStock
+                      }">
+                        {{ barcodes.length }}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="p-3 bg-slate-50 rounded-md">
+                    <p class="text-xs text-slate-600 flex items-start">
+                      <i class="lucide lucide-info stroke-[1.5] h-3 w-3 mr-1.5 mt-0.5 flex-shrink-0"></i>
+                      <span>Each item needs a unique barcode. Total barcodes must match opening stock quantity.</span>
+                    </p>
+                  </div>
+                </div>
+                
+                <!-- Form Buttons - Show here when serial number is YES -->
+                <div class="pt-4 border-t border-slate-200 mt-auto">
+                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+                    <button
+                      type="button"
+                      (click)="resetForm()"
+                      class="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      CANCEL
+                    </button>
+                    <button
+                      type="button"
+                      (click)="onSaveClick()"
+                      [disabled]="isButtonDisabled()"
+                      class="inline-flex items-center justify-center rounded-md border border-emerald-600 bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span *ngIf="isLoading" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        PROCESSING...
+                      </span>
+                      <span *ngIf="!isLoading">
+                        SAVE ITEM & BARCODES
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Instructions Section (when serial number is No) -->
+            <section *ngSwitchCase="false" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div class="p-5 sm:p-6">
+                <div class="flex items-start gap-3 mb-4">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
+                    <i class="lucide lucide-info stroke-[1.5] h-5 w-5 text-indigo-600"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">Instructions</h2>
+                    <p class="mt-1 text-sm text-slate-500">
+                      Follow these guidelines to add items correctly
+                    </p>
+                  </div>
+                </div>
+                
+                <ul class="space-y-3 text-sm text-slate-600">
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Fields marked with <span class="text-red-500 font-medium">*</span> are required</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Final price is automatically calculated from selling price minus discount</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Model No/SKU must be unique for each item</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Select "Serial Number Required" if this item needs individual tracking</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Opening stock is required for inventory management</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Remaining stock is automatically calculated and updated</span>
+                  </li>
+                </ul>
+                
+                <!-- Quick Tips -->
+                <div class="mt-6 pt-4 border-t border-slate-200">
+                  <h3 class="text-sm font-semibold text-slate-700 mb-3">Quick Tips</h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="flex items-start gap-2 p-2 bg-slate-50 rounded">
+                      <i class="lucide lucide-lightbulb stroke-[1.5] h-4 w-4 text-amber-500 mt-0.5"></i>
+                      <span class="text-xs text-slate-600">Use descriptive item names for easy searching</span>
+                    </div>
+                    <div class="flex items-start gap-2 p-2 bg-slate-50 rounded">
+                      <i class="lucide lucide-lightbulb stroke-[1.5] h-4 w-4 text-amber-500 mt-0.5"></i>
+                      <span class="text-xs text-slate-600">Keep SKU/Model numbers consistent</span>
+                    </div>
+                    <div class="flex items-start gap-2 p-2 bg-slate-50 rounded">
+                      <i class="lucide lucide-lightbulb stroke-[1.5] h-4 w-4 text-amber-500 mt-0.5"></i>
+                      <span class="text-xs text-slate-600">Set accurate pricing for better profit calculation</span>
+                    </div>
+                    <div class="flex items-start gap-2 p-2 bg-slate-50 rounded">
+                      <i class="lucide lucide-lightbulb stroke-[1.5] h-4 w-4 text-amber-500 mt-0.5"></i>
+                      <span class="text-xs text-slate-600">Choose appropriate units for accurate inventory</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
