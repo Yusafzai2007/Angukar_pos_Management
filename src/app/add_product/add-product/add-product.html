@@ -1,0 +1,290 @@
+<div class="min-h-screen bg-slate-100 antialiased">
+  <div class="min-h-screen flex flex-col">
+    <main class="flex-1">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <!-- Add New Item Card -->
+          <section class="rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div class="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-slate-100">
+              <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Add New Item</h1>
+              <p class="mt-1 text-base font-normal text-slate-500">
+                Please fill out the details below to add a new item.
+              </p>
+            </div>
+
+            <form (ngSubmit)="adding_product()" #productForm="ngForm">
+              <div class="px-5 sm:px-6 py-5 space-y-6">
+                <!-- Row 1 -->
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <!-- Item Name -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Item Name
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.itemName"
+                      name="itemName"
+                      type="text"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      required
+                    />
+                  </div>
+
+                  <!-- Model No/SKU -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Model No/SKU
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.modelNoSKU"
+                      name="modelNoSKU"
+                      type="text"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      required
+                    />
+                  </div>
+
+                  <!-- Actual Price -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Actual Price
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.actualItemPrice"
+                      name="actualItemPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      required
+                    />
+                  </div>
+
+                  <!-- Selling Price -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Selling Price
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.sellingItemPrice"
+                      name="sellingItemPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      (change)="calculateFinalPrice()"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      required
+                    />
+                  </div>
+
+                  <!-- Discount -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Discount
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.itemDiscountPrice"
+                      name="itemDiscountPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      (change)="calculateFinalPrice()"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                    />
+                  </div>
+
+                  <!-- Final Price -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Final Price
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <input
+                      [(ngModel)]="add_product.itemFinalPrice"
+                      name="itemFinalPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      readonly
+                      class="block w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-base font-normal text-slate-900"
+                    />
+                  </div>
+                </div>
+
+                <!-- Status Row -->
+                <div class="flex flex-wrap items-center gap-4">
+                  <button
+                    type="button"
+                    (click)="add_product.isActive = !add_product.isActive"
+                    [class.bg-indigo-600]="add_product.isActive"
+                    [class.bg-slate-300]="!add_product.isActive"
+                    class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
+                  >
+                    <span
+                      [class.translate-x-5]="add_product.isActive"
+                      [class.translate-x-0.5]="!add_product.isActive"
+                      class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200"
+                    ></span>
+                  </button>
+                  <span class="text-base font-medium text-slate-700">Status</span>
+                  <span
+                    [class.bg-emerald-50]="add_product.isActive"
+                    [class.bg-red-50]="!add_product.isActive"
+                    [class.text-emerald-700]="add_product.isActive"
+                    [class.text-red-700]="!add_product.isActive"
+                    [class.border-emerald-200]="add_product.isActive"
+                    [class.border-red-200]="!add_product.isActive"
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                  >
+                    {{ add_product.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+
+                <!-- Row 3: Item Group and Unit -->
+                <div class="grid gap-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                  <!-- Item Group Dropdown -->
+                  <div class="space-y-1.5 relative">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Item Group
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      (click)="toggleDropdown()"
+                      class="inline-flex w-full items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm hover:bg-slate-50"
+                    >
+                      <span>{{ selectedItem || 'Select Item Group' }}</span>
+                      <i class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div
+                      *ngIf="isOpen"
+                      class="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg"
+                    >
+                      <ul class="py-1 max-h-60 overflow-y-auto">
+                        <li
+                          *ngFor="let item of get_product"
+                          (click)="selectItem(item)"
+                          class="cursor-pointer px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                        >
+                          {{ item.itemGroupName }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- Unit -->
+                  <div class="space-y-1.5">
+                    <label class="flex items-center text-sm font-medium text-slate-700">
+                      Unit
+                      <span class="ml-0.5 text-red-500">*</span>
+                    </label>
+                    <select
+                      [(ngModel)]="add_product.unit"
+                      name="unit"
+                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      required
+                    >
+                      <option value="">Select Unit</option>
+                      <option value="piece">Piece</option>
+                      <option value="kg">Kilogram</option>
+                      <option value="gram">Gram</option>
+                      <option value="liter">Liter</option>
+                      <option value="ml">Milliliter</option>
+                      <option value="box">Box</option>
+                      <option value="pack">Pack</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="space-y-1.5">
+                  <label class="flex items-center text-sm font-medium text-slate-700">
+                    Description
+                    <span class="ml-0.5 text-red-500">*</span>
+                  </label>
+                  <textarea
+                    [(ngModel)]="add_product.itemDescription"
+                    name="itemDescription"
+                    rows="3"
+                    class="block w-full resize-none rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                    required
+                  ></textarea>
+                </div>
+
+                <!-- Serial Number Toggle -->
+                <div class="flex items-center gap-4">
+                  <label class="flex items-center text-sm font-medium text-slate-700">
+                    Serial Number Required
+                  </label>
+                  <div class="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="add_product.serialNo"
+                      name="serialNo"
+                      class="sr-only peer"
+                    />
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </div>
+                  <span class="text-sm text-slate-600">
+                    {{ add_product.serialNo ? 'Yes' : 'No' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Form Buttons -->
+              <div class="px-5 sm:px-6 py-5 border-t border-slate-100">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    (click)="resetForm()"
+                    class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50"
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    type="submit"
+                    [disabled]="!productForm.form.valid || !add_product.itemGroupName"
+                    class="inline-flex items-center justify-center rounded-md border border-emerald-600 bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    SAVE
+                  </button>
+                </div>
+              </div>
+            </form>
+          </section>
+
+          <!-- Right Side Panel (Optional - you can remove if not needed) -->
+          <section class="rounded-xl border border-slate-200 bg-white shadow-sm p-5 sm:p-6">
+            <h2 class="text-lg font-semibold tracking-tight text-slate-900 mb-4">
+              Instructions
+            </h2>
+            <ul class="space-y-3 text-sm text-slate-600">
+              <li class="flex items-start gap-2">
+                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
+                <span>Fields marked with <span class="text-red-500">*</span> are required</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
+                <span>Final price is automatically calculated from selling price minus discount</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
+                <span>Model No/SKU must be unique for each item</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <i class="lucide lucide-info stroke-[1.5] h-4 w-4 text-indigo-500 mt-0.5"></i>
+                <span>Select "Serial Number Required" if this item needs individual tracking</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
