@@ -1,21 +1,19 @@
 export interface AddProducttypescript {
-  itemGroupName: string;         
+  itemGroupName: string;
   itemName: string;
   itemDescription: string;
   actualItemPrice: number;
   sellingItemPrice: number;
-  itemDiscountPrice: number;  
+  itemDiscountPrice: number;
   itemFinalPrice: number;
-  isActive?: boolean;         
+  isActive?: boolean;
   modelNoSKU: string;
-  serialNo: boolean;         
+  serialNo: boolean;
   unit: string;
 }
 
-
-
 export interface productstock_record {
-  openingStock:string
+  openingStock: string;
 }
 
 export interface barcode_serila {
@@ -24,20 +22,76 @@ export interface barcode_serila {
   stockoutId: string | null;
 }
 
+////////////////////////////////////      products ////////////////////////////////////////////////
 
+/* =========================
+   MAIN API RESPONSE
+========================= */
 
+export interface StockApiResponse {
+  success: boolean;
+  count: number;
+  data: StockItem[];
+}
 
+/* =========================
+   STOCK ITEM
+========================= */
 
+export interface StockItem {
+  _id: string;
+  totalRemainingStock: number;
+  totalOpeningStock: number;
+  allTransactions: Transaction[][];
+  product: Product;
+  barcodes: Barcode[];
+}
 
+/* =========================
+   TRANSACTION
+========================= */
 
+export interface Transaction {
+  _id: string;
+  date: string; // ISO Date
+  quantity: number;
+  type: 'Opening' | 'In' | 'Out';
+  reference: string;
+}
 
+/* =========================
+   PRODUCT
+========================= */
 
+export interface Product {
+  _id: string;
+  itemGroupId: string;
+  item_Name: string;
+  item_Description: string;
+  actual_item_price: number;
+  selling_item_price: number;
+  item_discount_price: number;
+  item_final_price: number;
+  isActive: boolean;
+  modelNoSKU: string;
+  serialNo: boolean | string;
+  unit: 'piece' | 'gram' | 'liter';
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
 
+/* =========================
+   BARCODE
+========================= */
 
-
-
-
-
-
-
-
+export interface Barcode {
+  _id: string;
+  stock_productId: string;
+  barcode_serila: string;
+  stockInId: string | null;
+  stockoutId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}

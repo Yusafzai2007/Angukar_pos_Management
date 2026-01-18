@@ -4,7 +4,7 @@
   class="fixed top-0 left-0 w-full bg-gray-900 px-6 py-5 flex justify-between items-center z-50 border-b border-white border-b-2"
 >
   <!-- 🌍 Left: Logo -->
-  <div class="flex items-center text-white text-2xl font-bold">
+  <div class="flex items-center text-white text-xl md:text-2xl font-bold">
     <span class="tracking-wide">POS ManagementSystem</span>
   </div>
 
@@ -104,8 +104,14 @@
         <span [class.hidden]="!isSidebarOpen && !isMobileView">Add_Product</span>
       </a>
     </li>
+    <li>
+      <a routerLink="/admin/products" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
+        <i class="fas fa-shopping-cart text-white mr-2"></i>
+        <span [class.hidden]="!isSidebarOpen && !isMobileView">Products</span>
+      </a>
+    </li>
 
-    <!-- Dropdown -->
+    <!-- Dropdown --> 
     <li>
       <details class="group">
         <summary
@@ -183,7 +189,7 @@
       class="w-full flex justify-center items-center bg-gradient-to-r from-blue-600 to-gray-900 text-gray-100 font-semibold px-5 py-2 rounded-full hover:bg-white hover:text-white transition-all shadow-md"
     >
       <i class="fas fa-sign-out-alt mr-2"></i>
-      <span [class.hidden]="!isSidebarOpen && !isMobileView">Log Out</span>
+      <span [class.hidden]="!isSidebarOpen && !isMobileView" (click)="logout()">Log Out</span>
     </button>
   </div>
 </div>

@@ -1,0 +1,92 @@
+/* ============================= */
+/* VISIBLE & CLEAR SCROLLBAR */
+/* ============================= */
+
+/* Horizontal scrollbar */
+:host ::ng-deep .overflow-x-auto {
+  scrollbar-width: auto; /* Firefox */
+  -ms-overflow-style: auto; /* Edge / IE */
+}
+
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar {
+  height: 10px; /* visible thickness */
+}
+
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* ============================= */
+/* Vertical scrollbar (Modal etc) */
+/* ============================= */
+
+:host ::ng-deep .overflow-y-auto {
+  scrollbar-width: auto;
+  scrollbar-color: #9ca3af #f3f4f6;
+}
+
+:host ::ng-deep .overflow-y-auto::-webkit-scrollbar {
+  width: 10px;
+}
+
+:host ::ng-deep .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 10px;
+}
+
+:host ::ng-deep .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* ============================= */
+/* Sticky header and column */
+/* ============================= */
+
+:host ::ng-deep thead.sticky {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+:host ::ng-deep td.sticky {
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================= */
+/* Smooth transitions */
+/* ============================= */
+
+:host ::ng-deep * {
+  transition: all 0.3s ease;
+}
+
+/* ============================= */
+/* Responsive fixes */
+/* ============================= */
+
+@media (max-width: 768px) {
+  :host ::ng-deep .md\:sticky {
+    position: static;
+  }
+
+  :host ::ng-deep .md\:bg-white {
+    background: transparent;
+  }
+
+  :host ::ng-deep .md\:border-l {
+    border-left: none;
+  }
+}

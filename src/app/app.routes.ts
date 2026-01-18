@@ -6,6 +6,8 @@ import { ProductGroupComponent } from './sidebar/product-group/product-group';
 import { StockInComponent } from './category/stock-in/stock-in';
 import { StockoutComponent } from './category/stockout/stockout';
 import { AddProduct } from './add_product/add-product/add-product';
+import { ProductsComponent } from './add_product/products/products';
+import { EditProduct } from './add_product/edit-product/edit-product';
 
 export const routes: Routes = [
   {
@@ -25,6 +27,8 @@ export const routes: Routes = [
       { path: 'stockIn_category', component: StockInComponent },
       { path: 'stockout_category', component: StockoutComponent },
       { path: 'add_product', component: AddProduct },
+      { path: 'products', component: ProductsComponent },
+      { path: 'products/:id', component: EditProduct },
     ],
   },
 ];
