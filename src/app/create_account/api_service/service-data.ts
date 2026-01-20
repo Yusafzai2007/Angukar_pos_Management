@@ -12,6 +12,7 @@ import {
   StockApiResponse,
 } from '../../Typescript/add_product/add_product';
 import { productstock_record } from '../../Typescript/product_record';
+import { AllUsersResponse } from '../../Typescript/user/user';
 
 export interface ProductPayload {
   itemGroupName: string;
@@ -73,6 +74,11 @@ export class ServiceData {
     return this.http.post(`${this.apiUrl}/signup`, data);
   }
 
+
+  deleteuser(userId: string){
+    return this.http.delete(`${this.apiUrl}/deleteuser`)
+  }
+
   logout(data: any = {}) {
     return this.http.post(`${this.apiUrl}/logout`, data, {
       withCredentials: true,
@@ -83,6 +89,11 @@ export class ServiceData {
     return this.http.post(`${this.apiUrl}/login`, data, {
       withCredentials: true,
     });
+  }
+
+
+  get_user(){
+    return this.http.get<AllUsersResponse>(`${this.apiUrl}/users`) 
   }
 
   currentuser(): Observable<SingleUserResponse> {

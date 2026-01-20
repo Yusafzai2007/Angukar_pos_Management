@@ -23,7 +23,10 @@ export class Sidebar implements OnInit {
     this.checkScreen();
   }
 
-  constructor(private route: Router, private service: ServiceData) {
+  constructor(
+    private route: Router,
+    private service: ServiceData,
+  ) {
     this.checkScreen();
   }
 

@@ -17,9 +17,11 @@ export class StockInComponent implements OnInit {
   showEditModal: boolean = false;
   showDeleteModal: boolean = false;
   modalMode: 'create' | 'edit' = 'create';
+  showFilterSection: boolean = false;
   
   // Data arrays
   stockInCategories: StockInCategory[] = [];
+  filteredCategories: StockInCategory[] = [];
   
   // Form models
   stockInCategory = {
@@ -43,10 +45,26 @@ export class StockInComponent implements OnInit {
   deleteItemName: string = '';
   deleteError: string = '';
   
+  // Filter variables
+  filterName: string = '';
+  filterDescription: string = '';
+  filterStatus: 'all' | 'active' | 'inactive' = 'all';
+  filterDateFrom: string = '';
+  filterDateTo: string = '';
+  
   constructor(private stockInService: ServiceData) {}
   
   ngOnInit() {
     this.fetchStockInCategories();
+  }
+  
+  // Toggle filter section visibility
+  toggleFilterSection() {
+    this.showFilterSection = !this.showFilterSection;
+    if (!this.showFilterSection) {
+      // Clear filters when hiding the section
+      this.clearFilters();
+    }
   }
   
   // Fetch all stock in categories
@@ -56,6 +74,7 @@ export class StockInComponent implements OnInit {
       next: (response: StockInCategoryResponse) => {
         if (response && response.data) {
           this.stockInCategories = response.data;
+          this.filteredCategories = [...response.data];
         }
         this.isLoading = false;
       },
@@ -64,6 +83,64 @@ export class StockInComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  
+  // Apply filters
+  applyFilters() {
+    let filtered = [...this.stockInCategories];
+    
+    // Filter by name
+    if (this.filterName.trim()) {
+      const searchTerm = this.filterName.toLowerCase().trim();
+      filtered = filtered.filter(category => 
+        category.stockInCategoryName.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Filter by description
+    if (this.filterDescription.trim()) {
+      const searchTerm = this.filterDescription.toLowerCase().trim();
+      filtered = filtered.filter(category => 
+        category.category_description?.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    // Filter by status
+    if (this.filterStatus !== 'all') {
+      filtered = filtered.filter(category => 
+        this.filterStatus === 'active' ? category.isActive : !category.isActive
+      );
+    }
+    
+    // Filter by date range
+    if (this.filterDateFrom) {
+      const fromDate = new Date(this.filterDateFrom);
+      filtered = filtered.filter(category => {
+        const categoryDate = new Date(category.createdAt);
+        return categoryDate >= fromDate;
+      });
+    }
+    
+    if (this.filterDateTo) {
+      const toDate = new Date(this.filterDateTo);
+      toDate.setHours(23, 59, 59, 999); // End of the day
+      filtered = filtered.filter(category => {
+        const categoryDate = new Date(category.createdAt);
+        return categoryDate <= toDate;
+      });
+    }
+    
+    this.filteredCategories = filtered;
+  }
+  
+  // Clear filters
+  clearFilters() {
+    this.filterName = '';
+    this.filterDescription = '';
+    this.filterStatus = 'all';
+    this.filterDateFrom = '';
+    this.filterDateTo = '';
+    this.filteredCategories = [...this.stockInCategories];
   }
   
   // Open create modal
@@ -190,6 +267,11 @@ export class StockInComponent implements OnInit {
     this.deleteItemId = '';
     this.deleteItemName = '';
     this.deleteError = '';
+  }
+  
+  // Get today's date for date filter max value
+  getTodayDate(): string {
+    return new Date().toISOString().split('T')[0];
   }
   
   // Format date

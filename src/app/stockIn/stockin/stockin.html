@@ -1,0 +1,424 @@
+<div class="min-h-screen bg-gray-50 p-4 md:p-6">
+  <!-- Header -->
+  <div class="mb-6 md:mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Stock In Management</h1>
+    <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">Manage your inventory stock entries</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+    <p class="mt-4 text-gray-600">Loading products...</p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error && !loading" 
+       class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-red-700">{{error}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <!-- Action Header -->
+    <div class="p-4 md:p-6 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-lg md:text-xl font-semibold text-gray-800">Stock In Records</h2>
+          <p class="text-gray-500 text-sm md:text-base mt-1">
+            Available Products: {{productsList.length}}
+          </p>
+        </div>
+        
+        <!-- Open Form Button -->
+        <button 
+          (click)="toggleMainForm()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          {{ showMainForm ? 'Close Form' : 'Add Stock In' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Slide-up Form Section -->
+    <div *ngIf="showMainForm" class="slide-up-form">
+      <div class="p-4 md:p-6">
+        <!-- Form Header -->
+        <div class="mb-6">
+          <h3 class="text-lg md:text-xl font-bold text-gray-900">New Stock In Entry</h3>
+          <p class="text-gray-600 text-sm md:text-base mt-1">Fill in the details below</p>
+        </div>
+
+        <!-- Main Details Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+          <!-- Total Price -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Total Stock In Price *
+            </label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></span>
+              <input
+                type="number"
+                [(ngModel)]="stockInData.stcokIn_price"
+                class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+                min="0"
+                step="0.01"
+                
+              />
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Auto-calculated from products</p>
+          </div>
+
+          <!-- Date -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Stock In Date *
+            </label>
+            <input
+              type="date"
+              [(ngModel)]="stockInData.stockInDate"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+            />
+          </div>
+
+          <!-- Category -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Category *
+            </label>
+            <select
+              [(ngModel)]="stockInData.stockInCategoryId"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base bg-white"
+            >
+              <option value="" disabled selected>Select Category</option>
+              <option *ngFor="let category of stockInCategories" [value]="category._id">
+                {{category.stockInCategoryName}}
+              </option>
+            </select>
+          </div>
+
+          <!-- Invoice -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Invoice Number
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="stockInData.invoiceNo"
+              placeholder="Optional invoice number"
+              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+            />
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Notes
+          </label>
+          <textarea
+            [(ngModel)]="stockInData.notes"
+            rows="2"
+            placeholder="Additional notes..."
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Products Section -->
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h4 class="text-md md:text-lg font-semibold text-gray-900">Products</h4>
+              <p class="text-gray-500 text-sm">Add products with quantities</p>
+            </div>
+            <button
+              (click)="addProductRow()"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 text-sm md:text-base"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+              </svg>
+              Add Item
+            </button>
+          </div>
+
+          <!-- Product Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr class="bg-gray-50">
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item *</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Model/SKU</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Stock</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">New StockIn *</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total After</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barcodes</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let row of productRows; let i = index" class="hover:bg-gray-50">
+                  <!-- Product Selection -->
+                  <td class="px-4 py-3">
+                    <select
+                      [(ngModel)]="row._id"
+                      (change)="onProductSelect(i, row._id)"
+                      class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition text-sm"
+                    >
+                      <option value="">Select Product</option>
+                      <option *ngFor="let product of productsList" [value]="product._id">
+                        {{product.product.item_Name}} ({{product.product.modelNoSKU}})
+                      </option>
+                    </select>
+                  </td>
+                  
+                  <!-- Model No -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm text-gray-900 font-medium">{{row.modelNoSKU || '-'}}</div>
+                  </td>
+                  
+                  <!-- Unit -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm text-gray-900">{{row.unit || '-'}}</div>
+                  </td>
+                  
+                  <!-- Current Stock -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm text-gray-900 font-medium">{{row.currentStock}}</div>
+                  </td>
+                  
+                  <!-- Quantity -->
+                  <td class="px-4 py-3">
+                    <input
+                      type="number"
+                      [(ngModel)]="row.quantity"
+                      (input)="onQuantityChange(i)"
+                      min="0"
+                      class="w-20 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition text-sm"
+                      [disabled]="!row._id"
+                    />
+                  </td>
+                  
+                  <!-- Total After -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm font-medium text-gray-900">{{row.totalAfter}}</div>
+                  </td>
+                  
+                  <!-- Price -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm text-gray-900">${{row.salePrice}}</div>
+                  </td>
+                  
+                  <!-- Total -->
+                  <td class="px-4 py-3">
+                    <div class="text-sm font-bold text-gray-900">${{row.totalPrice.toFixed(2)}}</div>
+                  </td>
+                  
+                  <!-- Barcodes -->
+                  <td class="px-4 py-3">
+                    <button
+                      (click)="toggleBarcodeModal(i)"
+                      [disabled]="!row._id || row.quantity <= 0"
+                      class="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clip-rule="evenodd"/>
+                        <path d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3z"/>
+                      </svg>
+                      {{row.barcodes.length}}/{{row.quantity}}
+                    </button>
+                  </td>
+                  
+                  <!-- Delete Action -->
+                  <td class="px-4 py-3">
+                    <button
+                      (click)="removeProductRow(i)"
+                      class="text-red-500 hover:text-red-700 transition p-1.5 rounded hover:bg-red-50"
+                      title="Remove"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot class="bg-gray-50">
+                <tr>
+                  <td colspan="7" class="px-4 py-3 text-right font-medium text-gray-700 text-sm">Grand Total:</td>
+                  <td class="px-4 py-3 font-bold text-gray-900 text-lg">${{stockInData.stcokIn_price.toFixed(2)}}</td>
+                  <td colspan="2"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="productRows.length === 0" 
+               class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <p class="mt-2 text-gray-500">No products added</p>
+            <button
+              (click)="addProductRow()"
+              class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition text-sm"
+            >
+              Add First Product
+            </button>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+          <button
+            (click)="resetForm()"
+            class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm md:text-base"
+          >
+            Clear All
+          </button>
+          <button
+            (click)="submitStockIn()"
+            class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
+          >
+            <span *ngIf="submitting" class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+            {{submitting ? 'Processing...' : 'Submit Stock In'}}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barcode Modal -->
+    <div *ngFor="let row of productRows; let i = index">
+      <div *ngIf="row.showBarcodeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+          <!-- Modal Header -->
+          <div class="bg-gray-50 px-6 py-4 border-b">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Barcode Management</h3>
+                <p class="text-sm text-gray-600 mt-1">
+                  {{row.productName}} - Required: {{row.quantity}}
+                </p>
+              </div>
+              <button
+                (click)="row.showBarcodeModal = false"
+                class="text-gray-400 hover:text-gray-600 transition"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Modal Content -->
+          <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px)">
+            <!-- Barcode Input -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Enter Barcode
+              </label>
+              <div class="flex gap-3">
+                <input
+                  type="text"
+                  [(ngModel)]="row.newBarcode"
+                  (keyup.enter)="addBarcode(i)"
+                  placeholder="Type or scan barcode"
+                  class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                />
+                <button
+                  (click)="addBarcode(i)"
+                  class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                  </svg>
+                  ADD
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">Type or select from available barcodes</p>
+            </div>
+
+            <!-- Barcodes List -->
+            <div class="mb-6">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Added Barcodes ({{row.barcodes.length}}/{{row.quantity}})</h4>
+              
+              <div *ngIf="row.barcodes.length === 0" 
+                   class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                </svg>
+                <p class="mt-2 text-gray-500">No barcodes added yet</p>
+                <p class="text-xs text-gray-400 mt-1">Add barcodes above to continue</p>
+              </div>
+
+              <div *ngIf="row.barcodes.length > 0" class="space-y-2">
+                <div *ngFor="let barcode of row.barcodes; let bIndex = index" 
+                     class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="font-mono text-gray-800">{{barcode}}</span>
+                  </div>
+                  <button
+                    (click)="removeBarcode(i, bIndex)"
+                    class="text-red-500 hover:text-red-700 transition p-1 rounded hover:bg-red-50"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="bg-gray-50 px-6 py-4 border-t flex justify-end gap-3">
+            <button
+              (click)="row.showBarcodeModal = false"
+              class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+            >
+              CANCEL
+            </button>
+            <button
+              (click)="saveBarcodes(i)"
+              [disabled]="row.barcodes.length !== row.quantity"
+              class="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              SAVE BARCODES
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State (when no form is open) -->
+    <div *ngIf="!showMainForm && !loading" class="p-8 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to add stock?</h3>
+      <p class="text-gray-500 mb-6">Click "Add Stock In" to create a new stock entry</p>
+    </div>
+  </div>
+</div>
