@@ -1,3 +1,4 @@
+// add_product.ts file ko update karein
 export interface AddProducttypescript {
   itemGroupName: string;
   itemName: string;
@@ -45,6 +46,7 @@ export interface StockItem {
   allTransactions: Transaction[][];
   product: Product;
   barcodes: Barcode[];
+  itemGroupName?: string; // Add this property
 }
 
 /* =========================
@@ -60,12 +62,13 @@ export interface Transaction {
 }
 
 /* =========================
-   PRODUCT
+   PRODUCT (UPDATED)
 ========================= */
 
 export interface Product {
   _id: string;
   itemGroupId: string;
+  itemGroupName?: string; // Make this optional
   item_Name: string;
   item_Description: string;
   actual_item_price: number;
@@ -75,7 +78,7 @@ export interface Product {
   isActive: boolean;
   modelNoSKU: string;
   serialNo: boolean | string;
-  unit: 'piece' | 'gram' | 'liter';
+  unit: string; // More flexible
   createdAt: string;
   updatedAt: string;
   __v: number;

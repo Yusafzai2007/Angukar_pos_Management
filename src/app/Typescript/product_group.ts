@@ -9,7 +9,27 @@ export interface productGroup {
 
 
 
+export interface CreateBarcodePayload {
+  barcode_serila: string[];
+  productId: string; // Ensure this exists
+  stockInId: string | null;
+  stockoutId: string | null;
+}
 
+export interface EditProductPayload {
+  itemGroupId?: string; // Add this
+  itemGroupName: string;
+  item_Name: string;
+  item_Description: string;
+  actual_item_price: number;
+  selling_item_price: number;
+  item_discount_price: number;
+  item_final_price: number;
+  modelNoSKU: string;
+  serialNo: boolean;
+  unit: string;
+  isActive: boolean;
+}
 
 
 export interface ItemGroup {
