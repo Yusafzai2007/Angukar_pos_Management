@@ -115,3 +115,56 @@ button:hover {
     transform: rotate(360deg);
   }
 }
+
+
+
+
+
+
+/* Floating Label Container */
+.floating-label-group {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+/* Floating Label */
+.floating-label {
+  position: absolute;
+  pointer-events: none;
+  left: 12px;
+  top: 12px;
+  transition: all 0.2s ease;
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* When input/select is focused or has value */
+.floating-label.active,
+.floating-label-group input:focus ~ .floating-label,
+.floating-label-group select:focus ~ .floating-label {
+  top: -22px;
+  left: 0;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Inputs and Select Styling */
+.floating-label-group input,
+.floating-label-group select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.95rem 0.75rem;
+  font-size: 1rem;
+  color: #1f2937;
+  outline: none;
+  background: #fff;
+}
+
+/* Focus Style */
+.floating-label-group input:focus,
+.floating-label-group select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

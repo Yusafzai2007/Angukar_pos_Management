@@ -1,11 +1,30 @@
-<div class="min-h-screen bg-gray-50 p-4 md:p-6">
+<div class="  p-4 md:p-6">
   <!-- Header -->
-  <div class="mb-6 md:mb-8">
-    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Stock In Management</h1>
+ <div class="mb-6 md:mb-8 flex items-center justify-between gap-4">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+      Stock In Management
+    </h1>
     <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">
       Manage your inventory stock entries
     </p>
   </div>
+
+  <button
+    (click)="toggleMainForm()"
+    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path
+        fill-rule="evenodd"
+        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    {{ showMainForm ? 'Close Form' : 'Add Stock In' }}
+  </button>
+</div>
+
 
   <!-- Loading State -->
   <div *ngIf="loading" class="text-center py-12">
@@ -60,7 +79,11 @@
   <!-- Main Content -->
   <div class="bg-white rounded-xl shadow-lg overflow-hidden">
     <!-- Action Header -->
-    <div class="p-4 md:p-6 border-b border-gray-200">
+   
+
+    <!-- Slide-up Form Section -->
+    <div *ngIf="showMainForm" class="slide-up-form">
+      <div class="p-4 md:p-6 border-b border-gray-200">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-lg md:text-xl font-semibold text-gray-800">Stock In Records</h2>
@@ -70,29 +93,11 @@
         </div>
 
         <!-- Open Form Button -->
-        <button
-          (click)="toggleMainForm()"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          {{ showMainForm ? 'Close Form' : 'Add Stock In' }}
-        </button>
+        <span class="px-4 py-2 bg-gray-100 rounded-lg text-gray-700">
+          📅 {{ getCurrentDate() }}
+        </span>
       </div>
     </div>
-
-    <!-- Slide-up Form Section -->
-    <div *ngIf="showMainForm" class="slide-up-form">
       <div class="p-4 md:p-6">
         <!-- Form Header -->
         <div class="mb-6">
@@ -270,6 +275,7 @@
                       (click)="openProductSearchModal(i)"
                       class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition text-sm text-left bg-white hover:bg-gray-50"
                     >
+                    
                       {{ row.productName || 'Select Product' }}
                     </button>
                   </td>
@@ -878,9 +884,7 @@
                   readonly
                 />
               </div>
-              <p class="text-xs text-gray-500 mt-1">
-                Auto-calculated: Sale Price - Discount
-              </p>
+              <p class="text-xs text-gray-500 mt-1">Auto-calculated: Sale Price - Discount</p>
             </div>
           </div>
         </div>
@@ -1100,7 +1104,7 @@
   </div>
 
   <!-- Empty State (when no form is open) -->
-  <div *ngIf="!showMainForm && !loading" class="p-8 text-center">
+  <!-- <div *ngIf="!showMainForm && !loading" class="p-8 text-center">
     <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -1119,5 +1123,10 @@
     </div>
     <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to add stock?</h3>
     <p class="text-gray-500 mb-6">Click "Add Stock In" to create a new stock entry</p>
-  </div>
+  </div> -->
 </div>
+
+
+
+
+<app-fetch-stock-in></app-fetch-stock-in>

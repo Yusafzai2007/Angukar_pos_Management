@@ -2,15 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StockApiResponse, StockItem, Product } from '../../Typescript/add_product/add_product';
-import { StockIn } from '../../api_service/stock-in';
+import {  StockInStockInService } from '../../api_service/stock-in';
 import { StockInCategory, StockInCategoryResponse } from '../../Typescript/category/stockIn';
 import { ServiceData } from '../../create_account/api_service/service-data';
 import { ItemGroup } from '../../Typescript/product_group';
+import { FetchStockIn } from "../fetch-stock-in/fetch-stock-in";
 
 @Component({
   selector: 'app-stockin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FetchStockIn],
   templateUrl: './stockin.html',
   styleUrls: ['./stockin.css']
 })
@@ -102,13 +103,22 @@ export class Stockin implements OnInit {
     productGroupId: ''
   };
 
-  constructor(private service: StockIn, private services: ServiceData) {}
+  constructor(private service: StockInStockInService , private services: ServiceData) {}
 
   ngOnInit(): void {
     this.getProducts();
     this.getStockInCategories();
     this.loadProductGroups();
   }
+   getCurrentDate(): string {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
 
   getProducts(): void {
     this.loading = true;
