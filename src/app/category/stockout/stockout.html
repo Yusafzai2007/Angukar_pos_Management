@@ -286,8 +286,10 @@
 
 <div
   *ngIf="showFilterSection"
+  [ngClass]="showFilterSection ? 'animate-slideDown' : 'animate-slideUp'"
   class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-200 mb-6"
 >
+
   <!-- Header -->
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
     <h2 class="text-lg font-semibold text-gray-900">Filters</h2>

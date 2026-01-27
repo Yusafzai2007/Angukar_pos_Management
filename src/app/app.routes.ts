@@ -10,6 +10,7 @@ import { ProductsComponent } from './add_product/products/products';
 import { EditProduct } from './add_product/edit-product/edit-product';
 import { User } from './user/user/user';
 import { Stockin } from './stockIn/stockin/stockin';
+import { Stockout } from './stockIn/stockout/stockout';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: 'users', component: User },
       { path: 'products/:id', component: EditProduct },
       { path: 'StockIn', component: Stockin },
+      { path: 'stockout', component: Stockout },
     ],
   },
 ];

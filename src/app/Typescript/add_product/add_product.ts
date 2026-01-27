@@ -57,9 +57,16 @@ export interface Transaction {
   _id: string;
   date: string; // ISO Date
   quantity: number;
-  type: 'Opening' | 'In' | 'Out';
+  type: 'Opening' | 'Stock-In' | 'Stock-Out'; // <-- updated
   reference: string;
+
+  // New fields
+  costPrice: number;
+  salePrice: number;
+  discount: number;
+  finalPrice: number;
 }
+
 
 /* =========================
    PRODUCT (UPDATED)

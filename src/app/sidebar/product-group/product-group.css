@@ -136,3 +136,35 @@ input:focus ~ .floating-label {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+:host {
+  display: block;
+  position: relative;
+}
+
+/* Mobile view optimization */
+@media (max-width: 1023px) {
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    display: block;
+  }
+  
+  .sidebar-overlay.hidden {
+    display: none;
+  }
+}
+
+/* Smooth transitions */
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Ensure content is not hidden behind navbar */
+.main-content {
+  min-height: calc(100vh - 64px);
+}

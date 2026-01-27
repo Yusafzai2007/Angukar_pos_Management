@@ -23,6 +23,7 @@
   background: #555;
 }
 
+/* ------------------ Floating Label ------------------ */
 .floating-label-group {
   position: relative;
   margin-top: 1.5rem;
@@ -32,7 +33,7 @@
   position: absolute;
   pointer-events: none;
   left: 12px;
-  top: 12px;
+  top: 10px; /* smaller top */
   transition: all 0.2s ease;
   color: #64748b;
   font-size: 16px;
@@ -41,7 +42,7 @@
 .floating-label.active,
 .floating-label-group input:focus ~ .floating-label,
 .floating-label-group select:focus ~ .floating-label {
-  top: -22px;
+  top: -18px; /* smaller top */
   left: 0;
   font-size: 14px;
   color: #475569;
@@ -53,7 +54,7 @@
   width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 0.5rem;
-  padding: 0.95rem 0.75rem;
+  padding: 0.65rem 0.75rem; /* smaller padding */
   font-size: 1rem;
   color: #1f2937;
   outline: none;
@@ -64,4 +65,20 @@
 .floating-label-group select:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ------------------ Filters Animation (Pure CSS) ------------------ */
+.filters-container {
+  animation: filterOpen 0.4s ease forwards;
+}
+
+@keyframes filterOpen {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

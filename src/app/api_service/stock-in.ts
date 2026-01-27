@@ -4,6 +4,7 @@ import { StockApiResponse } from '../Typescript/add_product/add_product';
 import { StockInCategoryResponse } from '../Typescript/category/stockIn';
 import { Observable } from 'rxjs';
 import { StockInResponse } from '../Typescript/stockin/stockin';
+import { StockOutCategoryResponse } from '../Typescript/category/stockout_category';
 
 @Injectable({
   providedIn: 'root',
@@ -28,4 +29,10 @@ export class StockInStockInService  {
   get_stockIn() {
     return this.http.get<StockInResponse>(`${this.apiUrl}/get_stockIn`);
   }
+
+ 
+  get_stockout_category(): Observable<StockOutCategoryResponse> {
+     return this.http.get<StockOutCategoryResponse>(`${this.apiUrl}/get_stockOut_categories`);
+   }
+
 }

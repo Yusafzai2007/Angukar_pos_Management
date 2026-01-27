@@ -1,35 +1,15 @@
 <!-- ✅ Navbar -->
-<!-- ✅ Navbar -->
 <nav
-  class="fixed top-0 left-0 w-full bg-gray-900 px-6 py-5 flex justify-between items-center z-50 border-b border-white border-b-2"
+  class="fixed top-0 left-0 w-full bg-gray-800 px-6 py-3 flex justify-between items-center z-50 border-b border-slate-800 h-16"
 >
   <!-- 🌍 Left: Logo -->
   <div class="flex items-center text-white text-xl md:text-2xl font-bold">
     <span class="tracking-wide">POS ManagementSystem</span>
   </div>
 
-  <!-- 🔍 Center: Search Bar -->
-  <div class="hidden lg:flex flex-1 justify-center px-6 relative">
-    <div class="relative w-[60%]">
-      <input
-        type="text"
-        placeholder="Search products by title..."
-        class="w-full bg-gray-800 text-white py-2 px-5 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
-      />
-      <i
-        class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
-      ></i>
-
-      <!-- 🔽 Search Results Dropdown -->
-    </div>
-  </div>
-
   <!-- 👤 Right: Static Profile Info -->
   <div class="hidden lg:flex items-center space-x-4 text-white">
-    <!-- Bigger User Icon -->
     <i class="fa-solid fa-circle-user text-3xl"></i>
-
-    <!-- User Info -->
     <div class="flex flex-col">
       <p class="font-semibold text-lg">{{ currentUserData?.userName }}</p>
       <p class="text-sm text-gray-300">{{ currentUserData?.email }}</p>
@@ -44,12 +24,13 @@
 
 <!-- 📱 Sidebar -->
 <div
-  class="fixed top-[77px] left-0 h-[calc(100%-77px)] bg-gray-900 text-white z-[9999] flex flex-col justify-between transition-all duration-300 ease-in-out"
-  [class.w-64]="isSidebarOpen"
+  class="fixed top-16 left-0 h-[calc(100vh-64px)] bg-slate-800 text-white z-40 flex flex-col justify-between transition-all duration-300 ease-in-out overflow-y-auto"
+  [class.w-[200px]]="isSidebarOpen"
   [class.w-20]="!isSidebarOpen && !isMobileView"
   [class.-translate-x-full]="!isSidebarOpen && isMobileView"
   [class.translate-x-0]="isSidebarOpen || !isMobileView"
 >
+
   <!-- ✅ Sidebar Header -->
   <div class="flex justify-between items-center p-4 border-b border-gray-700">
     <div class="flex items-center space-x-2">
@@ -88,32 +69,7 @@
       </a>
     </li>
 
-    <!-- <li>
-      <a
-        routerLink="/admin/product_group"
-        class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
-      >
-        <i class="fas fa-shopping-cart text-white mr-2"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">Product_group</span>
-      </a>
-    </li>
-    <li>
-      <a
-        routerLink="/admin/add_product"
-        class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
-      >
-        <i class="fas fa-shopping-cart text-white mr-2"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">Add_Product</span>
-      </a>
-    </li>
-    <li>
-      <a routerLink="/admin/products" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
-        <i class="fas fa-shopping-cart text-white mr-2"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">Products</span>
-      </a>
-    </li> -->
-
-    <!-- Dropdown -->
+    <!-- Product Dropdown -->
     <li>
       <details class="group">
         <summary
@@ -129,111 +85,95 @@
           ></i>
         </summary>
         <ul class="ml-6 mt-2 space-y-1" *ngIf="isSidebarOpen || isMobileView">
-          <!-- <li><a href="#" class="block px-2 py-1 hover:bg-gray-800 rounded">Dubai</a></li> -->
           <li>
-  <a
-    routerLink="/admin/product_group"
-    class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
-  >
-    <i class="fas fa-layer-group text-white mr-2"></i>
-    <span [class.hidden]="!isSidebarOpen && !isMobileView">Product_group</span>
-  </a>
-</li>
+            <a
+              routerLink="/admin/product_group"
+              class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
+            >
+              <i class="fas fa-layer-group text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Product_group</span>
+            </a>
+          </li>
 
-<li>
-  <a
-    routerLink="/admin/add_product"
-    class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
-  >
-    <i class="fas fa-plus-square text-white mr-2"></i>
-    <span [class.hidden]="!isSidebarOpen && !isMobileView">Add_Product</span>
-  </a>
-</li>
+          <li>
+            <a
+              routerLink="/admin/add_product"
+              class="flex items-center hover:bg-gray-700 rounded px-3 py-2"
+            >
+              <i class="fas fa-plus-square text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Add_Product</span>
+            </a>
+          </li>
 
-<li>
-  <a routerLink="/admin/products" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
-    <i class="fas fa-boxes text-white mr-2"></i>
-    <span [class.hidden]="!isSidebarOpen && !isMobileView">Products</span>
-  </a>
-</li>
-
+          <li>
+            <a routerLink="/admin/products" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
+              <i class="fas fa-boxes text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Products</span>
+            </a>
+          </li>
         </ul>
       </details>
     </li>
-  <li>
-  <details class="group">
-    <summary
-      class="flex items-center justify-between cursor-pointer hover:bg-gray-700 rounded px-3 py-2"
-    >
-      <span class="flex items-center">
-        <i class="fas fa-warehouse text-white mr-2"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
-      </span>
-      <i
-        *ngIf="isSidebarOpen || isMobileView"
-        class="fas fa-chevron-down group-open:rotate-180 transition-transform"
-      ></i>
-    </summary>
 
-    <ul class="ml-6 mt-2 space-y-1" *ngIf="isSidebarOpen || isMobileView">
-      
-      <li>
-        <a
-          routerLink="/admin/StockIn"
-          class="flex items-center hover:bg-gray-700 rounded py-2"
+    <!-- StockIn/StockOut Dropdown -->
+    <li>
+      <details class="group">
+        <summary
+          class="flex items-center justify-between cursor-pointer hover:bg-gray-700 rounded px-3 py-2"
         >
-          <i class="fas fa-arrow-circle-down text-white mr-2"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
-        </a>
-      </li>
+          <span class="flex items-center">
+            <i class="fas fa-warehouse text-white mr-2"></i>
+            <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+          </span>
+          <i
+            *ngIf="isSidebarOpen || isMobileView"
+            class="fas fa-chevron-down group-open:rotate-180 transition-transform"
+          ></i>
+        </summary>
 
-      <li>
-        <a
-          routerLink="/admin/stockout"
-          class="flex items-center hover:bg-gray-700 rounded py-2"
-        >
-          <i class="fas fa-arrow-circle-up text-white mr-2"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
-        </a>
-      </li>
+        <ul class="ml-6 mt-2 space-y-1" *ngIf="isSidebarOpen || isMobileView">
+          <li>
+            <a
+              routerLink="/admin/StockIn"
+              class="flex items-center hover:bg-gray-700 rounded py-2"
+            >
+              <i class="fas fa-arrow-circle-down text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+            </a>
+          </li>
 
-      <li>
-        <a
-          routerLink="/admin/stockIn_category"
-          class="flex items-center hover:bg-gray-700 rounded py-2"
-        >
-          <i class="fas fa-tags text-white mr-2"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn Category</span>
-        </a>
-      </li>
+          <li>
+            <a
+              routerLink="/admin/stockout"
+              class="flex items-center hover:bg-gray-700 rounded py-2"
+            >
+              <i class="fas fa-arrow-circle-up text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
+            </a>
+          </li>
 
-      <li>
-        <a
-          routerLink="/admin/stockout_category"
-          class="flex items-center hover:bg-gray-700 rounded py-2"
-        >
-          <i class="fas fa-tags text-white mr-2"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut Category</span>
-        </a>
-      </li>
+          <li>
+            <a
+              routerLink="/admin/stockIn_category"
+              class="flex items-center hover:bg-gray-700 rounded py-2"
+            >
+              <i class="fas fa-tags text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn Category</span>
+            </a>
+          </li>
 
-    </ul>
-  </details>
-</li>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          <li>
+            <a
+              routerLink="/admin/stockout_category"
+              class="flex items-center hover:bg-gray-700 rounded py-2"
+            >
+              <i class="fas fa-tags text-white mr-2"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut Category</span>
+            </a>
+          </li>
+        </ul>
+      </details>
+    </li>
 
     <li>
       <a
@@ -245,26 +185,25 @@
         <span [class.hidden]="!isSidebarOpen && !isMobileView">Users</span>
       </a>
     </li>
-  
   </ul>
 
   <!-- ✅ Log Out Button -->
   <div class="p-4 border-t border-gray-700">
     <button
       class="w-full flex justify-center items-center bg-gradient-to-r from-blue-600 to-gray-900 text-gray-100 font-semibold px-5 py-2 rounded-full hover:bg-white hover:text-white transition-all shadow-md"
+      (click)="logout()"
     >
       <i class="fas fa-sign-out-alt mr-2"></i>
-      <span [class.hidden]="!isSidebarOpen && !isMobileView" (click)="logout()">Log Out</span>
+      <span [class.hidden]="!isSidebarOpen && !isMobileView">Log Out</span>
     </button>
   </div>
 </div>
 
 <!-- ✅ Main Content -->
-<!-- Main Content -->
 <div
-  [class.lg:pl-64]="isSidebarOpen"
+  [class.lg:pl-52]="isSidebarOpen"
   [class.lg:pl-20]="!isSidebarOpen && !isMobileView"
-  class="pt-[88px] transition-all duration-300"
+  class="pt-16 transition-all duration-300 min-h-screen bg-gray-100"
 >
   <router-outlet></router-outlet>
 </div>

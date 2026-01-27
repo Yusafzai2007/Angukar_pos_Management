@@ -1,97 +1,112 @@
 <div class="container mx-auto p-4">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Stock-In List</h2>
-    
-    <div class="space-x-2">
-      <button 
-        (click)="toggleFilters()"
-        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-        </svg>
-        <span>{{ showFilters ? 'Hide Filters' : 'Show Filters' }}</span>
-      </button>
-    </div>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">Stock-In List</h2>
+  
+  <div class="space-x-2">
+    <button 
+      (click)="toggleFilters()"
+      class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+      </svg>
+      <span>{{ showFilters ? 'Hide Filters' : 'Show Filters' }}</span>
+    </button>
   </div>
+</div>
 
-  <!-- Filters Section -->
-  <div 
-    *ngIf="showFilters"
-    class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm"
-  >
+<!-- Filters Section -->
+<div 
+  class="filters-container"
+  [class.filters-open]="showFilters"
+>
+  <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
       <!-- Item Name Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchItemName"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by item name..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900  px-3"
+        />
+        <label class="floating-label" [class.active]="searchItemName">
+          Item Name
+        </label>
       </div>
 
       <!-- Item Description Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Item Description</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchItemDescription"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by description..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900  px-3"
+        />
+        <label class="floating-label" [class.active]="searchItemDescription">
+          Item Description
+        </label>
       </div>
 
       <!-- Invoice No Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Invoice No</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchInvoiceNo"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by invoice..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
+        />
+        <label class="floating-label" [class.active]="searchInvoiceNo">
+          Invoice No
+        </label>
       </div>
 
       <!-- Group Name Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchItemGroupName"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by group..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
+        />
+        <label class="floating-label" [class.active]="searchItemGroupName">
+          Group Name
+        </label>
       </div>
 
       <!-- Category Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchCategoryName"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by category..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
+        />
+        <label class="floating-label" [class.active]="searchCategoryName">
+          Category
+        </label>
       </div>
 
       <!-- Model/SKU Filter -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Model/SKU</label>
+      <div class="floating-label-group">
         <input
           type="text"
           [(ngModel)]="searchModelSKU"
           (ngModelChange)="applyFilters()"
-          placeholder="Search by model/SKU..."
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          placeholder=" "
+          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
+        />
+        <label class="floating-label" [class.active]="searchModelSKU">
+          Model/SKU
+        </label>
       </div>
+
     </div>
 
     <div class="mt-4 flex justify-end space-x-2">
@@ -109,6 +124,9 @@
       </button>
     </div>
   </div>
+</div>
+
+
 
   <!-- Table Section -->
   <div class="overflow-x-auto bg-white rounded-lg shadow">
@@ -129,10 +147,10 @@
       </thead>
 
       <tbody>
-        <tr 
-          *ngFor="let row of filteredRows; let i = index"
-          class="hover:bg-gray-50 transition duration-150"
-        >
+   <tr 
+  *ngFor="let row of filteredRows; let i = index"
+  class="transition duration-150"
+>
           <td class="border px-4 py-2">{{ i + 1 }}</td>
           <td class="border px-4 py-2 font-medium">{{ row.invoiceNo }}</td>
           
@@ -165,24 +183,19 @@
           <!-- Group Details Column -->
           <td class="border px-4 py-2">
   <div class="flex items-center gap-2">
-    <!-- Icon -->
-    <i class="fa-solid fa-layer-group text-sm text-blue-600"></i>
+    <i
+      class="fa-solid fa-layer-group text-sm text-blue-600 cursor-pointer"
+      *ngIf="row.item?.itemGroupId"
+      (click)="openItemGroupModal(row.item.itemGroupId)"
+    ></i>
 
-    <div class="space-y-1">
-      <div>{{ row.item?.itemGroupId?.itemGroupName || 'N/A' }}</div>
-
-      <button
-        *ngIf="row.item?.itemGroupId"
-        (click)="openItemGroupModal(row.item.itemGroupId)"
-        class="text-blue-600 hover:text-blue-800 text-sm underline"
-      >
-        View Group Details
-      </button>
-
-      <span *ngIf="!row.item?.itemGroupId" class="text-gray-400 text-sm">
-        No group data
-      </span>
+    <div class="font-medium">
+      {{ row.item?.itemGroupId?.itemGroupName || 'N/A' }}
     </div>
+
+    <span *ngIf="!row.item?.itemGroupId" class="text-gray-400 text-sm">
+      No group data
+    </span>
   </div>
 </td>
 
@@ -191,21 +204,25 @@
           <td class="border px-4 py-2">${{ row.stockPrice || 0 }}</td>
           
           <!-- Category Details Column -->
-          <td class="border px-4 py-2">
-            <div class="space-y-1">
-              <div>{{ row.category?.stockInCategoryName || 'N/A' }}</div>
-              <button
-                *ngIf="row.category"
-                (click)="openCategoryModal(row.category)"
-                class="text-blue-600 hover:text-blue-800 text-sm underline"
-              >
-                View Category Details
-              </button>
-              <span *ngIf="!row.category" class="text-gray-400 text-sm">No category data</span>
-            </div>
-          </td>
-          
-          <td class="border px-4 py-2">{{ formatDate(row.date) }}</td>
+        <td class="border px-4 py-2">
+  <div class="flex items-center gap-2">
+    <i
+      class="fa-solid fa-tags text-sm text-blue-600 cursor-pointer"
+      *ngIf="row.category"
+      (click)="openCategoryModal(row.category)"
+    ></i>
+
+    <div class="font-medium">
+      {{ row.category?.stockInCategoryName || 'N/A' }}
+    </div>
+
+    <span *ngIf="!row.category" class="text-gray-400 text-sm">
+      No category data
+    </span>
+  </div>
+</td>
+
+<td class="border px-4 py-2">{{ row.createdAt | date:"shortDate" }}</td>
           
           <!-- Notes Column -->
           <td class="border px-4 py-2">
