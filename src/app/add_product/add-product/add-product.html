@@ -7,7 +7,7 @@
           class="grid gap-6"
           [ngClass]="{
             'lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]': !add_product.serialNo,
-            'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]': add_product.serialNo
+            'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]': add_product.serialNo,
           }"
         >
           <!-- Add New Item Card -->
@@ -281,7 +281,7 @@
                         class="mr-3 text-sm font-medium"
                         [ngClass]="{
                           'text-slate-500': !add_product.serialNo,
-                          'text-indigo-600': add_product.serialNo
+                          'text-indigo-600': add_product.serialNo,
                         }"
                       >
                         {{ add_product.serialNo ? 'Enabled' : 'Disabled' }}
@@ -394,7 +394,7 @@
                           class="h-full transition-all duration-300"
                           [ngClass]="{
                             'bg-emerald-500': barcodes.length === add_product.openingStock,
-                            'bg-indigo-500': barcodes.length !== add_product.openingStock
+                            'bg-indigo-500': barcodes.length !== add_product.openingStock,
                           }"
                           [style.width.%]="(barcodes.length / add_product.openingStock) * 100"
                         ></div>
@@ -665,7 +665,7 @@
                         class="text-lg font-semibold"
                         [ngClass]="{
                           'text-emerald-600': barcodes.length === add_product.openingStock,
-                          'text-amber-600': barcodes.length !== add_product.openingStock
+                          'text-amber-600': barcodes.length !== add_product.openingStock,
                         }"
                       >
                         {{ barcodes.length }}

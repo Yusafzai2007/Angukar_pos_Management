@@ -9,7 +9,7 @@ import { StockOutCategoryResponse } from '../Typescript/category/stockout_catego
 @Injectable({
   providedIn: 'root',
 })
-export class StockInStockInService  {
+export class StockInStockInService {
   constructor(private http: HttpClient) {}
 
   apiUrl: string = 'http://localhost:4000/api/v1/pos';
@@ -30,9 +30,7 @@ export class StockInStockInService  {
     return this.http.get<StockInResponse>(`${this.apiUrl}/get_stockIn`);
   }
 
- 
   get_stockout_category(): Observable<StockOutCategoryResponse> {
-     return this.http.get<StockOutCategoryResponse>(`${this.apiUrl}/get_stockOut_categories`);
-   }
-
+    return this.http.get<StockOutCategoryResponse>(`${this.apiUrl}/get_stockOut_categories`);
+  }
 }
