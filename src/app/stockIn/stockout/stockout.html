@@ -189,7 +189,7 @@
             </div>
             <button
               (click)="addProductRow()"
-              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 text-sm md:text-base"
+              class="bg-blue-700 hover:bg-blue-900 text-white px-4 py-2 rounded-sm font-medium transition flex items-center gap-2 text-sm md:text-base"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -212,51 +212,10 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr class="bg-gray-50">
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Item Name *
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" let *ngFor="let Header of tableheader">
+                    {{Header}}
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    SKU/Model
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Unit
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Status
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Cost Price
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Sale Price
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Discount
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Final Price
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Opening
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Remaining
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Stock Out *
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Total After
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Line Total
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Barcodes
-                  </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Actions
-                  </th>
+                 
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
@@ -1130,3 +1089,55 @@
     <p class="text-gray-500 mb-6">Click "Add Stock Out" to create a new stock out entry</p>
   </div> -->
 </div>
+
+
+
+
+<app-fetch-stockout></app-fetch-stockout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

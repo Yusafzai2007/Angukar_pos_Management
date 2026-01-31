@@ -1,31 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { Barcode, Item, ItemGroup, StockIn, StockInCategory, StockInResponse } from '../../Typescript/stockin/stockin';
-import { StockInStockInService } from '../../api_service/stock-in';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Stockoutservice } from '../../api_service/stockout/stockoutservice';
+import { StockOutApiResponsedata, StockOutItemdata } from '../../Typescript/stcokout/stock_out_data';
 
 interface TableRow {
-  stockInId: string;
+  stockOutId: string;
   invoiceNo: string;
-  item: Item;
-  stockAdded: number;
-  stockPrice: number;
-  category: StockInCategory;
+  item: any;
+  quantity: number;
+  totalSale: number;
+  category: any;
   date: string;
-  notes: string;
+  stockOutDate: string;
   isActive: boolean;
   createdAt: string;
 }
 
 @Component({
-  selector: 'app-fetch-stock-in',
+  selector: 'app-fetch-stockout',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './fetch-stock-in.html',
-  styleUrls: ['./fetch-stock-in.css']
+  templateUrl: './fetch-stockout.html',
+  styleUrl: './fetch-stockout.css'
 })
-export class FetchStockIn implements OnInit {
-  stockindata: StockIn[] = [];
+export class FetchStockout implements OnInit {
+  stockoutData: StockOutItemdata[] = [];
   tableRows: TableRow[] = [];
   filteredRows: TableRow[] = [];
   
@@ -45,71 +45,66 @@ export class FetchStockIn implements OnInit {
   showBarcodeModal = false;
   
   // Selected data for modals
-  selectedItemGroup: ItemGroup | null = null;
-  selectedItem: Item | null = null;
-  selectedCategory: StockInCategory | null = null;
-  selectedBarcodes: Barcode[] = [];
+  selectedItemGroup: any = null;
+  selectedItem: any = null;
+  selectedCategory: any = null;
+  selectedBarcodes: any[] = [];
   selectedItemName: string = '';
 
-  constructor(private service: StockInStockInService) {}
-
-
-
-  
-
-
+  constructor(private service: Stockoutservice) {}
 
   ngOnInit(): void {
     this.fetch_data();
   }
 
   fetch_data(): void {
-    this.service.get_stockIn().subscribe((res: StockInResponse) => {
-      this.stockindata = res.message;
-      this.processStockInData();
-      this.filteredRows = [...this.tableRows];
-      console.log("tableRows", this.tableRows);
-    });
+this.service.all_stock_out().subscribe((res: StockOutApiResponsedata) => {
+  this.stockoutData = res.message;
+  this.processStockOutData();
+  this.filteredRows = [...this.tableRows];
+  console.log("stockoutData", this.stockoutData);
+});
+
   }
 
-  processStockInData(): void {
+  processStockOutData(): void {
     this.tableRows = [];
     
-    this.stockindata.forEach(stockItem => {
-      // Check if there are multiple items in one stock-in record
-      if (stockItem.itemId && stockItem.itemId.length > 0) {
-        stockItem.itemId.forEach((item, index) => {
-          // Get the corresponding stockAdded value for this item
-          const stockAdded = stockItem.stockAdded && stockItem.stockAdded[index] !== undefined 
-            ? stockItem.stockAdded[index] 
-            : stockItem.stockAdded?.[0] || 1;
+    this.stockoutData.forEach(stockOutItem => {
+      // Check if there are multiple items in one stock-out record
+      if (stockOutItem.itemId && stockOutItem.itemId.length > 0) {
+        stockOutItem.itemId.forEach((item, index) => {
+          // Get the corresponding quantity value for this item
+          const quantity = stockOutItem.quantity && stockOutItem.quantity[index] !== undefined 
+            ? stockOutItem.quantity[index] 
+            : stockOutItem.quantity?.[0] || 1;
           
-          // Get the corresponding price for this item (or calculate proportionally)
-          let itemPrice = 0;
-          if (stockItem.itemId.length === 1) {
-            // Single item, use the full price
-            itemPrice = stockItem.stcokIn_price;
+          // Get the corresponding sale amount for this item (or calculate proportionally)
+          let itemSale = 0;
+          if (stockOutItem.itemId.length === 1) {
+            // Single item, use the full sale amount
+            itemSale = stockOutItem.Total_sale;
           } else {
-            // Multiple items, calculate proportional price based on actual_item_price
-            const totalActualPrice = stockItem.itemId.reduce((sum, item) => sum + (item.actual_item_price || 0), 0);
-            if (totalActualPrice > 0) {
-              itemPrice = (item.actual_item_price / totalActualPrice) * stockItem.stcokIn_price;
+            // Multiple items, calculate proportional sale based on selling price
+            const totalSellingPrice = stockOutItem.itemId.reduce((sum, item) => sum + (item.selling_item_price || 0), 0);
+            if (totalSellingPrice > 0) {
+              itemSale = (item.selling_item_price / totalSellingPrice) * stockOutItem.Total_sale;
             } else {
-              itemPrice = stockItem.stcokIn_price / stockItem.itemId.length;
+              itemSale = stockOutItem.Total_sale / stockOutItem.itemId.length;
             }
           }
           
           this.tableRows.push({
-            stockInId: stockItem._id,
-            invoiceNo: stockItem.invoiceNo,
+            stockOutId: stockOutItem._id,
+            invoiceNo: stockOutItem.invoiceNo,
             item: item,
-            stockAdded: stockAdded,
-            stockPrice: Math.round(itemPrice * 100) / 100, // Round to 2 decimal places
-            category: stockItem.stockInCategoryId,
-            date: stockItem.stockInDate,
-            notes: stockItem.notes,
-            isActive: stockItem.isActive,
-            createdAt: stockItem.createdAt
+            quantity: quantity,
+            totalSale: Math.round(itemSale * 100) / 100, // Round to 2 decimal places
+            category: stockOutItem.stockOutCategoryId,
+            date: stockOutItem.date,
+            stockOutDate: stockOutItem.stockOutDate,
+            isActive: stockOutItem.isActive,
+            createdAt: stockOutItem.createdAt
           });
         });
       }
@@ -132,7 +127,7 @@ export class FetchStockIn implements OnInit {
         (!this.searchItemGroupName || 
           row.item.itemGroupId?.itemGroupName?.toLowerCase().includes(this.searchItemGroupName.toLowerCase())) &&
         (!this.searchCategoryName || 
-          row.category?.stockInCategoryName?.toLowerCase().includes(this.searchCategoryName.toLowerCase())) &&
+          row.category?.stockoutCategoryName?.toLowerCase().includes(this.searchCategoryName.toLowerCase())) &&
         (!this.searchModelSKU || 
           row.item.modelNoSKU?.toLowerCase().includes(this.searchModelSKU.toLowerCase()))
       );
@@ -150,7 +145,7 @@ export class FetchStockIn implements OnInit {
   }
 
   // Open Item Group Modal with safe check
-  openItemGroupModal(itemGroup?: ItemGroup): void {
+  openItemGroupModal(itemGroup?: any): void {
     if (itemGroup) {
       this.selectedItemGroup = itemGroup;
       this.showItemGroupModal = true;
@@ -158,7 +153,7 @@ export class FetchStockIn implements OnInit {
   }
 
   // Open Item Modal with safe check
-  openItemModal(item?: Item): void {
+  openItemModal(item?: any): void {
     if (item) {
       this.selectedItem = item;
       this.showItemModal = true;
@@ -166,7 +161,7 @@ export class FetchStockIn implements OnInit {
   }
 
   // Open Category Modal with safe check
-  openCategoryModal(category?: StockInCategory): void {
+  openCategoryModal(category?: any): void {
     if (category) {
       this.selectedCategory = category;
       this.showCategoryModal = true;
@@ -174,7 +169,7 @@ export class FetchStockIn implements OnInit {
   }
 
   // Open Barcode Modal
-  openBarcodeModal(barcodes: Barcode[], itemName: string): void {
+  openBarcodeModal(barcodes: any[], itemName: string): void {
     if (barcodes && barcodes.length > 0) {
       this.selectedBarcodes = barcodes;
       this.selectedItemName = itemName;
@@ -195,14 +190,14 @@ export class FetchStockIn implements OnInit {
     this.selectedItemName = '';
   }
 
-  editStockIn(id: string): void {
-    console.log('Edit stock-in:', id);
+  editStockOut(id: string): void {
+    console.log('Edit stock-out:', id);
     // Implement edit functionality here
   }
 
-  deleteStockIn(id: string): void {
-    if (confirm('Are you sure you want to delete this stock-in record?')) {
-      console.log('Delete stock-in:', id);
+  deleteStockOut(id: string): void {
+    if (confirm('Are you sure you want to delete this stock-out record?')) {
+      console.log('Delete stock-out:', id);
       // Implement delete functionality here
     }
   }
@@ -226,14 +221,14 @@ export class FetchStockIn implements OnInit {
   }
 
   // Get barcode status text
-  getBarcodeStatus(barcode: Barcode): string {
+  getBarcodeStatus(barcode: any): string {
     if (barcode.stockoutId) return 'Out of Stock';
     if (barcode.stockInId) return 'In Stock';
     return 'Available';
   }
 
   // Get barcode status color
-  getBarcodeStatusColor(barcode: Barcode): string {
+  getBarcodeStatusColor(barcode: any): string {
     if (barcode.stockoutId) return 'bg-red-100 text-red-800';
     if (barcode.stockInId) return 'bg-green-100 text-green-800';
     return 'bg-blue-100 text-blue-800';

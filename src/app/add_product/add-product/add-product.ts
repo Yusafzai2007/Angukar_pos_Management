@@ -14,17 +14,17 @@ import { ProductPayload } from '../../create_account/api_service/service-data';
 })
 export class AddProduct {
   @ViewChild('productForm') productForm!: NgForm;
-  
+
   isOpen = false;
   selectedItem: string = '';
   get_product: ItemGroup[] = [];
   selectedGroupName: string = '';
   isLoading: boolean = false;
-  
+
   // Barcode Management
   barcodeInput: string = '';
   barcodes: string[] = [];
-  
+
   constructor(private service: ServiceData) {}
 
   ngOnInit() {
@@ -40,7 +40,7 @@ export class AddProduct {
   calculateFinalPrice() {
     const sellingPrice = this.add_product.sellingItemPrice || 0;
     const discount = this.add_product.itemDiscountPrice || 0;
-    
+
     if (sellingPrice >= discount) {
       this.add_product.itemFinalPrice = parseFloat((sellingPrice - discount).toFixed(2));
     } else {
@@ -74,41 +74,44 @@ export class AddProduct {
     serialNo: false,
     unit: '',
     openingStock: 0,
-    remainingStock: 0
+    remainingStock: 0,
   };
 
   // Check if button should be disabled
   isButtonDisabled(): boolean {
     console.log('Checking button disabled state...');
-    
+
     // Basic form validation
-    const basicValidation = !this.add_product.itemGroupName || 
-                           !this.add_product.itemName || 
-                           !this.add_product.modelNoSKU ||
-                           this.add_product.actualItemPrice <= 0 ||
-                           this.add_product.sellingItemPrice <= 0 ||
-                           !this.add_product.unit ||
-                           !this.add_product.itemDescription ||
-                           this.add_product.openingStock < 0;
-    
+    const basicValidation =
+      !this.add_product.itemGroupName ||
+      !this.add_product.itemName ||
+      !this.add_product.modelNoSKU ||
+      this.add_product.actualItemPrice <= 0 ||
+      this.add_product.sellingItemPrice <= 0 ||
+      !this.add_product.unit ||
+      !this.add_product.itemDescription ||
+      this.add_product.openingStock < 0;
+
     if (basicValidation) {
       console.log('Button disabled: Basic validation failed');
       return true;
     }
-    
+
     // Serial number specific validation
     if (this.add_product.serialNo) {
       if (this.add_product.openingStock <= 0) {
         console.log('Button disabled: Opening stock must be > 0 for serial tracking');
         return true;
       }
-      
+
       if (this.barcodes.length !== this.add_product.openingStock) {
-        console.log(`Button disabled: Barcodes (${this.barcodes.length}) don't match opening stock (${this.add_product.openingStock})`);
+        console.log(
+          `Button disabled: Barcodes (${this.barcodes.length}) don't match opening stock (${this.add_product.openingStock})`,
+        );
         return true;
       }
     }
-    
+
     console.log('Button enabled: All validations passed');
     return false;
   }
@@ -119,86 +122,90 @@ export class AddProduct {
     console.log('Form data:', this.add_product);
     console.log('Serial No:', this.add_product.serialNo);
     console.log('Barcodes:', this.barcodes);
-    
+
     // Mark all fields as touched to show validation errors
     if (this.productForm) {
       this.productForm.form.markAllAsTouched();
     }
-    
+
     // Manual validation
     if (!this.add_product.itemGroupName) {
       alert('Please select Item Group');
       return;
     }
-    
+
     if (!this.add_product.itemName?.trim()) {
       alert('Please enter Item Name');
       return;
     }
-    
+
     if (!this.add_product.modelNoSKU?.trim()) {
       alert('Please enter Model No/SKU');
       return;
     }
-    
+
     if (this.add_product.actualItemPrice <= 0) {
       alert('Actual Price must be greater than 0');
       return;
     }
-    
+
     if (this.add_product.sellingItemPrice <= 0) {
       alert('Selling Price must be greater than 0');
       return;
     }
-    
+
     if (this.add_product.itemDiscountPrice < 0) {
       alert('Discount cannot be negative');
       return;
     }
-    
+
     if (this.add_product.itemDiscountPrice > this.add_product.sellingItemPrice) {
       alert('Discount cannot be greater than selling price');
       return;
     }
-    
+
     if (!this.add_product.unit) {
       alert('Please select Unit');
       return;
     }
-    
+
     if (!this.add_product.itemDescription?.trim()) {
       alert('Please enter Description');
       return;
     }
-    
+
     if (this.add_product.openingStock < 0) {
       alert('Opening Stock cannot be negative');
       return;
     }
-    
+
     // Auto-calculate final price if needed
-    if (this.add_product.itemFinalPrice === 0 && 
-        (this.add_product.sellingItemPrice > 0 || this.add_product.itemDiscountPrice > 0)) {
+    if (
+      this.add_product.itemFinalPrice === 0 &&
+      (this.add_product.sellingItemPrice > 0 || this.add_product.itemDiscountPrice > 0)
+    ) {
       this.calculateFinalPrice();
     }
-    
+
     // Serial number validation
     if (this.add_product.serialNo) {
       if (this.add_product.openingStock <= 0) {
         alert('Opening Stock must be greater than 0 for serial number tracking');
         return;
       }
-      
+
       if (this.barcodes.length === 0) {
         alert('Please add barcodes for serial number tracking');
         return;
       }
-      
+
       if (this.barcodes.length !== this.add_product.openingStock) {
-        alert(`Number of barcodes (${this.barcodes.length}) must exactly match opening stock (${this.add_product.openingStock})`);
+        alert(
+          `Number of barcodes (${this.barcodes.length}) must exactly match opening stock (${this.add_product.openingStock})`,
+        );
         return;
       }
-      
+
       // Check for duplicate barcodes
       const uniqueBarcodes = new Set(this.barcodes);
       if (uniqueBarcodes.size !== this.barcodes.length) {
@@ -206,9 +213,9 @@ export class AddProduct {
         return;
       }
     }
-    
+
     console.log('✅ All validations passed! Calling adding_product()...');
-    
+
     // Call the save method
     this.adding_product();
   }
@@ -221,17 +228,17 @@ export class AddProduct {
     }
 
     this.barcodes = []; // Clear existing barcodes
-    
+
     // Generate unique barcodes based on opening stock
     for (let i = 1; i <= this.add_product.openingStock; i++) {
-      const prefix = this.add_product.modelNoSKU 
-        ? this.add_product.modelNoSKU.substring(0, 3).toUpperCase() 
+      const prefix = this.add_product.modelNoSKU
+        ? this.add_product.modelNoSKU.substring(0, 3).toUpperCase()
         : 'ITM';
       const timestamp = Date.now().toString().slice(-6);
       const barcode = `${prefix}-${timestamp}-${String(i).padStart(3, '0')}`;
       this.barcodes.push(barcode);
     }
-    
+
     console.log(`Generated ${this.add_product.openingStock} barcodes`);
   }
 
@@ -266,7 +273,7 @@ export class AddProduct {
 
     this.barcodes.push(this.barcodeInput.trim());
     this.barcodeInput = '';
-    
+
     console.log(`Added barcode. Total: ${this.barcodes.length}/${this.add_product.openingStock}`);
   }
 
@@ -284,7 +291,7 @@ export class AddProduct {
     // Generate a random barcode for scanning simulation
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let scannedBarcode = '';
-    
+
     for (let i = 0; i < 8; i++) {
       scannedBarcode += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -295,18 +302,18 @@ export class AddProduct {
       this.scanBarcode(); // Try again
       return;
     }
-    
+
     this.barcodes.push(scannedBarcode);
     this.barcodeInput = '';
-    
+
     console.log(`Scanned barcode. Total: ${this.barcodes.length}/${this.add_product.openingStock}`);
   }
 
   async adding_product() {
     console.log('=== STARTING API CALLS ===');
-    
+
     this.isLoading = true;
-    
+
     try {
       // Step 1: Create product payload
       const productPayload: ProductPayload = {
@@ -321,16 +328,16 @@ export class AddProduct {
         serialNo: this.add_product.serialNo,
         unit: this.add_product.unit,
       };
-      
+
       console.log('Step 1: Creating product with payload:', productPayload);
-      
+
       // Step 1: Create product API call
       const productResponse: any = await this.service.create_product(productPayload).toPromise();
       console.log('Product API Response:', productResponse);
-      
+
       // Extract product ID from response
       let productId: string = '';
-      
+
       if (productResponse.message && productResponse.message._id) {
         productId = productResponse.message._id;
       } else if (productResponse.data && productResponse.data._id) {
@@ -343,49 +350,52 @@ export class AddProduct {
         console.error('Product ID not found in response:', productResponse);
         throw new Error('Product created but ID not returned');
       }
-      
+
       console.log('✅ Product created with ID:', productId);
-      
+
       // Step 2: Create stock record (only if opening stock > 0)
       if (this.add_product.openingStock > 0) {
         console.log('Step 2: Creating stock record for product:', productId);
-        
+
         const stockRecordPayload = {
           productId: productId,
-          openingStock: this.add_product.openingStock
+          openingStock: this.add_product.openingStock,
         };
-        
-        const stockResponse: any = await this.service.add_product_record(stockRecordPayload).toPromise();
+
+        const stockResponse: any = await this.service
+          .add_product_record(stockRecordPayload)
+          .toPromise();
         console.log('✅ Stock record created:', stockResponse);
       }
-      
+
       // Step 3: Create barcode records (only if serial number is required)
       if (this.add_product.serialNo && this.barcodes.length > 0) {
         console.log('Step 3: Creating barcode records for product:', productId);
-        
+
         const barcodePayload: barcode_serila = {
           barcode_serila: this.barcodes,
           stockInId: null,
-          stockoutId: null
+          stockoutId: null,
         };
-        
-        const barcodeResponse: any = await this.service.add_barcode_serillla(productId, barcodePayload).toPromise();
+
+        const barcodeResponse: any = await this.service
+          .add_barcode_serillla(productId, barcodePayload)
+          .toPromise();
         console.log('✅ Barcode records created:', barcodeResponse);
       }
-      
+
       alert('✅ Product, stock record and barcodes created successfully!');
       this.resetForm();
-      
     } catch (error: any) {
       console.error('❌ Error:', error);
-      
+
       let errorMessage = 'Operation failed. ';
       if (error.error?.message) {
         errorMessage += error.error.message;
       } else if (error.message) {
         errorMessage += error.message;
       }
-      
+
       alert(errorMessage);
     } finally {
       this.isLoading = false;
@@ -406,13 +416,13 @@ export class AddProduct {
       serialNo: false,
       unit: '',
       openingStock: 0,
-      remainingStock: 0
+      remainingStock: 0,
     };
     this.selectedItem = '';
     this.selectedGroupName = '';
     this.barcodes = [];
     this.barcodeInput = '';
-    
+
     // Reset form validation state
     if (this.productForm) {
       this.productForm.resetForm();

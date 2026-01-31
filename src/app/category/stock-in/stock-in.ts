@@ -17,7 +17,6 @@ export class StockInComponent implements OnInit {
   showEditModal: boolean = false;
   showDeleteModal: boolean = false;
   modalMode: 'create' | 'edit' = 'create';
-  showFilterSection: boolean = false;
   
   // Data arrays
   stockInCategories: StockInCategory[] = [];
@@ -45,26 +44,15 @@ export class StockInComponent implements OnInit {
   deleteItemName: string = '';
   deleteError: string = '';
   
-  // Filter variables
-  filterName: string = '';
-  filterDescription: string = '';
-  filterStatus: 'all' | 'active' | 'inactive' = 'all';
-  filterDateFrom: string = '';
-  filterDateTo: string = '';
+  // Filter variables - Like Stock Out
+  searchQuery: string = '';
+  statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  isFocused: boolean = false;
   
   constructor(private stockInService: ServiceData) {}
   
   ngOnInit() {
     this.fetchStockInCategories();
-  }
-  
-  // Toggle filter section visibility
-  toggleFilterSection() {
-    this.showFilterSection = !this.showFilterSection;
-    if (!this.showFilterSection) {
-      // Clear filters when hiding the section
-      this.clearFilters();
-    }
   }
   
   // Fetch all stock in categories
@@ -74,73 +62,69 @@ export class StockInComponent implements OnInit {
       next: (response: StockInCategoryResponse) => {
         if (response && response.data) {
           this.stockInCategories = response.data;
-          this.filteredCategories = [...response.data];
+          this.applyFilters();
+          console.log('Fetched categories:', this.stockInCategories);
+        } else {
+          this.stockInCategories = [];
+          this.filteredCategories = [];
+          console.log('No data received');
         }
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error fetching stock in categories:', error);
         this.isLoading = false;
+        alert('Failed to load categories. Please try again.');
       }
     });
   }
   
-  // Apply filters
+  // Apply combined search and status filter
   applyFilters() {
     let filtered = [...this.stockInCategories];
     
-    // Filter by name
-    if (this.filterName.trim()) {
-      const searchTerm = this.filterName.toLowerCase().trim();
+    // Apply search filter (both name and description)
+    if (this.searchQuery.trim()) {
+      const searchTerm = this.searchQuery.toLowerCase().trim();
       filtered = filtered.filter(category => 
-        category.stockInCategoryName.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    // Filter by description
-    if (this.filterDescription.trim()) {
-      const searchTerm = this.filterDescription.toLowerCase().trim();
-      filtered = filtered.filter(category => 
+        category.stockInCategoryName.toLowerCase().includes(searchTerm) ||
         category.category_description?.toLowerCase().includes(searchTerm)
       );
     }
     
-    // Filter by status
-    if (this.filterStatus !== 'all') {
+    // Apply status filter
+    if (this.statusFilter !== 'all') {
       filtered = filtered.filter(category => 
-        this.filterStatus === 'active' ? category.isActive : !category.isActive
+        this.statusFilter === 'active' ? category.isActive : !category.isActive
       );
-    }
-    
-    // Filter by date range
-    if (this.filterDateFrom) {
-      const fromDate = new Date(this.filterDateFrom);
-      filtered = filtered.filter(category => {
-        const categoryDate = new Date(category.createdAt);
-        return categoryDate >= fromDate;
-      });
-    }
-    
-    if (this.filterDateTo) {
-      const toDate = new Date(this.filterDateTo);
-      toDate.setHours(23, 59, 59, 999); // End of the day
-      filtered = filtered.filter(category => {
-        const categoryDate = new Date(category.createdAt);
-        return categoryDate <= toDate;
-      });
     }
     
     this.filteredCategories = filtered;
   }
   
-  // Clear filters
+  // Apply search when typing
+  applySearch() {
+    this.applyFilters();
+  }
+  
+  // Toggle status filter
+  toggleStatusFilter() {
+    if (this.statusFilter === 'all') {
+      this.statusFilter = 'active';
+    } else if (this.statusFilter === 'active') {
+      this.statusFilter = 'inactive';
+    } else {
+      this.statusFilter = 'all';
+    }
+    this.applyFilters();
+  }
+  
+  // Clear all filters
   clearFilters() {
-    this.filterName = '';
-    this.filterDescription = '';
-    this.filterStatus = 'all';
-    this.filterDateFrom = '';
-    this.filterDateTo = '';
-    this.filteredCategories = [...this.stockInCategories];
+    this.searchQuery = '';
+    this.statusFilter = 'all';
+    this.isFocused = false;
+    this.applyFilters();
   }
   
   // Open create modal
@@ -171,12 +155,19 @@ export class StockInComponent implements OnInit {
   
   // Submit create form
   onSubmit() {
-    if (!this.stockInCategory.stockInCategoryName || !this.stockInCategory.category_description) {
-      alert('Please fill all required fields');
+    // Validation
+    if (!this.stockInCategory.stockInCategoryName.trim()) {
+      alert('Please enter category name');
+      return;
+    }
+    
+    if (!this.stockInCategory.category_description.trim()) {
+      alert('Please enter description');
       return;
     }
     
     this.isLoading = true;
+    console.log('Sending create data:', this.stockInCategory);
     
     // Format data to match backend expectations
     const formattedData = {
@@ -186,14 +177,16 @@ export class StockInComponent implements OnInit {
     
     this.stockInService.create_stockIn_category(formattedData).subscribe({
       next: (response: any) => {
+        console.log('Create response:', response);
         this.closeModal();
         this.fetchStockInCategories();
-        alert('Stock In Category created successfully!');
+        alert(response.message || 'Stock In Category created successfully!');
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error creating stock in category:', error);
-        alert(error.error?.message || 'Failed to create category');
+        const errorMessage = error.error?.message || error.message || 'Failed to create category';
+        alert(errorMessage);
         this.isLoading = false;
       }
     });
@@ -201,30 +194,41 @@ export class StockInComponent implements OnInit {
   
   // Submit edit form
   onEditSubmit() {
-    if (!this.editStockInCategory.stockInCategoryName || !this.editStockInCategory.category_description) {
-      alert('Please fill all required fields');
+    // Validation
+    if (!this.editStockInCategory.stockInCategoryName.trim()) {
+      alert('Please enter category name');
+      return;
+    }
+    
+    if (!this.editStockInCategory.category_description.trim()) {
+      alert('Please enter description');
       return;
     }
     
     this.isLoading = true;
     
-    // Prepare update data - match backend expectations
+    // Prepare update data
     const updateData = {
       categoryName: this.editStockInCategory.stockInCategoryName,
       description: this.editStockInCategory.category_description,
       isActive: this.editStockInCategory.isActive
     };
     
+    console.log('Updating with data:', updateData);
+    console.log('Category ID:', this.editStockInCategory._id);
+    
     this.stockInService.edit_stockIn_category(this.editStockInCategory._id, updateData).subscribe({
       next: (response: any) => {
+        console.log('Update response:', response);
         this.closeModal();
         this.fetchStockInCategories();
-        alert('Stock In Category updated successfully!');
+        alert(response.message || 'Stock In Category updated successfully!');
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error updating stock in category:', error);
-        alert(error.error?.message || 'Failed to update category');
+        const errorMessage = error.error?.message || error.message || 'Failed to update category';
+        alert(errorMessage);
         this.isLoading = false;
       }
     });
@@ -241,16 +245,19 @@ export class StockInComponent implements OnInit {
   // Confirm delete
   confirmDelete() {
     this.isLoading = true;
+    console.log('Deleting category with ID:', this.deleteItemId);
+    
     this.stockInService.delete_stockIn_category(this.deleteItemId).subscribe({
       next: (response: any) => {
+        console.log('Delete response:', response);
         this.closeDeleteModal();
         this.fetchStockInCategories();
-        alert('Stock In Category deleted successfully!');
+        alert(response.message || 'Stock In Category deleted successfully!');
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error deleting stock in category:', error);
-        this.deleteError = error.error?.message || 'Failed to delete category';
+        this.deleteError = error.error?.message || error.message || 'Failed to delete category';
         this.isLoading = false;
       }
     });
@@ -269,20 +276,19 @@ export class StockInComponent implements OnInit {
     this.deleteError = '';
   }
   
-  // Get today's date for date filter max value
-  getTodayDate(): string {
-    return new Date().toISOString().split('T')[0];
-  }
-  
   // Format date
   formatDate(dateString: string) {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
   
   // Get active categories count
@@ -294,4 +300,14 @@ export class StockInComponent implements OnInit {
   getInactiveCategoriesCount() {
     return this.stockInCategories.filter(category => !category.isActive).length;
   }
+  
+  // Table headers
+  tableheader:string[] = [
+    '#',
+    'Category Name',
+    'Description',
+    'Status',
+    'Created At',
+    'Actions',
+  ]
 }

@@ -7,7 +7,7 @@ import { ServiceData } from '../../create_account/api_service/service-data';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterLink, RouterOutlet],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css'],
 })
@@ -16,12 +16,28 @@ export class Sidebar implements OnInit {
   screenWidth = window.innerWidth;
   isMobileView = false;
   currentUserData: CurrentUser | null = null;
+  showConfigure = false;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.screenWidth = (event.target as Window).innerWidth;
     this.checkScreen();
   }
+  showConfiguredata = false;
+
+configureItems = [
+  { name: 'Product_group', link: '/admin/product_group', icon: 'fas fa-layer-group' },
+  { name: 'Add_Product', link: '/admin/add_product', icon: 'fas fa-plus-square' },
+  { name: 'Products', link: '/admin/products', icon: 'fas fa-boxes' },
+  { name: 'StockIn Category', link: '/admin/stockIn_category', icon: 'fas fa-tags' },
+  { name: 'Stockout Category', link: '/admin/stockout_category', icon: 'fas fa-tags' },
+  { name: 'Users', link: '/admin/users', icon: 'fas fa-users' },
+];
+
+toggleConfiguredata() {
+  this.showConfigure = !this.showConfigure;
+}
+
 
   constructor(
     private route: Router,
@@ -41,6 +57,10 @@ export class Sidebar implements OnInit {
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  toggleConfigure() {
+    this.showConfigure = !this.showConfigure;
   }
 
   get shouldShowSidebar() {

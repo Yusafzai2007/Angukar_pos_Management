@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StockOutApiResponse } from '../../Typescript/stcokout/stock_out';
 import { StockOutCategoryResponse } from '../../Typescript/category/stockout_category';
+import { StockOutApiResponsedata } from '../../Typescript/stcokout/stock_out_data';
 
 @Injectable({
   providedIn: 'root',
@@ -32,4 +33,16 @@ export class Stockoutservice {
   get_stockOut(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/get_stockOut`);
   }
+
+
+
+
+
+ all_stock_out(): Observable<StockOutApiResponsedata>{
+  return this.http.get<StockOutApiResponsedata>(`${this.apiUrl}/get_all_stockOut`)
+}
+
+
+
+  
 }

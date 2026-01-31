@@ -215,4 +215,19 @@ export class ProductsComponent implements OnInit {
   toggleFilters() {
     this.showFilters = !this.showFilters;
   }
+
+  tableheader: string[] = [
+    '#',
+    'Item Name',
+    'SKU/Model',
+    'Unit',
+    'Status',
+    'Cost',
+    'Price',
+    'Discount',
+    'Final',
+    'Opening',
+    'Remaining',
+    'Barcodes',
+  ];
 }

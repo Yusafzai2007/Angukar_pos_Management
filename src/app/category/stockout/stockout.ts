@@ -1,3 +1,4 @@
+// stockout.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +19,6 @@ export class StockoutComponent implements OnInit {
   showEditModal: boolean = false;
   showDeleteModal: boolean = false;
   modalMode: 'create' | 'edit' = 'create';
-  showFilterSection: boolean = false;
   
   // Data arrays
   stockOutCategories: StockOutCategoryDisplay[] = [];
@@ -40,18 +40,20 @@ export class StockoutComponent implements OnInit {
     __v: 0,
     id: ''
   };
+  clearFilter() {
+  this.searchQuery = '';
+  this.applySearch();
+}
+
   
   // Delete modal data
   deleteItemId: string = '';
   deleteItemName: string = '';
   deleteError: string = '';
   
-  // Filter variables
-  filterName: string = '';
-  filterDescription: string = '';
-  filterStatus: 'all' | 'active' | 'inactive' = 'all';
-  filterDateFrom: string = '';
-  filterDateTo: string = '';
+  // Filter variables - Simplified
+  searchQuery: string = '';
+  statusFilter: 'all' | 'active' | 'inactive' = 'all';
   
   constructor(
     private http: HttpClient,
@@ -62,15 +64,6 @@ export class StockoutComponent implements OnInit {
     this.fetchStockOutCategories();
   }
   
-  // Toggle filter section visibility
-  toggleFilterSection() {
-    this.showFilterSection = !this.showFilterSection;
-    if (!this.showFilterSection) {
-      // Clear filters when hiding the section
-      this.clearFilters();
-    }
-  }
-  
   // Fetch all stock out categories
   fetchStockOutCategories() {
     this.isLoading = true;
@@ -78,7 +71,7 @@ export class StockoutComponent implements OnInit {
       next: (response: StockOutCategoryResponse) => {
         if (response && response.data) {
           this.stockOutCategories = response.data;
-          this.filteredCategories = [...response.data];
+          this.applyFilters();
           console.log('Fetched categories:', this.stockOutCategories);
         } else {
           this.stockOutCategories = [];
@@ -95,62 +88,52 @@ export class StockoutComponent implements OnInit {
     });
   }
   
-  // Apply filters
+  // Apply combined search and status filter
   applyFilters() {
     let filtered = [...this.stockOutCategories];
     
-    // Filter by name
-    if (this.filterName.trim()) {
-      const searchTerm = this.filterName.toLowerCase().trim();
+    // Apply search filter (both name and description)
+    if (this.searchQuery.trim()) {
+      const searchTerm = this.searchQuery.toLowerCase().trim();
       filtered = filtered.filter(category => 
-        category.stockoutCategoryName.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    // Filter by description
-    if (this.filterDescription.trim()) {
-      const searchTerm = this.filterDescription.toLowerCase().trim();
-      filtered = filtered.filter(category => 
+        category.stockoutCategoryName.toLowerCase().includes(searchTerm) ||
         category.stockout_category_description?.toLowerCase().includes(searchTerm)
       );
     }
     
-    // Filter by status
-    if (this.filterStatus !== 'all') {
+    // Apply status filter
+    if (this.statusFilter !== 'all') {
       filtered = filtered.filter(category => 
-        this.filterStatus === 'active' ? category.isActive : !category.isActive
+        this.statusFilter === 'active' ? category.isActive : !category.isActive
       );
-    }
-    
-    // Filter by date range
-    if (this.filterDateFrom) {
-      const fromDate = new Date(this.filterDateFrom);
-      filtered = filtered.filter(category => {
-        const categoryDate = new Date(category.createdAt);
-        return categoryDate >= fromDate;
-      });
-    }
-    
-    if (this.filterDateTo) {
-      const toDate = new Date(this.filterDateTo);
-      toDate.setHours(23, 59, 59, 999); // End of the day
-      filtered = filtered.filter(category => {
-        const categoryDate = new Date(category.createdAt);
-        return categoryDate <= toDate;
-      });
     }
     
     this.filteredCategories = filtered;
   }
   
-  // Clear filters
+  // Apply search when typing
+  applySearch() {
+    this.applyFilters();
+  }
+  isFocused: boolean = false;
+
+  // Toggle status filter
+  toggleStatusFilter() {
+    if (this.statusFilter === 'all') {
+      this.statusFilter = 'active';
+    } else if (this.statusFilter === 'active') {
+      this.statusFilter = 'inactive';
+    } else {
+      this.statusFilter = 'all';
+    }
+    this.applyFilters();
+  }
+  
+  // Clear all filters
   clearFilters() {
-    this.filterName = '';
-    this.filterDescription = '';
-    this.filterStatus = 'all';
-    this.filterDateFrom = '';
-    this.filterDateTo = '';
-    this.filteredCategories = [...this.stockOutCategories];
+    this.searchQuery = '';
+    this.statusFilter = 'all';
+    this.applyFilters();
   }
   
   // Open create modal
@@ -296,11 +279,6 @@ export class StockoutComponent implements OnInit {
     this.deleteError = '';
   }
   
-  // Get today's date for date filter max value
-  getTodayDate(): string {
-    return new Date().toISOString().split('T')[0];
-  }
-  
   // Format date
   formatDate(dateString: string) {
     if (!dateString) return 'N/A';
@@ -316,16 +294,6 @@ export class StockoutComponent implements OnInit {
     }
   }
   
-  // Get active categories count
-  getActiveCategoriesCount() {
-    return this.stockOutCategories.filter(category => category.isActive).length;
-  }
-  
-  // Get inactive categories count
-  getInactiveCategoriesCount() {
-    return this.stockOutCategories.filter(category => !category.isActive).length;
-  }
-  
   // Debug method
   debugData() {
     console.log('=== DEBUG STOCK OUT DATA ===');
@@ -335,16 +303,13 @@ export class StockoutComponent implements OnInit {
     console.log('============================');
   }
   
-  // 测试 API 连接
-  testApiConnection() {
-    console.log('Testing API connection...');
-    this.http.get(`${this.stockoutService.apiUrl}/get_stockOut_categories`).subscribe({
-      next: (response) => {
-        console.log('API connection successful:', response);
-      },
-      error: (error) => {
-        console.error('API connection failed:', error);
-      }
-    });
-  }
+  // Table headers
+  tableheader:string[] = [
+    '#',
+    'Category Name',
+    'Description',
+    'Status',
+    'Created At',
+    'Actions',
+  ]
 }

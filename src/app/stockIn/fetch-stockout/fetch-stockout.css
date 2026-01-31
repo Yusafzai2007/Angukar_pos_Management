@@ -1,4 +1,4 @@
-/* src/app/components/fetch-stock-in/fetch-stock-in.css */
+/* src/app/components/fetch-stockout/fetch-stockout.css */
 .container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -108,60 +108,3 @@ tr:hover {
     padding: 0.5rem;
   }
 }
-
-/* ------------------ Floating Label CSS ------------------ */
-.floating-label-group {
-  position: relative;
-  margin-top: 1.5rem;
-}
-
-.floating-label {
-  position: absolute;
-  pointer-events: none;
-  left: 12px;
-  top: 10px;
-  transition: all 0.2s ease;
-  color: #64748b;
-  font-size: 16px;
-}
-
-.floating-label.active,
-.floating-label-group input:focus ~ .floating-label {
-  top: -22px;
-  left: 0;
-  font-size: 14px;
-  color: #475569;
-  font-weight: 500;
-}
-
-.floating-label-group input {
-  width: 100%;
-  border: 1px solid #cbd5e1;
-  border-radius: 0.5rem;
-  padding: 0.58rem 0.79rem;   /* <-- yahan height kam ho rahi hai */
-  font-size: 1rem;
-  color: #1f2937;
-  outline: none;
-  background: #fff;
-}
-
-.floating-label-group input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* ------------------ Filters Animation CSS ------------------ */
-.filters-container {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-}
-
-.filters-container.filters-open {
-  max-height: 1200px; /* adjust if needed */
-  opacity: 1;
-}
-
-
-

@@ -33,239 +33,342 @@
 
             <form #productForm="ngForm">
               <div class="px-5 sm:px-6 py-5 space-y-6">
-                <!-- Debug Information (temporary) -->
-                <!-- <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                  <h3 class="text-sm font-medium text-yellow-800 mb-2">Debug Information:</h3>
-                  <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span class="text-yellow-600">Form Valid:</span>
-                      <span class="font-medium ml-1">{{
-                        productForm.form?.valid ? 'Yes' : 'No'
-                      }}</span>
-                    </div>
-                    <div>
-                      <span class="text-yellow-600">Item Group:</span>
-                      <span class="font-medium ml-1">{{
-                        add_product.itemGroupName ? 'Selected' : 'Not Selected'
-                      }}</span>
-                    </div>
-                    <div>
-                      <span class="text-yellow-600">Serial No:</span>
-                      <span class="font-medium ml-1">{{
-                        add_product.serialNo ? 'Yes' : 'No'
-                      }}</span>
-                    </div>
-                    <div>
-                      <span class="text-yellow-600">Barcodes:</span>
-                      <span class="font-medium ml-1"
-                        >{{ barcodes.length }}/{{ add_product.openingStock }}</span
-                      >
-                    </div>
-                  </div>
-                </div> -->
-
                 <!-- Row 1 -->
                 <div class="grid gap-4 sm:grid-cols-3">
                   <!-- Item Name -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Item Name
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
+                  <div class="relative w-full">
                     <input
+                      type="text"
                       [(ngModel)]="add_product.itemName"
                       name="itemName"
-                      type="text"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                      required
+                      placeholder=" "
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
                     />
+
+                    <label
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-md peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm peer-[&:not(:placeholder-shown)]:text-slate-700"
+                    >
+                      Item Name <span class="text-red-500">*</span>
+                    </label>
                   </div>
 
                   <!-- Model No/SKU -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Model No/SKU
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
+                  <div class="relative w-full">
                     <input
+                      type="text"
+                      id="modelNoSKU_floating"
                       [(ngModel)]="add_product.modelNoSKU"
                       name="modelNoSKU"
-                      type="text"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
+                      placeholder=" "
                       required
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
                     />
+
+                    <label
+                      for="modelNoSKU_floating"
+                      class="absolute left-3 bg-white px-1 pointer-events-none text-slate-700 transition-all duration-200 top-1/2 -translate-y-1/2 text-md peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                    >
+                      Model No/SKU <span class="text-red-500">*</span>
+                    </label>
                   </div>
 
-                  <!-- Actual Price -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Actual Price
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
-                    <input
-                      [(ngModel)]="add_product.actualItemPrice"
-                      name="actualItemPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                      required
-                    />
-                  </div>
+                <!-- Actual Price -->
+<div class="relative w-full">
+  <input
+    type="number"
+    id="actualPrice_floating"
+    [(ngModel)]="add_product.actualItemPrice"
+    name="actualItemPrice"
+    placeholder=" "
+    min="0"
+    step="0.01"
+    required
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-500 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+  />
 
-                  <!-- Selling Price -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Selling Price
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
-                    <input
-                      [(ngModel)]="add_product.sellingItemPrice"
-                      name="sellingItemPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      (change)="calculateFinalPrice()"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                      required
-                    />
-                  </div>
+  <label
+    for="actualPrice_floating"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           top-1/2 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm"
+  >
+    Actual Price <span class="text-red-500">*</span>
+  </label>
+</div>
 
-                  <!-- Discount -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Discount
-                    </label>
-                    <input
-                      [(ngModel)]="add_product.itemDiscountPrice"
-                      name="itemDiscountPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      (change)="calculateFinalPrice()"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                    />
-                  </div>
 
-                  <!-- Final Price -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Final Price
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
-                    <input
-                      [(ngModel)]="add_product.itemFinalPrice"
-                      name="itemFinalPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      readonly
-                      class="block w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-base font-normal text-slate-900"
-                    />
-                  </div>
+                <div class="relative w-full">
+  <input
+    type="number"
+    id="sellingPrice_floating"
+    [(ngModel)]="add_product.sellingItemPrice"
+    name="sellingItemPrice"
+    placeholder=" "
+    min="0"
+    step="0.01"
+    (change)="calculateFinalPrice()"
+    required
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-500 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+  />
+
+  <label
+    for="sellingPrice_floating"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           top-1/2 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm"
+  >
+    Selling Price <span class="text-red-500">*</span>
+  </label>
+</div>
+
+
+             <!-- Discount -->
+<div class="relative w-full">
+  <input
+    type="number"
+    id="discount_floating"
+    [(ngModel)]="add_product.itemDiscountPrice"
+    name="itemDiscountPrice"
+    placeholder=" "
+    min="0"
+    step="0.01"
+    (change)="calculateFinalPrice()"
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-500 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+  />
+
+  <label
+    for="discount_floating"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           top-1/2 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm"
+  >
+    Discount
+  </label>
+</div>
+
+
+                <!-- Final Price -->
+<div class="relative w-full">
+  <input
+    type="number"
+    id="finalPrice_floating"
+    [(ngModel)]="add_product.itemFinalPrice"
+    name="itemFinalPrice"
+    placeholder=" "
+    min="0"
+    step="0.01"
+    readonly
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900
+           bg-slate-100 border border-slate-300 rounded-sm appearance-none
+           focus:outline-none cursor-not-allowed"
+  />
+
+  <label
+    for="finalPrice_floating"
+    class="absolute left-3 bg-slate-100 px-1 text-slate-700 pointer-events-none
+           top-1/2 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm
+           peer-[&:not(:placeholder-shown)]:text-indigo-400"
+  >
+    Final Price <span class="text-red-500">*</span>
+  </label>
+</div>
+
                 </div>
 
                 <!-- Status Row -->
-                <div class="flex flex-wrap items-center gap-4">
-                  <div class="flex items-center gap-3">
-                    <div class="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        [(ngModel)]="add_product.isActive"
-                        name="isActive"
-                        class="sr-only peer"
-                      />
-                      <div
-                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"
-                      ></div>
-                    </div>
-                    <span class="text-base font-medium text-slate-700">Status</span>
-                    <span
-                      [class.bg-emerald-50]="add_product.isActive"
-                      [class.bg-red-50]="!add_product.isActive"
-                      [class.text-emerald-700]="add_product.isActive"
-                      [class.text-red-700]="!add_product.isActive"
-                      [class.border-emerald-200]="add_product.isActive"
-                      [class.border-red-200]="!add_product.isActive"
-                      class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
+                <div class="flex items-center gap-3">
+                  <!-- Toggle -->
+                  <div class="relative w-11 h-6 flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="add_product.isActive"
+                      name="isActive"
+                      id="isActiveToggle"
+                      class="sr-only"
+                    />
+                    <div
+                      class="w-11 h-6 bg-gray-200 rounded-full relative transition-colors peer-checked:bg-indigo-600"
                     >
-                      {{ add_product.isActive ? 'Active' : 'Inactive' }}
-                    </span>
+                      <span
+                        class="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border border-gray-300 rounded-full transition-transform peer-checked:translate-x-full peer-checked:border-white"
+                      ></span>
+                    </div>
                   </div>
+
+                  <!-- Floating Label -->
+                  <label
+                    for="isActiveToggle"
+                    class="relative cursor-pointer transition-all duration-200"
+                    [ngClass]="{
+                      'text-indigo-400 -translate-y-3 text-sm': add_product.isActive,
+                      'text-slate-700 translate-y-0 text-base': !add_product.isActive,
+                    }"
+                  >
+                    Status
+                  </label>
+
+                  <!-- Badge -->
+                  <span
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-colors"
+                    [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 border-emerald-200': add_product.isActive,
+                      'bg-red-50 text-red-700 border-red-200': !add_product.isActive,
+                    }"
+                  >
+                    {{ add_product.isActive ? 'Active' : 'Inactive' }}
+                  </span>
                 </div>
 
                 <!-- Row 3: Item Group and Unit -->
                 <div class="grid gap-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                   <!-- Item Group Dropdown -->
-                  <div class="space-y-1.5 relative">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Item Group
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
-                    <button
-                      type="button"
-                      (click)="toggleDropdown()"
-                      class="inline-flex w-full items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm hover:bg-slate-50"
-                    >
-                      <span>{{ selectedItem || 'Select Item Group' }}</span>
-                      <i class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500"></i>
-                    </button>
+                <div #dropdownContainer class="relative w-full">
+  <!-- Floating Label -->
+  <label
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           transition-all duration-200
+           top-1/2 -translate-y-1/2 text-md"
+    [ngClass]="{
+      'top-1 -translate-y-3 text-sm text-indigo-400': selectedItem,
+      'top-1/2 -translate-y-1/2 text-md text-slate-700': !selectedItem
+    }"
+  >
+    Item Group <span class="text-red-500">*</span>
+  </label>
 
-                    <!-- Dropdown Menu -->
-                    <div
-                      *ngIf="isOpen"
-                      class="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg"
-                    >
-                      <ul class="py-1 max-h-60 overflow-y-auto">
-                        <li
-                          *ngFor="let item of get_product"
-                          (click)="selectItem(item)"
-                          class="cursor-pointer px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                        >
-                          {{ item.itemGroupName }}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+  <!-- Dropdown Button -->
+  <button
+    type="button"
+    (click)="toggleDropdown()"
+    class="block w-full px-3 pt-4 pb-2 text-base text-slate-900 bg-transparent
+           border border-slate-300 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
+           text-left"
+  >
+    {{ selectedItem || '' }}
+    <i
+      class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500 float-right"
+    ></i>
+  </button>
 
-                  <!-- Unit -->
-                  <div class="space-y-1.5">
-                    <label class="flex items-center text-sm font-medium text-slate-700">
-                      Unit
-                      <span class="ml-0.5 text-red-500">*</span>
-                    </label>
-                    <select
-                      [(ngModel)]="add_product.unit"
-                      name="unit"
-                      class="block w-full rounded-md border border-slate-300 bg-slate-50/80 px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                      required
-                    >
-                      <option value="">Select Unit</option>
-                      <option value="piece">Piece</option>
-                      <option value="kg">Kilogram</option>
-                      <option value="gram">Gram</option>
-                      <option value="liter">Liter</option>
-                      <option value="ml">Milliliter</option>
-                      <option value="box">Box</option>
-                      <option value="pack">Pack</option>
-                    </select>
-                  </div>
+  <!-- Dropdown Menu -->
+  <div
+    *ngIf="isOpen"
+    class="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg max-h-60 overflow-y-auto"
+  >
+    <ul class="py-1">
+      <li
+        *ngFor="let item of get_product"
+        (click)="selectItem(item); isOpen = false"
+        class="cursor-pointer px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+      >
+        {{ item.itemGroupName }}
+      </li>
+
+      <li
+        *ngIf="get_product.length === 0"
+        class="px-3 py-2 text-sm text-slate-400"
+      >
+        No items found
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+                <!-- Unit Dropdown -->
+<div class="relative w-full">
+  <!-- Floating Label -->
+  <label
+    for="unit"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200"
+    [ngClass]="{
+      'top-1 -translate-y-3 text-sm text-indigo-400': add_product.unit,
+      'top-1/2 -translate-y-1/2 text-md text-slate-700': !add_product.unit
+    }"
+  >
+    Unit <span class="text-red-500">*</span>
+  </label>
+
+  <!-- Select Dropdown -->
+  <select
+    [(ngModel)]="add_product.unit"
+    name="unit"
+    id="unit"
+    required
+    class="block w-full px-3 pt-2 pb-2 text-base text-slate-900 bg-transparent
+           border border-slate-300 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
+  >
+    <option value="" disabled hidden></option>
+    <option value="piece">Piece</option>
+    <option value="kg">Kilogram</option>
+    <option value="gram">Gram</option>
+    <option value="liter">Liter</option>
+    <option value="ml">Milliliter</option>
+    <option value="box">Box</option>
+    <option value="pack">Pack</option>
+  </select>
+
+  <!-- Dropdown Icon -->
+  <i
+    class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500
+           absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+  ></i>
+</div>
+
                 </div>
 
-                <!-- Description -->
-                <div class="space-y-1.5">
-                  <label class="flex items-center text-sm font-medium text-slate-700">
-                    Description
-                    <span class="ml-0.5 text-red-500">*</span>
-                  </label>
-                  <textarea
-                    [(ngModel)]="add_product.itemDescription"
-                    name="itemDescription"
-                    rows="3"
-                    class="block w-full resize-none rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                    required
-                  ></textarea>
-                </div>
+            <div class="relative w-full">
+  <textarea
+    id="description_floating"
+    [(ngModel)]="add_product.itemDescription"
+    name="itemDescription"
+    rows="3"
+    placeholder=" "
+    required
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-400 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
+           transition-colors resize-none"
+  ></textarea>
+
+  <label
+    for="description_floating"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           top-6 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm"
+  >
+    Description <span class="text-red-500">*</span>
+  </label>
+</div>
+
 
                 <!-- Serial Number Toggle -->
                 <div class="space-y-3">
@@ -319,45 +422,75 @@
                   </div>
 
                   <div class="grid gap-4 sm:grid-cols-2">
-                    <div class="space-y-1.5">
-                      <label class="flex items-center text-sm font-medium text-slate-700">
-                        Opening Stock
-                        <span class="ml-0.5 text-red-500">*</span>
-                      </label>
-                      <div class="flex items-center gap-2">
-                        <input
-                          [(ngModel)]="add_product.openingStock"
-                          name="openingStock"
-                          type="number"
-                          min="0"
-                          (input)="updateRemainingStock()"
-                          class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                          required
-                        />
-                        <button
-                          *ngIf="add_product.serialNo && add_product.openingStock > 0"
-                          type="button"
-                          (click)="generateBarcodes()"
-                          class="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-3 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
-                        >
-                          <i class="lucide lucide-refresh-ccw stroke-[1.5] h-3 w-3 mr-1"></i>
-                          Gen
-                        </button>
-                      </div>
-                      <p class="text-xs text-slate-500 mt-1">Initial quantity available</p>
+                    <!-- Opening Stock -->
+                    <div class="relative w-full">
+                    <div class="relative w-full">
+  <input
+    type="number"
+    id="openingStock_floating"
+    [(ngModel)]="add_product.openingStock"
+    name="openingStock"
+    placeholder=" "
+    min="0"
+    (input)="updateRemainingStock()"
+    required
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-500 rounded-sm appearance-none
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
+           transition-colors"
+  />
+
+  <label
+    for="openingStock_floating"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           top-1/2 -translate-y-1/2 text-md
+           transition-all duration-200
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm"
+  >
+    Opening Stock <span class="text-red-500">*</span>
+  </label>
+</div>
+
+
+                      <!-- Generate Button -->
+                      <button
+                        *ngIf="add_product.serialNo && add_product.openingStock > 0"
+                        type="button"
+                        (click)="generateBarcodes()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+                      >
+                        <i class="lucide lucide-refresh-ccw stroke-[1.5] h-3 w-3 mr-1"></i>
+                        Gen
+                      </button>
                     </div>
 
-                    <div class="space-y-1.5">
-                      <label class="flex items-center text-sm font-medium text-slate-700">
-                        Remaining Stock (Auto)
-                      </label>
+                    <div class="relative w-full">
                       <input
+                        type="number"
+                        id="remainingStock_floating"
                         [(ngModel)]="add_product.remainingStock"
                         name="remainingStock"
-                        type="number"
+                        placeholder=" "
                         readonly
-                        class="block w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-base font-normal text-slate-900"
+                        class="block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-slate-100 border border-slate-300 rounded-sm appearance-none transition-colors"
                       />
+
+                      <label
+                        for="remainingStock_floating"
+                        [ngClass]="{
+                          'top-1 -translate-y-3 text-sm text-indigo-400':
+                            add_product.remainingStock != null,
+                          'top-1/2 md:top-5 -translate-y-1/2 text-md text-slate-700':
+                            add_product.remainingStock == null,
+                        }"
+                        class="absolute left-3 px-1 pointer-events-none transition-all bg-slate-100"
+                      >
+                        Remaining Stock (Auto)
+                      </label>
+
                       <p class="text-xs text-slate-500 mt-1">Will be updated automatically</p>
                     </div>
                   </div>
@@ -509,44 +642,73 @@
                 </div>
 
                 <!-- Input Row -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-slate-700"> Add Barcode </label>
-                  <div class="flex flex-col sm:flex-row gap-2">
-                    <div class="flex-1">
-                      <input
-                        [(ngModel)]="barcodeInput"
-                        name="barcodeInput"
-                        type="text"
-                        placeholder="Enter barcode (e.g., ABC123456)"
-                        class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40"
-                        (keyup.enter)="addBarcode()"
-                      />
-                    </div>
-                    <div class="flex gap-2">
-                      <button
-                        type="button"
-                        (click)="addBarcode()"
-                        [disabled]="barcodes.length >= add_product.openingStock"
-                        class="inline-flex items-center justify-center rounded-md border border-emerald-500 bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4"></i>
-                        ADD
-                      </button>
-                      <button
-                        type="button"
-                        (click)="scanBarcode()"
-                        [disabled]="barcodes.length >= add_product.openingStock"
-                        class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <i class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4"></i>
-                        SCAN
-                      </button>
-                    </div>
-                  </div>
-                  <p class="text-xs text-slate-500">
-                    Press Enter to add barcode. Each barcode must be unique.
-                  </p>
-                </div>
+             <div class="space-y-2">
+  <!-- Floating Label Input -->
+  <div class="flex flex-col sm:flex-row gap-2">
+    <div class="relative flex-1">
+      <input
+        [(ngModel)]="barcodeInput"
+        name="barcodeInput"
+        type="text"
+        id="barcode_floating"
+        placeholder=" "
+        (keyup.enter)="addBarcode()"
+        class="peer block w-full rounded-md border border-slate-300 bg-white
+               px-3 pt-4 pb-2 text-base font-normal text-slate-900 shadow-sm
+               focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40
+               transition"
+      />
+
+      <label
+        for="barcode_floating"
+        class="absolute left-3 bg-white px-1 text-slate-600 pointer-events-none
+               top-1/2 -translate-y-1/2 text-sm
+               transition-all duration-200
+               peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500
+               peer-[&:not(:placeholder-shown)]:top-1
+               peer-[&:not(:placeholder-shown)]:-translate-y-3
+               peer-[&:not(:placeholder-shown)]:text-xs"
+      >
+        Add Barcode
+      </label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex gap-2">
+      <button
+        type="button"
+        (click)="addBarcode()"
+        [disabled]="barcodes.length >= add_product.openingStock"
+        class="inline-flex items-center justify-center rounded-md
+               border border-emerald-500 bg-emerald-500 px-4 py-2
+               text-sm font-medium text-white hover:bg-emerald-600
+               disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4"></i>
+        ADD
+      </button>
+
+      <button
+        type="button"
+        (click)="scanBarcode()"
+        [disabled]="barcodes.length >= add_product.openingStock"
+        class="inline-flex items-center justify-center rounded-md
+               border border-sky-500 bg-white px-4 py-2
+               text-sm font-medium text-sky-600 hover:bg-sky-50
+               disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <i class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4"></i>
+        SCAN
+      </button>
+    </div>
+  </div>
+
+  <!-- Helper text -->
+  <p class="text-xs text-slate-500">
+    Press Enter to add barcode. Each barcode must be unique.
+  </p>
+</div>
+
 
                 <!-- Validation message -->
                 <div
