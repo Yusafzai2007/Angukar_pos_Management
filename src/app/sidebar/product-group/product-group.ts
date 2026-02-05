@@ -44,19 +44,20 @@ export class ProductGroupComponent implements OnInit {
   filtered_product: ItemGroup[] = [];
   isLoading = false;
 
-  // Filter variables
-  filterName = '';
-  filterDescription = '';
-  filterStatus: 'all' | 'active' | 'inactive' = 'all';
-  filterDateFrom = '';
-  filterDateTo = '';
+  // Filter variables (simplified like Stock Out)
+  searchQuery: string = '';
+  statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  isSearchFocused: boolean = false;
 
-  // Date picker variables
-  showDateFromPicker = false;
-  showDateToPicker = false;
-
-  // New variable for filter section visibility
-  showFilterSection = false;
+  // Table headers
+  tableHeaders: string[] = [
+    '#',
+    'Group Name',
+    'Description',
+    'Status',
+    'Created At',
+    'Actions'
+  ];
 
   constructor(private service: ServiceData) {}
 
@@ -71,11 +72,6 @@ export class ProductGroupComponent implements OnInit {
 
   getInactiveGroupsCount(): number {
     return this.get_product.filter(p => !p.isActive).length;
-  }
-
-  // Toggle filter section visibility
-  toggleFilterSection() {
-    this.showFilterSection = !this.showFilterSection;
   }
 
   // Open Create Modal
@@ -210,101 +206,64 @@ export class ProductGroupComponent implements OnInit {
         this.isLoading = false;
         if (res.success) {
           this.get_product = res.data || [];
-          this.filtered_product = [...this.get_product];
+          this.applyFilters();
         } else {
           console.error('Failed to fetch product groups:', res.message);
+          this.get_product = [];
+          this.filtered_product = [];
         }
       },
       error: (err: any) => {
         this.isLoading = false;
         console.error('Error fetching product groups:', err);
         alert('Failed to load product groups. Please try again.');
+        this.get_product = [];
+        this.filtered_product = [];
       }
     });
   }
 
-  // Apply Filters
+  // Apply Filters (simplified like Stock Out)
   applyFilters() {
-    if (!this.get_product.length) {
-      this.filtered_product = [];
-      return;
-    }
-
     let filtered = [...this.get_product];
-
-    // Filter by name
-    if (this.filterName.trim()) {
-      const searchTerm = this.filterName.toLowerCase().trim();
-      filtered = filtered.filter(item => 
-        item.itemGroupName.toLowerCase().includes(searchTerm)
+    
+    // Apply search filter (both name and description)
+    if (this.searchQuery.trim()) {
+      const searchTerm = this.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(category => 
+        category.itemGroupName.toLowerCase().includes(searchTerm) ||
+        category.group_description?.toLowerCase().includes(searchTerm)
       );
     }
-
-    // Filter by description
-    if (this.filterDescription.trim()) {
-      const searchTerm = this.filterDescription.toLowerCase().trim();
-      filtered = filtered.filter(item => 
-        item.group_description?.toLowerCase().includes(searchTerm)
+    
+    // Apply status filter
+    if (this.statusFilter !== 'all') {
+      filtered = filtered.filter(category => 
+        this.statusFilter === 'active' ? category.isActive : !category.isActive
       );
     }
-
-    // Filter by status
-    if (this.filterStatus !== 'all') {
-      filtered = filtered.filter(item => 
-        this.filterStatus === 'active' ? item.isActive : !item.isActive
-      );
-    }
-
-    // Filter by date range
-    if (this.filterDateFrom) {
-      const fromDate = new Date(this.filterDateFrom);
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= fromDate;
-      });
-    }
-
-    if (this.filterDateTo) {
-      const toDate = new Date(this.filterDateTo);
-      toDate.setHours(23, 59, 59, 999); // End of the day
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate <= toDate;
-      });
-    }
-
+    
     this.filtered_product = filtered;
   }
 
-  // Clear Filters
-  clearFilters() {
-    this.filterName = '';
-    this.filterDescription = '';
-    this.filterStatus = 'all';
-    this.filterDateFrom = '';
-    this.filterDateTo = '';
-    this.filtered_product = [...this.get_product];
+  // Toggle status filter
+  toggleStatusFilter() {
+    if (this.statusFilter === 'all') {
+      this.statusFilter = 'active';
+    } else if (this.statusFilter === 'active') {
+      this.statusFilter = 'inactive';
+    } else {
+      this.statusFilter = 'all';
+    }
+    this.applyFilters();
   }
 
-  // Toggle Status (if needed)
-  toggleStatus(product: ItemGroup) {
-    const updateData: productGroup = {
-      itemGroupName: product.itemGroupName,
-      group_description: product.group_description
-    };
-
-    // Note: You might need to adjust this based on your API
-    // Some APIs accept isActive in update, others might have separate endpoint
-    this.service.edit_product_group(product._id, updateData).subscribe({
-      next: (res: any) => {
-        if (res.statuscode === 200) {
-          this.getproduct();
-        }
-      },
-      error: (err: any) => {
-        this.handleError(err, 'toggle');
-      },
-    });
+  // Clear all filters
+  clearFilters() {
+    this.searchQuery = '';
+    this.statusFilter = 'all';
+    this.isSearchFocused = false;
+    this.applyFilters();
   }
 
   // Form validation
@@ -365,18 +324,6 @@ export class ProductGroupComponent implements OnInit {
       return 'Invalid Date';
     }
   }
+    isFocused: boolean = false;
 
-  // Get current date in YYYY-MM-DD format for date input
-  getTodayDate(): string {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  // Toggle date picker visibility
-  toggleDateFromPicker() {
-    this.showDateFromPicker = !this.showDateFromPicker;
-  }
-
-  toggleDateToPicker() {
-    this.showDateToPicker = !this.showDateToPicker;
-  }
 }

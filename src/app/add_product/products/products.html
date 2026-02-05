@@ -376,7 +376,7 @@
                 <!-- Description Eye Icon -->
                 <button
                   (click)="openDescriptionModal(p)"
-                  class="p-2.5 bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                   title="View Description"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -398,7 +398,7 @@
                 <!-- Transactions Icon -->
                 <button
                   (click)="openTransactionsModal(p)"
-                  class="p-2.5 bg-gray-100 hover:bg-green-50 text-gray-600 hover:text-green-600 rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                   title="View Transactions"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,11 +410,10 @@
                     />
                   </svg>
                 </button>
-
                 <!-- Barcodes Eye Icon -->
                 <button
                   (click)="openBarcodesModal(p)"
-                  class="p-2.5 bg-gray-100 hover:bg-purple-50 text-gray-600 hover:text-purple-600 rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                   title="View Barcodes"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -430,7 +429,7 @@
                 <!-- Edit Icon -->
                 <button
                   [routerLink]="['/admin/products', p?.product?._id]"
-                  class="p-2.5 bg-gray-100 hover:bg-yellow-50 text-gray-600 hover:text-yellow-600 rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
                   title="Edit Product"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,6 +438,26 @@
                       stroke-linejoin="round"
                       stroke-width="2"
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Delete Button -->
+                <button
+                (click)="delete_products(p._id)"
+                  class="text-red-600 p-2 rounded-full hover:bg-red-500 hover:text-white transition"
+                  title="Delete"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
                     />
                   </svg>
                 </button>
@@ -697,108 +716,91 @@
   class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
 >
   <div
-    class="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-6xl mx-auto max-h-[90vh] overflow-hidden"
+    class="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-6xl mx-auto max-h-[90vh] overflow-auto"
   >
+    <!-- Modal Header -->
     <div
-      class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-violet-50 rounded-t-2xl"
+      class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-violet-50 rounded-t-2xl flex justify-between items-center"
     >
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-2xl font-bold text-gray-900">🏷️ Barcode Details</h3>
-          <div class="flex items-center gap-4 mt-2">
-            <p class="text-gray-600 text-sm" *ngIf="selectedProduct">
-              {{ selectedProduct.product.item_Name }}
-            </p>
-            <span
-              class="px-3 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full border border-purple-200"
-            >
-              {{ selectedBarcodes.length }} Barcodes
-            </span>
-          </div>
-        </div>
-        <button
-          (click)="closeModal()"
-          class="text-gray-500 hover:text-gray-700 text-3xl hover:scale-110 transition-transform"
-        >
-          &times;
-        </button>
-      </div>
-    </div>
-    <div class="p-8 overflow-y-auto max-h-[70vh]">
-      <div *ngIf="selectedBarcodes.length; else noBarcodes">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div
-            *ngFor="let barcode of selectedBarcodes"
-            class="bg-white border border-gray-200 rounded-xl p-6 hover:border-purple-300 hover:shadow-lg hover:shadow-purple-100 transition-all duration-300"
+      <div>
+        <h3 class="text-2xl font-bold text-gray-900">🏷️ Barcode Details</h3>
+        <div class="flex items-center gap-4 mt-2">
+          <p class="text-gray-600 text-sm" *ngIf="selectedProduct">
+            {{ selectedProduct.product.item_Name }}
+          </p>
+          <span
+            class="px-3 py-1 bg-purple-100 text-purple-800 text-sm font-medium rounded-full border border-purple-200"
           >
-            <div class="space-y-4">
-              <div>
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-3">Barcode Serial</p>
-                <div
-                  class="flex items-center justify-between bg-gray-50 rounded-lg p-4 border border-gray-200"
-                >
-                  <p class="text-xl font-bold text-gray-900 font-mono tracking-wider">
-                    {{ barcode.barcode_serila }}
-                  </p>
-                  <svg
-                    class="w-8 h-8 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <div class="space-y-3 pt-4 border-t border-gray-200">
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-500">Created Date:</span>
-                  <span class="text-gray-700">{{ formatDate(barcode.createdAt) }}</span>
-                </div>
-                <div class="text-sm">
-                  <span class="text-gray-500">Barcode ID:</span>
-                  <p class="text-gray-500 font-mono text-xs truncate mt-1">{{ barcode._id }}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 pt-4 border-t border-gray-200">
-                <span
-                  class="text-xs px-3 py-1.5 rounded-lg flex items-center gap-2"
-                  [ngClass]="
-                    barcode.stockInId
-                      ? 'bg-green-100 text-green-800 border border-green-200'
-                      : 'bg-gray-100 text-gray-600 border border-gray-200'
-                  "
-                >
-                  <span
-                    class="w-1.5 h-1.5 rounded-full"
-                    [ngClass]="barcode.stockInId ? 'bg-green-600' : 'bg-gray-400'"
-                  ></span>
-                  Stock In: {{ barcode.stockInId ? 'Yes' : 'No' }}
-                </span>
-                <span
-                  class="text-xs px-3 py-1.5 rounded-lg flex items-center gap-2"
-                  [ngClass]="
-                    barcode.stockoutId
-                      ? 'bg-red-100 text-red-800 border border-red-200'
-                      : 'bg-gray-100 text-gray-600 border border-gray-200'
-                  "
-                >
-                  <span
-                    class="w-1.5 h-1.5 rounded-full"
-                    [ngClass]="barcode.stockoutId ? 'bg-red-600' : 'bg-gray-400'"
-                  ></span>
-                  Stock Out: {{ barcode.stockoutId ? 'Yes' : 'No' }}
-                </span>
-              </div>
-            </div>
-          </div>
+            {{ selectedBarcodes.length }} Barcodes
+          </span>
         </div>
       </div>
+      <button
+        (click)="closeModal()"
+        class="text-gray-500 hover:text-gray-700 text-3xl hover:scale-110 transition-transform"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="p-8 overflow-x-auto">
+      <table
+        *ngIf="selectedBarcodes.length; else noBarcodes"
+        class="min-w-full table-auto border-collapse border border-gray-200"
+      >
+        <thead class="bg-gray-50 sticky top-0">
+          <tr>
+            <th class="border border-gray-200 px-4 py-2 text-left">#</th>
+            <th class="border border-gray-200 px-4 py-2 text-left">Barcode Serial</th>
+            <th class="border border-gray-200 px-4 py-2 text-left">Created Date</th>
+            <th class="border border-gray-200 px-4 py-2 text-left">Stock In</th>
+            <th class="border border-gray-200 px-4 py-2 text-left">Stock Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let barcode of selectedBarcodes; let i = index" class="hover:bg-gray-50">
+            <td class="border border-gray-200 px-4 py-2">{{ i + 1 }}</td>
+            <td class="border border-gray-200 px-4 py-2 font-mono tracking-wider">
+              {{ barcode.barcode_serila }}
+            </td>
+            <td class="border border-gray-200 px-4 py-2">{{ formatDate(barcode.createdAt) }}</td>
+            <td class="border border-gray-200 px-4 py-2">
+              <span
+                class="text-xs px-3 py-1.5 rounded-lg flex items-center gap-2"
+                [ngClass]="
+                  barcode.stockInId
+                    ? 'bg-green-100 text-green-800 border border-green-200'
+                    : 'bg-gray-100 text-gray-600 border border-gray-200'
+                "
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="barcode.stockInId ? 'bg-green-600' : 'bg-gray-400'"
+                ></span>
+                {{ barcode.stockInId ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td class="border border-gray-200 px-4 py-2">
+              <span
+                class="text-xs px-3 py-1.5 rounded-lg flex items-center gap-2"
+                [ngClass]="
+                  barcode.stockoutId
+                    ? 'bg-red-100 text-red-800 border border-red-200'
+                    : 'bg-gray-100 text-gray-600 border border-gray-200'
+                "
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="barcode.stockoutId ? 'bg-red-600' : 'bg-gray-400'"
+                ></span>
+                {{ barcode.stockoutId ? 'Yes' : 'No' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       <ng-template #noBarcodes>
         <div class="text-center py-16">
           <div
@@ -822,6 +824,8 @@
           <p class="text-gray-600">There are no barcode records for this product yet.</p>
         </div>
       </ng-template>
+
+      <!-- Modal Footer -->
       <div class="flex justify-end mt-8">
         <button
           (click)="closeModal()"

@@ -1,0 +1,62 @@
+/* edit-stockout.css */
+.notification-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Floating label styles */
+.relative input:focus + label,
+.relative input:not(:placeholder-shown) + label,
+.relative select:focus + label,
+.relative select:not([value=""]) + label {
+  top: 0;
+  font-size: 0.75rem;
+  transform: translateY(-50%);
+}
+
+/* Table styles */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Modal backdrop */
+.fixed {
+  backdrop-filter: blur(4px);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

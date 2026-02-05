@@ -2,7 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Stockoutservice } from '../../api_service/stockout/stockoutservice';
-import { StockOutApiResponsedata, StockOutItemdata } from '../../Typescript/stcokout/stock_out_data';
+import {
+  StockOutApiResponsedata,
+  StockOutItemdata,
+} from '../../Typescript/stcokout/stock_out_data';
+import { StockOutCategoryDisplay, StockOutCategoryResponse } from '../../Typescript/category/stockout_category';
+import { RouterLink } from "@angular/router";
 
 interface TableRow {
   stockOutId: string;
@@ -15,156 +20,205 @@ interface TableRow {
   stockOutDate: string;
   isActive: boolean;
   createdAt: string;
+  updatedAt: string;
+}
+
+interface StockOutItem {
+  item: any;
+  quantity: number;
 }
 
 @Component({
   selector: 'app-fetch-stockout',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './fetch-stockout.html',
-  styleUrl: './fetch-stockout.css'
+  styleUrl: './fetch-stockout.css',
 })
 export class FetchStockout implements OnInit {
   stockoutData: StockOutItemdata[] = [];
   tableRows: TableRow[] = [];
   filteredRows: TableRow[] = [];
-  
-  // Search filters
+
+  // Search filters - UPDATED with Stock-In like filters
   showFilters = false;
   searchItemName = '';
-  searchItemDescription = '';
   searchInvoiceNo = '';
-  searchItemGroupName = '';
-  searchCategoryName = '';
+  searchIsActive = ''; // Added: Is Active filter (dropdown)
+  searchCategoryId = ''; // Added: Category ID for dropdown
   searchModelSKU = '';
   
+  // Category dropdown - ADDED
+  showCategoryDropdown = false;
+  categorySearch = '';
+  
   // Modals
-  showItemGroupModal = false;
-  showItemModal = false;
-  showCategoryModal = false;
+  showItemsModal = false;
   showBarcodeModal = false;
   
   // Selected data for modals
-  selectedItemGroup: any = null;
-  selectedItem: any = null;
-  selectedCategory: any = null;
+  selectedStockOut: StockOutItemdata | null = null;
+  selectedItems: StockOutItem[] = [];
   selectedBarcodes: any[] = [];
   selectedItemName: string = '';
+
+  // Categories - ADDED
+  stockOutCategories: StockOutCategoryDisplay[] = [];
+
+  // Table headers - UPDATED
+  tableheader: string[] = [
+    '#',
+    'Item Name(s)', // Changed label
+    'Invoice No',
+    'Category',
+    'Quantity',
+    'Total Sale',
+    'Status',
+    'Stock-Out Date',
+    'CreatedAt',
+    'UpdatedAt',
+    'Actions'
+  ];
+
+  // Eye modal headers
+  eyemodel: string[] = [
+    '#',
+    'Item Name',
+    'SKU/Model',
+    'Group Name',
+    'Status',
+    'Opening',
+    'Remaining',
+    'Quantity',
+    'Unit',
+    'Serial No'
+  ];
 
   constructor(private service: Stockoutservice) {}
 
   ngOnInit(): void {
     this.fetch_data();
+    this.get_stockout_category();
   }
 
   fetch_data(): void {
-this.service.all_stock_out().subscribe((res: StockOutApiResponsedata) => {
-  this.stockoutData = res.message;
-  this.processStockOutData();
-  this.filteredRows = [...this.tableRows];
-  console.log("stockoutData", this.stockoutData);
-});
-
+    this.service.all_stock_out().subscribe((res: StockOutApiResponsedata) => {
+      this.stockoutData = res.message;
+      this.processStockOutData();
+      this.filteredRows = this.getUniqueTableRows();
+      console.log('stockoutData', this.stockoutData);
+    });
   }
 
   processStockOutData(): void {
     this.tableRows = [];
-    
-    this.stockoutData.forEach(stockOutItem => {
-      // Check if there are multiple items in one stock-out record
+
+    this.stockoutData.forEach((stockOutItem) => {
       if (stockOutItem.itemId && stockOutItem.itemId.length > 0) {
         stockOutItem.itemId.forEach((item, index) => {
-          // Get the corresponding quantity value for this item
-          const quantity = stockOutItem.quantity && stockOutItem.quantity[index] !== undefined 
-            ? stockOutItem.quantity[index] 
-            : stockOutItem.quantity?.[0] || 1;
-          
-          // Get the corresponding sale amount for this item (or calculate proportionally)
+          const quantity =
+            stockOutItem.quantity && stockOutItem.quantity[index] !== undefined
+              ? stockOutItem.quantity[index]
+              : stockOutItem.quantity?.[0] || 1;
+
           let itemSale = 0;
           if (stockOutItem.itemId.length === 1) {
-            // Single item, use the full sale amount
             itemSale = stockOutItem.Total_sale;
           } else {
-            // Multiple items, calculate proportional sale based on selling price
-            const totalSellingPrice = stockOutItem.itemId.reduce((sum, item) => sum + (item.selling_item_price || 0), 0);
+            const totalSellingPrice = stockOutItem.itemId.reduce(
+              (sum, item) => sum + (item.selling_item_price || 0),
+              0,
+            );
             if (totalSellingPrice > 0) {
               itemSale = (item.selling_item_price / totalSellingPrice) * stockOutItem.Total_sale;
             } else {
               itemSale = stockOutItem.Total_sale / stockOutItem.itemId.length;
             }
           }
-          
+
           this.tableRows.push({
             stockOutId: stockOutItem._id,
             invoiceNo: stockOutItem.invoiceNo,
             item: item,
             quantity: quantity,
-            totalSale: Math.round(itemSale * 100) / 100, // Round to 2 decimal places
+            totalSale: Math.round(itemSale * 100) / 100,
             category: stockOutItem.stockOutCategoryId,
             date: stockOutItem.date,
             stockOutDate: stockOutItem.stockOutDate,
             isActive: stockOutItem.isActive,
-            createdAt: stockOutItem.createdAt
+            createdAt: stockOutItem.createdAt,
+            updatedAt: stockOutItem.updatedAt || stockOutItem.createdAt,
           });
         });
       }
     });
   }
 
-  toggleFilters(): void {
-    this.showFilters = !this.showFilters;
-  }
-
-  applyFilters(): void {
-    this.filteredRows = this.tableRows.filter(row => {
-      return (
-        (!this.searchItemName || 
-          row.item.item_Name?.toLowerCase().includes(this.searchItemName.toLowerCase())) &&
-        (!this.searchItemDescription || 
-          row.item.item_Description?.toLowerCase().includes(this.searchItemDescription.toLowerCase())) &&
-        (!this.searchInvoiceNo || 
-          row.invoiceNo?.toLowerCase().includes(this.searchInvoiceNo.toLowerCase())) &&
-        (!this.searchItemGroupName || 
-          row.item.itemGroupId?.itemGroupName?.toLowerCase().includes(this.searchItemGroupName.toLowerCase())) &&
-        (!this.searchCategoryName || 
-          row.category?.stockoutCategoryName?.toLowerCase().includes(this.searchCategoryName.toLowerCase())) &&
-        (!this.searchModelSKU || 
-          row.item.modelNoSKU?.toLowerCase().includes(this.searchModelSKU.toLowerCase()))
-      );
+  // Get unique table rows (one per stock-out record)
+  getUniqueTableRows(): TableRow[] {
+    const uniqueRows: TableRow[] = [];
+    const seenIds = new Set<string>();
+    
+    this.tableRows.forEach(row => {
+      if (!seenIds.has(row.stockOutId)) {
+        seenIds.add(row.stockOutId);
+        uniqueRows.push(row);
+      }
     });
+    
+    return uniqueRows;
   }
 
-  clearFilters(): void {
-    this.searchItemName = '';
-    this.searchItemDescription = '';
-    this.searchInvoiceNo = '';
-    this.searchItemGroupName = '';
-    this.searchCategoryName = '';
-    this.searchModelSKU = '';
-    this.filteredRows = [...this.tableRows];
-  }
-
-  // Open Item Group Modal with safe check
-  openItemGroupModal(itemGroup?: any): void {
-    if (itemGroup) {
-      this.selectedItemGroup = itemGroup;
-      this.showItemGroupModal = true;
+  // Get item display name for a stock-out record
+  getItemDisplayName(stockOutId: string): string {
+    const stockOut = this.stockoutData.find(item => item._id === stockOutId);
+    if (!stockOut?.itemId) return 'N/A';
+    
+    if (stockOut.itemId.length === 1) {
+      // Single item - show item name
+      return stockOut.itemId[0].item_Name || 'N/A';
+    } else {
+      // Multiple items - show count
+      return `${stockOut.itemId.length} item(s)`;
     }
   }
 
-  // Open Item Modal with safe check
-  openItemModal(item?: any): void {
-    if (item) {
-      this.selectedItem = item;
-      this.showItemModal = true;
-    }
+  // Get items count for a stock-out record
+  getItemsCount(stockOutId: string): number {
+    const stockOut = this.stockoutData.find(item => item._id === stockOutId);
+    return stockOut?.itemId?.length || 0;
   }
 
-  // Open Category Modal with safe check
-  openCategoryModal(category?: any): void {
-    if (category) {
-      this.selectedCategory = category;
-      this.showCategoryModal = true;
+  // Get total quantity for a stock-out record
+  getTotalQuantity(stockOutId: string): number {
+    const stockOut = this.stockoutData.find(item => item._id === stockOutId);
+    if (!stockOut?.quantity) return 0;
+    
+    if (Array.isArray(stockOut.quantity)) {
+      return stockOut.quantity.reduce((sum, qty) => sum + (qty || 0), 0);
+    }
+    return stockOut.quantity || 0;
+  }
+
+  // Open Items Modal
+  openItemsModal(stockOutId: string): void {
+    const stockOutItem = this.stockoutData.find(item => item._id === stockOutId);
+    if (stockOutItem) {
+      this.selectedStockOut = stockOutItem;
+      
+      this.selectedItems = [];
+      if (stockOutItem.itemId && stockOutItem.itemId.length > 0) {
+        stockOutItem.itemId.forEach((item, index) => {
+          const quantity =
+            stockOutItem.quantity && stockOutItem.quantity[index] !== undefined
+              ? stockOutItem.quantity[index]
+              : stockOutItem.quantity?.[0] || 1;
+          
+          this.selectedItems.push({ item, quantity });
+        });
+      }
+      
+      this.showItemsModal = true;
     }
   }
 
@@ -179,15 +233,98 @@ this.service.all_stock_out().subscribe((res: StockOutApiResponsedata) => {
 
   // Close all modals
   closeAllModals(): void {
-    this.showItemGroupModal = false;
-    this.showItemModal = false;
-    this.showCategoryModal = false;
+    this.showItemsModal = false;
     this.showBarcodeModal = false;
-    this.selectedItemGroup = null;
-    this.selectedItem = null;
-    this.selectedCategory = null;
+    this.selectedStockOut = null;
+    this.selectedItems = [];
     this.selectedBarcodes = [];
     this.selectedItemName = '';
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  // NEW: Toggle category dropdown
+  toggleCategoryDropdown(): void {
+    this.showCategoryDropdown = !this.showCategoryDropdown;
+  }
+
+  // NEW: Handle category search change
+  onCategorySearchChange(): void {
+    this.showCategoryDropdown = true;
+  }
+
+  // NEW: Select category from dropdown
+  selectCategory(categoryId: string, categoryName: string): void {
+    this.searchCategoryId = categoryId;
+    this.showCategoryDropdown = false;
+    this.categorySearch = categoryName;
+    this.applyFilters();
+  }
+
+  // NEW: Clear category selection
+  clearCategory(): void {
+    this.searchCategoryId = '';
+    this.categorySearch = '';
+    this.applyFilters();
+  }
+
+  // NEW: Get filtered categories for dropdown
+  getFilteredCategories(): StockOutCategoryDisplay[] {
+    if (!this.categorySearch) {
+      return this.stockOutCategories;
+    }
+    return this.stockOutCategories.filter(category =>
+      category.stockoutCategoryName.toLowerCase().includes(this.categorySearch.toLowerCase())
+    );
+  }
+
+  // UPDATED: applyFilters method
+  applyFilters(): void {
+    const uniqueRows = this.getUniqueTableRows();
+    
+    this.filteredRows = uniqueRows.filter(row => {
+      const stockOut = this.stockoutData.find(item => item._id === row.stockOutId);
+      if (!stockOut) return false;
+      
+      const hasMatchingItem = stockOut.itemId?.some(item => {
+        return (
+          (!this.searchItemName || 
+            item.item_Name?.toLowerCase().includes(this.searchItemName.toLowerCase())) &&
+          (!this.searchModelSKU || 
+            item.modelNoSKU?.toLowerCase().includes(this.searchModelSKU.toLowerCase()))
+        );
+      });
+      
+      // Check active status
+      const isActiveMatch = !this.searchIsActive || 
+        (this.searchIsActive === 'active' && stockOut.isActive) ||
+        (this.searchIsActive === 'inactive' && !stockOut.isActive);
+      
+      // Check category
+      const categoryMatch = !this.searchCategoryId || 
+        stockOut.stockOutCategoryId?._id === this.searchCategoryId;
+      
+      return (
+        hasMatchingItem &&
+        isActiveMatch &&
+        categoryMatch &&
+        (!this.searchInvoiceNo || 
+          row.invoiceNo?.toLowerCase().includes(this.searchInvoiceNo.toLowerCase()))
+      );
+    });
+  }
+
+  // UPDATED: clearFilters method
+  clearFilters(): void {
+    this.searchItemName = '';
+    this.searchInvoiceNo = '';
+    this.searchIsActive = '';
+    this.searchCategoryId = '';
+    this.categorySearch = '';
+    this.searchModelSKU = '';
+    this.filteredRows = this.getUniqueTableRows();
   }
 
   editStockOut(id: string): void {
@@ -203,97 +340,28 @@ this.service.all_stock_out().subscribe((res: StockOutApiResponsedata) => {
   }
 
   // Helper function to format date
-  formatDate(dateString: string): string {
+  formatDate(dateString: string | Date): string {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-GB', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
       });
     } catch (error) {
       return 'Invalid Date';
     }
   }
 
-  // Get barcode status text
-  getBarcodeStatus(barcode: any): string {
-    if (barcode.stockoutId) return 'Out of Stock';
-    if (barcode.stockInId) return 'In Stock';
-    return 'Available';
-  }
 
-  // Get barcode status color
-  getBarcodeStatusColor(barcode: any): string {
-    if (barcode.stockoutId) return 'bg-red-100 text-red-800';
-    if (barcode.stockInId) return 'bg-green-100 text-green-800';
-    return 'bg-blue-100 text-blue-800';
-  }
 
-  // Print barcodes function
-  printBarcodes(): void {
-    const printContent = document.createElement('div');
-    printContent.innerHTML = `
-      <div style="padding: 20px; font-family: Arial, sans-serif;">
-        <h2 style="text-align: center; margin-bottom: 20px;">Barcode Report</h2>
-        <h3 style="text-align: center; margin-bottom: 30px; color: #666;">${this.selectedItemName}</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-          <thead>
-            <tr style="background-color: #f3f4f6;">
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">#</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Barcode Serial</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Status</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Created At</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${this.selectedBarcodes.map((barcode, index) => `
-              <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">${index + 1}</td>
-                <td style="border: 1px solid #ddd; padding: 8px; font-family: monospace; font-weight: bold;">${barcode.barcode_serila}</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">
-                  <span style="padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; 
-                    ${barcode.stockoutId ? 'background-color: #fee2e2; color: #991b1b;' : 
-                      barcode.stockInId ? 'background-color: #d1fae5; color: #065f46;' : 
-                      'background-color: #dbeafe; color: #1e40af;'}">
-                    ${this.getBarcodeStatus(barcode)}
-                  </span>
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${this.formatDate(barcode.createdAt)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666;">
-          <p>Total Barcodes: ${this.selectedBarcodes.length}</p>
-          <p>Generated on: ${new Date().toLocaleString()}</p>
-        </div>
-      </div>
-    `;
-
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Barcode Report - ${this.selectedItemName}</title>
-            <style>
-              @media print {
-                @page { margin: 0.5in; }
-                body { margin: 0; }
-              }
-            </style>
-          </head>
-          <body onload="window.print(); window.close();">
-            ${printContent.innerHTML}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+  // Get stock-out categories
+  get_stockout_category(): void {
+    this.service.get_stockOut_category().subscribe((res: StockOutCategoryResponse) => {
+      this.stockOutCategories = res.data;
+      console.log('Stock-Out Categories:', this.stockOutCategories);
+    });
   }
 }

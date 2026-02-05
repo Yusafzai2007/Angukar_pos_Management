@@ -230,4 +230,43 @@ export class ProductsComponent implements OnInit {
     'Remaining',
     'Barcodes',
   ];
+
+
+
+
+
+delete_products(id: string): void {
+  if (confirm('Are you sure you want to delete this product group?')) {
+    this.service.delete_product(id).subscribe({
+      next: (res) => {
+        console.log(res);
+        alert('Product group deleted successfully!');
+
+     
+      },
+      error: (err) => {
+        console.error(err);
+        alert('An error occurred while deleting the product group.');
+      }
+    });
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

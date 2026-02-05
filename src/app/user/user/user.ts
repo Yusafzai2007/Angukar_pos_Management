@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AllUsersResponse, userdata } from '../../Typescript/user/user';
 import { ServiceData } from '../../create_account/api_service/service-data';
+import { AddUsers } from "../../add_users/add-users/add-users";
 
 @Component({
   selector: 'app-user',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AddUsers],
   templateUrl: './user.html',
   styleUrl: './user.css',
 })

@@ -1,12 +1,83 @@
-<div class=" p-4 md:p-6">
+<div class="p-4 md:p-6">
+  <!-- Notification System (Right Side) -->
+  <div 
+    *ngIf="showNotification" 
+    class="fixed top-4 right-4 z-50 notification-slide-in"
+  >
+    <div 
+      [ngClass]="{
+        'bg-green-50 border-green-500': notificationType === 'success',
+        'bg-red-50 border-red-500': notificationType === 'error',
+        'bg-blue-50 border-blue-500': notificationType === 'info',
+        'bg-yellow-50 border-yellow-500': notificationType === 'warning'
+      }"
+      class="border-l-4 p-4 rounded-lg shadow-lg w-80"
+    >
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <svg 
+            *ngIf="notificationType === 'success'" 
+            class="h-5 w-5 text-green-500" 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <svg 
+            *ngIf="notificationType === 'error'" 
+            class="h-5 w-5 text-red-500" 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <svg 
+            *ngIf="notificationType === 'info'" 
+            class="h-5 w-5 text-blue-500" 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+          <svg 
+            *ngIf="notificationType === 'warning'" 
+            class="h-5 w-5 text-yellow-500" 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3 flex-1">
+          <p class="text-sm font-medium" [ngClass]="{
+            'text-green-800': notificationType === 'success',
+            'text-red-800': notificationType === 'error',
+            'text-blue-800': notificationType === 'info',
+            'text-yellow-800': notificationType === 'warning'
+          }">
+            {{ notificationMessage }}
+          </p>
+        </div>
+        <button 
+          (click)="closeNotification()" 
+          class="ml-4 -mt-0.5 -mr-1 flex-shrink-0"
+        >
+          <svg class="h-4 w-4 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <div class="mb-6 md:mb-8 flex items-center justify-between gap-4">
     <div>
       <h1 class="text-2xl md:text-2xl font-bold text-gray-900">
-        Stock Out Management
+        Stock-Out Management
       </h1>
-      <p class="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">
-        Manage your inventory stock out entries
+      <p class="text-gray-600 mt-1 md:mt-1 text-sm md:text-base">
+        Manage your inventory stock-Out records
       </p>
     </div>
 
@@ -31,48 +102,6 @@
       class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"
     ></div>
     <p class="mt-4 text-gray-600">Loading products...</p>
-  </div>
-
-  <!-- Error Alert -->
-  <div
-    *ngIf="error && !loading"
-    class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg shadow"
-  >
-    <div class="flex">
-      <div class="flex-shrink-0">
-        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <div class="ml-3">
-        <p class="text-sm text-red-700">{{ error }}</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Success Alert -->
-  <div
-    *ngIf="successMessage && !loading"
-    class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg shadow"
-  >
-    <div class="flex">
-      <div class="flex-shrink-0">
-        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <div class="ml-3">
-        <p class="text-sm text-green-700">{{ successMessage }}</p>
-      </div>
-    </div>
   </div>
 
   <!-- Main Content -->
@@ -101,83 +130,142 @@
 
         <!-- Main Details Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
-          <!-- Total Sale Price -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Total Sale Price *
-            </label>
+          <!-- Total Sale Price with Floating Label -->
+          <div class="relative">
             <div class="relative">
               <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
               <input
                 type="number"
                 [(ngModel)]="stockOutData.Total_sale"
-                class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+                class="peer w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
                 min="0"
                 step="0.01"
                 readonly
+                placeholder=" "
               />
             </div>
+            <label
+              class="absolute left-8 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200
+                     peer-focus:text-red-500 peer-focus:-top-2.5 peer-focus:text-xs
+                     peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+            >
+              Total Sale Price
+            </label>
             <p class="text-xs text-gray-500 mt-1">
               Auto-calculated: Σ(Sale Price × Quantity) for all products
             </p>
           </div>
 
-          <!-- Date -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Stock Out Date *</label>
+          <!-- Date with Floating Label -->
+          <div class="relative">
             <input
               type="date"
               [(ngModel)]="stockOutData.stockOutDate"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+              class="peer w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+              placeholder=" "
             />
+            <label
+              class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200
+                     peer-focus:text-red-500 peer-focus:-top-2.5 peer-focus:text-xs
+                     peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+            >
+              Stock Out Date *
+            </label>
           </div>
 
-          <!-- Category -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-            <select
-              [(ngModel)]="stockOutData.stockOutCategoryId"
-              (change)="onCategorySelect()"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base bg-white"
-            >
-              <option value="" disabled selected>Select Category</option>
-              <option *ngFor="let category of stockOutCategories" [value]="category._id">
-                {{ category.stockoutCategoryName }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Category Name Display -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Selected Category</label>
-            <div
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-sm md:text-base"
-            >
-              {{ stockOutData.stockOutCategoryName || 'Not selected' }}
+          <!-- Category with Searchable Dropdown and Floating Label -->
+          <div class="relative">
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="categorySearch"
+                (click)="toggleCategoryDropdown()"
+                (input)="onCategorySearchChange()"
+                class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+                placeholder=" "
+              />
+              <label
+                class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200
+                       peer-focus:text-red-500 peer-focus:-top-2.5 peer-focus:text-xs
+                       peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+              >
+                Category *
+              </label>
+              
+              <!-- Clear button when category is selected -->
+              <button
+                *ngIf="stockOutData.stockOutCategoryId"
+                (click)="clearCategory()"
+                class="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                type="button"
+              >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              
+              <!-- Dropdown arrow -->
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              
+              <!-- Category Dropdown -->
+              <div
+                *ngIf="showCategoryDropdown"
+                class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+              >
+                <div class="max-h-48 overflow-y-auto">
+                  <div *ngFor="let category of filteredCategories" class="border-b border-gray-100 last:border-b-0">
+                    <button
+                      (click)="selectCategory(category._id, category.stockoutCategoryName)"
+                      class="w-full text-left px-4 py-2 text-sm hover:bg-red-50 transition-colors"
+                    >
+                      {{ category.stockoutCategoryName }}
+                    </button>
+                  </div>
+                  <div *ngIf="filteredCategories.length === 0" class="px-4 py-2 text-sm text-gray-500">
+                    No categories found
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Invoice -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Invoice Number</label>
+          <!-- Invoice with Floating Label -->
+          <div class="relative">
             <input
               type="text"
               [(ngModel)]="stockOutData.invoiceNo"
-              placeholder="Optional invoice number"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+              class="peer w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base"
+              placeholder=" "
             />
+            <label
+              class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200
+                     peer-focus:text-red-500 peer-focus:-top-2.5 peer-focus:text-xs
+                     peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+            >
+              Invoice Number (Optional)
+            </label>
           </div>
         </div>
 
-        <!-- Notes -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+        <!-- Notes with Floating Label -->
+        <div class="mb-6 relative">
           <textarea
             [(ngModel)]="stockOutData.notes"
             rows="2"
-            placeholder="Additional notes..."
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base resize-none"
+            class="peer w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition text-sm md:text-base resize-none"
+            placeholder=" "
           ></textarea>
+          <label
+            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200
+                   peer-focus:text-red-500 peer-focus:-top-2.5 peer-focus:text-xs
+                   peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+          >
+            Notes (Optional)
+          </label>
         </div>
 
         <!-- Products Section -->
@@ -212,22 +300,30 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr class="bg-gray-50">
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase" let *ngFor="let Header of tableheader">
+                  <th *ngFor="let Header of tableheader" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {{Header}}
                   </th>
-                 
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
                 <tr *ngFor="let row of productRows; let i = index" class="hover:bg-gray-50">
-                  <!-- Product Selection -->
+                  <!-- Product Selection with Floating Label -->
                   <td class="px-4 py-3">
-                    <button
-                      (click)="openProductSearchModal(i)"
-                      class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 transition text-sm text-left bg-white hover:bg-gray-50"
-                    >
-                      {{ row.productName || 'Select Product' }}
-                    </button>
+                    <div class="relative">
+                      <button
+                        (click)="openProductSearchModal(i)"
+                        class="peer w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 transition text-sm text-left bg-white hover:bg-gray-50"
+                      >
+                        {{ row.productName || ' ' }}
+                      </button>
+                      <label
+                        class="absolute left-3 -top-2 bg-white px-1 text-xs text-gray-600 transition-all duration-200
+                               peer-focus:text-red-500 peer-focus:-top-2
+                               peer-[&:not(:empty)]:-top-2 peer-[&:not(:empty)]:text-xs pointer-events-none"
+                      >
+                        Item Name *
+                      </label>
+                    </div>
                   </td>
 
                   <!-- Model No -->
@@ -295,17 +391,27 @@
                     <div class="text-sm font-medium text-gray-900">{{ row.currentStock }}</div>
                   </td>
 
-                  <!-- Quantity Input -->
+                  <!-- Quantity Input with Floating Label -->
                   <td class="px-4 py-3">
-                    <input
-                      type="number"
-                      [(ngModel)]="row.quantity"
-                      (input)="onQuantityChange(i)"
-                      min="0"
-                      [max]="row.currentStock"
-                      class="w-20 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 transition text-sm"
-                      [disabled]="!row._id"
-                    />
+                    <div class="relative">
+                      <input
+                        type="number"
+                        [(ngModel)]="row.quantity"
+                        (input)="onQuantityChange(i)"
+                        min="0"
+                        [max]="row.currentStock"
+                        class="peer w-20 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 transition text-sm"
+                        [disabled]="!row._id"
+                        placeholder=" "
+                      />
+                      <label
+                        class="absolute left-3 -top-2 bg-white px-1 text-xs text-gray-600 transition-all duration-200
+                               peer-focus:text-red-500 peer-focus:-top-2
+                               peer-[&:not(:placeholder-shown)]:-top-2 peer-[&:not(:placeholder-shown)]:text-xs pointer-events-none"
+                      >
+                        Qty
+                      </label>
+                    </div>
                   </td>
 
                   <!-- Total After -->
@@ -319,13 +425,6 @@
                       }"
                     >
                       {{ row.totalAfter }}
-                    </div>
-                  </td>
-
-                  <!-- Line Total (Sale Price × Quantity) -->
-                  <td class="px-4 py-3">
-                    <div class="text-sm font-bold text-green-700">
-                      ${{ (row.salePrice * row.quantity).toFixed(2) }}
                     </div>
                   </td>
 
@@ -352,7 +451,7 @@
                           d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3z"
                         />
                       </svg>
-                      {{ row.barcodes.length }}/{{ row.quantity }}
+                      {{ row.barcodes.length }}
                       <span *ngIf="row.barcodeSaved" class="ml-1">✓</span>
                     </button>
                   </td>
@@ -454,7 +553,7 @@
             Clear All
           </button>
 
-          <!-- Submit Stock Out Button -->
+          <!-- Single Submit Button -->
           <button
             (click)="submitStockOut()"
             [disabled]="submitting || !isFormValid()"
@@ -466,53 +565,6 @@
             ></span>
             {{ submitting ? 'Processing...' : 'Submit Stock Out' }}
           </button>
-
-          <!-- Complete Process Button -->
-          <button
-            *ngIf="stockOutSubmitted"
-            (click)="completeStockOut()"
-            class="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm md:text-base"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Complete Process
-          </button>
-        </div>
-
-        <!-- Stock Out Status -->
-        <div
-          *ngIf="stockOutSubmitted"
-          class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg"
-        >
-          <div class="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-green-600 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <span class="text-green-700 font-medium">Stock Out submitted successfully!</span>
-          </div>
-          <p class="text-sm text-green-600 mt-1">
-            You can now add barcodes for each product. Click the barcode button next to each product
-            to add barcodes.
-          </p>
         </div>
       </div>
     </div>
@@ -682,37 +734,62 @@
       <!-- Modal Content -->
       <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px)">
         <div class="space-y-6">
-          <!-- Product Name -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+          <!-- Product Name with Floating Label -->
+          <div class="relative">
             <input
               type="text"
               [(ngModel)]="editFormData.productName"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              placeholder=" "
             />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                     peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                     peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              Product Name *
+            </label>
           </div>
 
-          <!-- SKU/Model -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">SKU/Model *</label>
+          <!-- SKU/Model with Floating Label -->
+          <div class="relative">
             <input
               type="text"
               [(ngModel)]="editFormData.modelNoSKU"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              placeholder=" "
             />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                     peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                     peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              SKU/Model *
+            </label>
           </div>
 
-          <!-- Product Group -->
-          <div class="space-y-1.5">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Product Group *</label>
+          <!-- Product Group with Floating Label -->
+          <div class="relative">
             <div class="relative">
               <button
                 type="button"
                 (click)="toggleGroupDropdown()"
-                class="w-full text-left px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition bg-white hover:bg-gray-50"
+                class="peer w-full px-3 pt-3 pb-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition bg-white hover:bg-gray-50"
               >
-                {{ editFormData.productGroupName || 'Select Product Group' }}
+                {{ editFormData.productGroupName || '' }}
               </button>
+              <label
+                class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                       peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                       peer-[&:not(:empty)]:top-2 peer-[&:not(:empty)]:-translate-y-3 peer-[&:not(:empty)]:text-xs peer-[&:not(:empty)]:text-slate-700"
+              >
+                Product Group *
+              </label>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
 
               <div
                 *ngIf="showGroupDropdown"
@@ -720,14 +797,16 @@
               >
                 <!-- Search input -->
                 <div class="p-2 border-b">
-                  <input
-                    type="text"
-                    [(ngModel)]="groupSearchTerm"
-                    (input)="groupSearchTerm = $event.target.value"
-                    placeholder="Search groups..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                    autofocus
-                  />
+                  <div class="relative">
+                    <input
+                      type="text"
+                      [(ngModel)]="groupSearchTerm"
+                      (input)="groupSearchTerm = $event.target.value"
+                      placeholder="Search groups..."
+                      class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                      autofocus
+                    />
+                  </div>
                 </div>
 
                 <!-- Group list -->
@@ -746,17 +825,15 @@
                 </div>
               </div>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Select the product group for this item</p>
           </div>
 
-          <!-- Unit -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
+          <!-- Unit with Floating Label -->
+          <div class="relative">
             <select
               [(ngModel)]="editFormData.unit"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none"
             >
-              <option value="">Select Unit</option>
+              <option value=""></option>
               <option value="piece">Piece</option>
               <option value="gram">Gram</option>
               <option value="liter">Liter</option>
@@ -764,24 +841,65 @@
               <option value="pack">Pack</option>
               <option value="box">Box</option>
             </select>
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                     peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                     peer-[&:not([value=''])]:top-2 peer-[&:not([value=''])]:-translate-y-3 peer-[&:not([value=''])]:text-xs peer-[&:not([value=''])]:text-slate-700"
+            >
+              Unit *
+            </label>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
 
-          <!-- Opening Stock -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Opening Stock *</label>
+          <!-- Opening Stock with Floating Label -->
+          <div class="relative">
             <input
               type="number"
               [(ngModel)]="editFormData.openingStock"
               min="0"
-              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+              placeholder=" "
             />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                     peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                     peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              Opening Stock *
+            </label>
+          </div>
+
+          <!-- Serial Number (True/False) with Floating Label -->
+          <div class="relative">
+            <select
+              [(ngModel)]="editFormData.serialNo"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition appearance-none"
+            >
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                     peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                     peer-[&:not([value='false'])]:top-2 peer-[&:not([value='false'])]:-translate-y-3 peer-[&:not([value='false'])]:text-xs peer-[&:not([value='false'])]:text-slate-700"
+            >
+              Serial Number Tracking *
+            </label>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
 
           <!-- Price Details Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Cost Price -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Cost Price *</label>
+            <!-- Cost Price with Floating Label -->
+            <div class="relative">
               <div class="relative">
                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >$</span
@@ -791,14 +909,21 @@
                   [(ngModel)]="editFormData.costPrice"
                   min="0"
                   step="0.01"
-                  class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  placeholder=" "
                 />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                         peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                         peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Cost Price *
+                </label>
               </div>
             </div>
 
-            <!-- Sale Price -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Sale Price *</label>
+            <!-- Sale Price with Floating Label -->
+            <div class="relative">
               <div class="relative">
                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >$</span
@@ -809,14 +934,21 @@
                   min="0"
                   step="0.01"
                   (input)="updateFinalPriceInEdit()"
-                  class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  placeholder=" "
                 />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                         peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                         peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Sale Price *
+                </label>
               </div>
             </div>
 
-            <!-- Discount -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
+            <!-- Discount with Floating Label -->
+            <div class="relative">
               <div class="relative">
                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >$</span
@@ -827,14 +959,21 @@
                   min="0"
                   step="0.01"
                   (input)="updateFinalPriceInEdit()"
-                  class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  placeholder=" "
                 />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                         peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                         peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Discount
+                </label>
               </div>
             </div>
 
-            <!-- Final Price -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Final Price *</label>
+            <!-- Final Price with Floating Label -->
+            <div class="relative">
               <div class="relative">
                 <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >$</span
@@ -844,9 +983,17 @@
                   [(ngModel)]="editFormData.finalPrice"
                   min="0"
                   step="0.01"
-                  class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                  placeholder=" "
                   readonly
                 />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                         peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                         peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Final Price *
+                </label>
               </div>
               <p class="text-xs text-gray-500 mt-1">Auto-calculated: Sale Price - Discount</p>
             </div>
@@ -883,16 +1030,13 @@
         <div class="bg-gray-50 px-6 py-4 border-b">
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="text-lg font-bold text-gray-900">Barcode Management</h3>
+              <h3 class="text-lg font-bold text-gray-900">Barcode Management (Optional)</h3>
               <p class="text-sm text-gray-600 mt-1">
-                {{ productRows[showBarcodeModalIndex].productName }} - Required:
+                {{ productRows[showBarcodeModalIndex].productName }} - Quantity:
                 {{ productRows[showBarcodeModalIndex].quantity }}
               </p>
               <p class="text-xs text-gray-500 mt-1">
-                Add exactly {{ productRows[showBarcodeModalIndex].quantity }} barcodes ({{
-                  productRows[showBarcodeModalIndex].barcodes.length
-                }}
-                added)
+                Barcodes are optional. Add them if needed.
               </p>
             </div>
             <button
@@ -919,24 +1063,28 @@
 
         <!-- Modal Content -->
         <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px)">
-          <!-- Barcode Input -->
+          <!-- Barcode Input with Floating Label -->
           <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Enter Barcode</label>
-            <div class="flex gap-3">
+            <div class="relative">
               <input
                 type="text"
                 [(ngModel)]="productRows[showBarcodeModalIndex].newBarcode"
                 (keyup.enter)="addBarcode(showBarcodeModalIndex)"
-                placeholder="Type or scan barcode"
-                class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
+                placeholder=" "
               />
+              <label
+                class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+                       peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-red-500
+                       peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+              >
+                Enter Barcode (Optional)
+              </label>
+            </div>
+            <div class="flex gap-3 mt-4">
               <button
                 (click)="addBarcode(showBarcodeModalIndex)"
-                [disabled]="
-                  productRows[showBarcodeModalIndex].barcodes.length >=
-                  productRows[showBarcodeModalIndex].quantity
-                "
-                class="px-5 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2 flex-1 justify-center"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -950,21 +1098,18 @@
                     clip-rule="evenodd"
                   />
                 </svg>
-                ADD
+                ADD BARCODE
               </button>
             </div>
             <p class="text-xs text-gray-500 mt-2">
-              Type or scan barcodes. You need
-              {{ productRows[showBarcodeModalIndex].quantity }} unique barcodes.
+              Barcodes are optional. Add barcodes only if required.
             </p>
           </div>
 
           <!-- Barcodes List -->
           <div class="mb-6">
             <h4 class="text-sm font-medium text-gray-700 mb-3">
-              Added Barcodes ({{ productRows[showBarcodeModalIndex].barcodes.length }}/{{
-                productRows[showBarcodeModalIndex].quantity
-              }})
+              Added Barcodes ({{ productRows[showBarcodeModalIndex].barcodes.length }})
               <span
                 *ngIf="productRows[showBarcodeModalIndex].barcodeSaved"
                 class="ml-2 text-green-600 text-xs"
@@ -991,7 +1136,7 @@
                 />
               </svg>
               <p class="mt-2 text-gray-500">No barcodes added yet</p>
-              <p class="text-xs text-gray-400 mt-1">Add barcodes above to continue</p>
+              <p class="text-xs text-gray-400 mt-1">Barcodes are optional. Add them if needed.</p>
             </div>
 
             <div *ngIf="productRows[showBarcodeModalIndex].barcodes.length > 0" class="space-y-2">
@@ -1050,10 +1195,7 @@
           </button>
           <button
             (click)="saveBarcodes(showBarcodeModalIndex)"
-            [disabled]="
-              productRows[showBarcodeModalIndex].barcodes.length !==
-                productRows[showBarcodeModalIndex].quantity || savingBarcodes
-            "
+            [disabled]="savingBarcodes"
             class="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
           >
             <span
@@ -1067,77 +1209,7 @@
     </div>
   </div>
 
-  <!-- Empty State -->
-  <!-- <div *ngIf="!showMainForm && !loading" class="p-8 text-center">
-    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-8 w-8 text-red-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-        />
-      </svg>
-    </div>
-    <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to record stock out?</h3>
-    <p class="text-gray-500 mb-6">Click "Add Stock Out" to create a new stock out entry</p>
-  </div> -->
+
 </div>
 
-
-
-
 <app-fetch-stockout></app-fetch-stockout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

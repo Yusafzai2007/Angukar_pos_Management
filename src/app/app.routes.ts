@@ -11,6 +11,8 @@ import { EditProduct } from './add_product/edit-product/edit-product';
 import { User } from './user/user/user';
 import { Stockin } from './stockIn/stockin/stockin';
 import { Stockout } from './stockIn/stockout/stockout';
+import { EditStockIn } from './stockIn/edit-stock-in/edit-stock-in';
+import { EditStockout } from './stockIn/edit-stockout/edit-stockout';
 
 export const routes: Routes = [
   {
@@ -35,6 +37,8 @@ export const routes: Routes = [
       { path: 'products/:id', component: EditProduct },
       { path: 'StockIn', component: Stockin },
       { path: 'stockout', component: Stockout },
+      { path: 'edit_stockIn/:id', component: EditStockIn },
+      { path: 'edit_stockout/:id', component: EditStockout },
     ],
   },
 ];

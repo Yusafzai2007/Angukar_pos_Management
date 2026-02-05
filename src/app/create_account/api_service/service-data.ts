@@ -74,9 +74,8 @@ export class ServiceData {
     return this.http.post(`${this.apiUrl}/signup`, data);
   }
 
-
-  deleteuser(userId: string){
-    return this.http.delete(`${this.apiUrl}/deleteuser`)
+  deleteuser(userId: string) {
+    return this.http.delete(`${this.apiUrl}/deleteuser`);
   }
 
   logout(data: any = {}) {
@@ -91,9 +90,8 @@ export class ServiceData {
     });
   }
 
-
-  get_user(){
-    return this.http.get<AllUsersResponse>(`${this.apiUrl}/users`) 
+  get_user() {
+    return this.http.get<AllUsersResponse>(`${this.apiUrl}/users`);
   }
 
   currentuser(): Observable<SingleUserResponse> {
@@ -207,35 +205,11 @@ export class ServiceData {
     return this.http.delete(`${this.apiUrl}/delete_product_barcode/${id}`);
   }
 
-
-
-
-add_new_barcode_serillla(stock_productId: string, data: CreateBarcodePayload): Observable<any> {
+  add_new_barcode_serillla(stock_productId: string, data: CreateBarcodePayload): Observable<any> {
     return this.http.post(`${this.apiUrl}/product_barcode/${stock_productId}`, data);
   }
-  
 
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  delete_product(id: string) {
+    return this.http.delete(`${this.apiUrl}/delete_item/${id}`);
+  }
 }

@@ -39,6 +39,9 @@ export interface Item {
   updatedAt: string;
   __v: number;
   barcodes: Barcode[];
+  openingStock:Number,
+  remainingStock:Number,
+
 }
 
 export interface ItemGroup {

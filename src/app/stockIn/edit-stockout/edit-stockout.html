@@ -1,0 +1,1286 @@
+<!-- edit-stockout.html -->
+<div class="bg-white p-4 md:p-6">
+  <!-- Notification System -->
+  <div *ngIf="showNotification" class="fixed top-4 right-4 z-50 notification-slide-in">
+    <div
+      [ngClass]="{
+        'bg-green-50 border-green-500': notificationType === 'success',
+        'bg-red-50 border-red-500': notificationType === 'error',
+        'bg-blue-50 border-blue-500': notificationType === 'info',
+        'bg-yellow-50 border-yellow-500': notificationType === 'warning',
+      }"
+      class="border-l-4 p-4 rounded-lg shadow-lg w-80"
+    >
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <!-- Success Icon -->
+          <svg
+            *ngIf="notificationType === 'success'"
+            class="h-5 w-5 text-green-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <!-- Error Icon -->
+          <svg
+            *ngIf="notificationType === 'error'"
+            class="h-5 w-5 text-red-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <!-- Info Icon -->
+          <svg
+            *ngIf="notificationType === 'info'"
+            class="h-5 w-5 text-blue-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <!-- Warning Icon -->
+          <svg
+            *ngIf="notificationType === 'warning'"
+            class="h-5 w-5 text-yellow-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3 flex-1">
+          <p
+            class="text-sm font-medium"
+            [ngClass]="{
+              'text-green-800': notificationType === 'success',
+              'text-red-800': notificationType === 'error',
+              'text-blue-800': notificationType === 'info',
+              'text-yellow-800': notificationType === 'warning',
+            }"
+          >
+            {{ notificationMessage }}
+          </p>
+        </div>
+        <button (click)="closeNotification()" class="ml-4 -mt-0.5 -mr-1 flex-shrink-0">
+          <svg
+            class="h-4 w-4 text-gray-400 hover:text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-12">
+    <div
+      class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"
+    ></div>
+    <p class="mt-4 text-gray-600">Loading stock out data...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && editStockOutData" class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <!-- Header -->
+    <div class="p-4 md:p-6 border-b border-gray-200 bg-gray-50">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <button
+              (click)="goBack()"
+              class="text-blue-600 hover:text-blue-800"
+              title="Go back to Stock Out list"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800">Edit Stock Out</h2>
+          </div>
+          <p class="text-gray-500 text-sm md:text-base mt-1">
+            Stock Out ID: {{ editStockOutData._id }}
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button
+            (click)="deleteStockOut()"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition flex items-center gap-2 text-sm md:text-base"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="p-4 md:p-6">
+      <!-- Form Header -->
+      <div class="mb-6">
+        <h3 class="text-lg md:text-xl font-bold text-gray-900">Edit Stock Out Entry</h3>
+        <p class="text-gray-600 text-sm md:text-base mt-1">Update the stock out details below</p>
+      </div>
+
+      <!-- Main Details Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+        <!-- Total Sale with Floating Label -->
+        <div class="relative">
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+            <input
+              type="number"
+              [(ngModel)]="stockOutData.Total_sale"
+              class="peer w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+              min="0"
+              step="0.01"
+              readonly
+              placeholder=" "
+            />
+          </div>
+          <label
+            class="absolute left-8 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200 peer-focus:text-blue-500 peer-focus:-top-2.5 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+          >
+            Total Sale Value
+          </label>
+          <p class="text-xs text-gray-500 mt-1">
+            Auto-calculated: Σ(Sale Price × Quantity) for all products
+          </p>
+        </div>
+
+        <!-- Date with Floating Label -->
+        <div class="relative">
+          <input
+            type="date"
+            [(ngModel)]="stockOutData.stockOutDate"
+            class="peer w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+            placeholder=" "
+          />
+          <label
+            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200 peer-focus:text-blue-500 peer-focus:-top-2.5 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+          >
+            Stock Out Date *
+          </label>
+        </div>
+
+        <!-- Category with Searchable Dropdown and Floating Label -->
+        <div class="relative">
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="categorySearch"
+              (click)="toggleCategoryDropdown()"
+              (input)="onCategorySearchChange()"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+              placeholder=" "
+            />
+            <label
+              class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200 peer-focus:text-blue-500 peer-focus:-top-2.5 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+            >
+              Category *
+            </label>
+
+            <!-- Clear button when category is selected -->
+            <button
+              *ngIf="stockOutData.stockOutCategoryId"
+              (click)="clearCategory()"
+              class="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              type="button"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+
+            <!-- Dropdown arrow -->
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                class="h-4 w-4 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div
+              *ngIf="showCategoryDropdown"
+              class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+            >
+              <div class="max-h-48 overflow-y-auto">
+                <div
+                  *ngFor="let category of filteredCategories"
+                  class="border-b border-gray-100 last:border-b-0"
+                >
+                  <button
+                    (click)="selectCategory(category._id, category.stockoutCategoryName)"
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 transition-colors"
+                  >
+                    {{ category.stockoutCategoryName }}
+                  </button>
+                </div>
+                <div
+                  *ngIf="filteredCategories.length === 0"
+                  class="px-4 py-2 text-sm text-gray-500"
+                >
+                  No categories found
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice with Floating Label -->
+        <div class="relative">
+          <input
+            type="text"
+            [(ngModel)]="stockOutData.invoiceNo"
+            class="peer w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm md:text-base"
+            placeholder=" "
+          />
+          <label
+            class="absolute left-3 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all duration-200 peer-focus:text-blue-500 peer-focus:-top-2.5 peer-focus:text-xs peer-[&:not(:placeholder-shown)]:-top-2.5 peer-[&:not(:placeholder-shown)]:text-xs"
+          >
+            Invoice Number (Optional)
+          </label>
+        </div>
+      </div>
+
+      <!-- Status Checkbox -->
+      <div class="mb-6 flex items-center">
+        <input
+          type="checkbox"
+          [(ngModel)]="stockOutData.isActive"
+          id="isActive"
+          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        />
+        <label for="isActive" class="ml-2 text-sm text-gray-700">
+          Active
+        </label>
+      </div>
+
+      <!-- Products Section -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h4 class="text-md md:text-lg font-semibold text-gray-900">Products</h4>
+            <p class="text-gray-500 text-sm">Edit products and quantities</p>
+          </div>
+          <button
+            (click)="addNewProductRow()"
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 text-sm md:text-base"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Add New Product
+          </button>
+        </div>
+
+        <!-- Product Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr class="bg-gray-50">
+                <th
+                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+                  *ngFor="let table of tableHeader"
+                >
+                  {{ table }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let row of productRows; let i = index" class="hover:bg-gray-50">
+                <!-- Product Selection -->
+                <td class="px-4 py-3">
+                  <div *ngIf="!row.isNewProduct" class="text-sm font-medium text-gray-900">
+                    {{ row.productName || '-' }}
+                  </div>
+                  <div *ngIf="row.isNewProduct" class="relative">
+                    <button
+                      (click)="openProductSearchModal(i)"
+                      class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition text-sm text-left bg-white hover:bg-gray-50 flex justify-between items-center"
+                    >
+                      <span>{{ row.productName || 'Select Product' }}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+
+                <!-- Model No -->
+                <td class="px-4 py-3">
+                  <div class="text-sm text-gray-900 font-medium">{{ row.modelNoSKU || '-' }}</div>
+                </td>
+
+                <!-- Unit -->
+                <td class="px-4 py-3">
+                  <div class="text-sm text-gray-900">{{ row.unit || '-' }}</div>
+                </td>
+
+                <!-- Status -->
+                <td class="px-4 py-3">
+                  <span
+                    *ngIf="row.status"
+                    [class]="
+                      'px-2 py-1 text-xs font-medium rounded-full ' + getStatusColor(row.status)
+                    "
+                  >
+                    {{ row.status }}
+                  </span>
+                  <span *ngIf="!row.status" class="text-sm text-gray-400">-</span>
+                </td>
+
+                <!-- Cost Price -->
+                <td class="px-4 py-3">
+                  <div class="text-sm text-gray-900" *ngIf="row.costPrice">
+                    ${{ row.costPrice | number: '1.2-2' }}
+                  </div>
+                  <div class="text-sm text-gray-400" *ngIf="!row.costPrice">-</div>
+                </td>
+
+                <!-- Opening Stock -->
+                <td class="px-4 py-3">
+                  <div class="text-sm text-gray-900">{{ row.openingStock }}</div>
+                </td>
+
+                <!-- Remaining Stock -->
+                <td class="px-4 py-3">
+                  <div class="text-sm font-medium text-gray-900">{{ row.currentStock || 0 }}</div>
+                </td>
+
+                <!-- Original Quantity -->
+                <td class="px-4 py-3">
+                  <div class="text-sm text-gray-900">{{ row.originalStockAdded || 0 }}</div>
+                </td>
+
+                <!-- Quantity Input with Floating Label -->
+                <td class="px-4 py-3">
+                  <div class="relative">
+                    <input
+                      type="number"
+                      [(ngModel)]="row.quantity"
+                      (input)="onQuantityChange(i)"
+                      min="0"
+                      [max]="row.currentStock"
+                      step="1"
+                      [disabled]="!row._id && !row.isNewProduct"
+                      class="peer w-20 px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition text-sm"
+                      placeholder=" "
+                    />
+                    <label
+                      class="absolute left-3 -top-2 bg-white px-1 text-xs text-gray-600 transition-all duration-200 peer-focus:text-blue-500 peer-focus:-top-2 peer-[&:not(:placeholder-shown)]:-top-2 peer-[&:not(:placeholder-shown)]:text-xs pointer-events-none"
+                    >
+                      Qty
+                    </label>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">
+                    Max: {{ row.currentStock }}
+                  </p>
+                </td>
+
+                <!-- Barcodes -->
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="openBarcodeModal(i)"
+                      [disabled]="!row._id || (!row.isSerialTracking && !row.isNewProduct)"
+                      [class]="getBarcodeButtonClass(row)"
+                      [title]="getBarcodeButtonTitle(row)"
+                      class="flex items-center gap-1 px-3 py-1.5 rounded-lg transition text-sm font-medium"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z"
+                          clip-rule="evenodd"
+                        />
+                        <path
+                          d="M11 4a1 1 0 10-2 0v1a1 1 0 002 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3z"
+                        />
+                      </svg>
+                      {{ row.barcodes.length }}
+                      <span *ngIf="row.barcodeSaved" class="ml-1">✓</span>
+                    </button>
+                    <span
+                      *ngIf="!row.isSerialTracking && !row.isNewProduct"
+                      class="text-xs text-gray-500"
+                    >
+                      No Serial
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Action Buttons -->
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <!-- Edit Button -->
+                    <button
+                      (click)="openEditProductModal(i)"
+                      [disabled]="!row._id || row.isNewProduct"
+                      class="text-blue-500 hover:text-blue-700 transition p-1.5 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Edit Product"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                        />
+                      </svg>
+                    </button>
+
+                    <!-- Delete Button -->
+                    <button
+                      (click)="removeProductRow(i)"
+                      class="text-red-500 hover:text-red-700 transition p-1.5 rounded hover:bg-red-50"
+                      title="Remove"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot class="bg-gray-50">
+              <tr>
+                <td colspan="10" class="px-4 py-3 text-right font-medium text-gray-700 text-sm">
+                  Grand Total:
+                </td>
+                <td class="px-4 py-3 font-bold text-gray-900 text-lg">
+                  ${{ stockOutData.Total_sale.toFixed(2) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          *ngIf="productRows.length === 0"
+          class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 mx-auto text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            />
+          </svg>
+          <p class="mt-2 text-gray-500">No products in this stock out</p>
+          <button
+            (click)="addNewProductRow()"
+            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition text-sm"
+          >
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+        <button
+          (click)="goBack()"
+          class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-sm md:text-base"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="updateStockOut()"
+          [disabled]="submitting || !isFormValid()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
+        >
+          <span
+            *ngIf="submitting"
+            class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"
+          ></span>
+          {{ submitting ? 'Updating...' : 'Update Stock Out' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Search Modal -->
+  <div
+    *ngIf="showProductSearchModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+  >
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="bg-gray-50 px-6 py-4 border-b">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Search Product</h3>
+            <p class="text-sm text-gray-600 mt-1">Search by product name or SKU/Model</p>
+          </div>
+          <button
+            (click)="closeProductSearchModal()"
+            class="text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="mt-4">
+          <div class="relative">
+            <svg
+              class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <input
+              type="text"
+              [(ngModel)]="productSearchTerm"
+              (input)="filterProducts()"
+              placeholder="Search by name or SKU..."
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              autofocus
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 160px)">
+        <!-- Products List -->
+        <div *ngIf="filteredProducts.length > 0" class="space-y-3">
+          <div
+            *ngFor="let product of filteredProducts"
+            (click)="selectProductFromModal(product)"
+            [class]="getProductItemClass(product.product._id)"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer transition"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="font-medium text-gray-900">{{ product.product.item_Name }}</h4>
+                  <span
+                    *ngIf="isProductSelected(product.product._id)"
+                    class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full"
+                  >
+                    ✓ Selected
+                  </span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">SKU: {{ product.product.modelNoSKU }}</p>
+                <div class="flex gap-4 mt-2">
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded"
+                    >Unit: {{ product.product.unit }}</span
+                  >
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded"
+                    >Cost: ${{ product.product.actual_item_price | number: '1.2-2' }}</span
+                  >
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-800 rounded"
+                    >Stock: {{ product.totalRemainingStock }}</span
+                  >
+                </div>
+              </div>
+              <span
+                [class]="
+                  'px-2 py-1 text-xs font-medium rounded-full ' +
+                  (product.product.isActive
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800')
+                "
+              >
+                {{ product.product.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Results -->
+        <div *ngIf="filteredProducts.length === 0" class="text-center py-12">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 mx-auto text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p class="mt-4 text-gray-500">No products found</p>
+          <p class="text-sm text-gray-400 mt-1">Try a different search term</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div
+    *ngIf="showEditProductModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+  >
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="bg-gray-50 px-6 py-4 border-b">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Edit Product Details</h3>
+            <p class="text-sm text-gray-600 mt-1">Update product information</p>
+          </div>
+          <button
+            (click)="closeEditProductModal()"
+            class="text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px)">
+        <div class="space-y-6">
+          <!-- Product Name with Floating Label -->
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="editFormData.productName"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder=" "
+            />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              Product Name *
+            </label>
+          </div>
+
+          <!-- SKU/Model with Floating Label -->
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="editFormData.modelNoSKU"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder=" "
+            />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              SKU/Model *
+            </label>
+          </div>
+
+          <!-- Product Group with Floating Label -->
+          <div class="relative">
+            <div class="relative">
+              <button
+                type="button"
+                (click)="toggleGroupDropdown()"
+                class="peer w-full px-3 pt-3 pb-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white hover:bg-gray-50"
+              >
+                {{ editFormData.productGroupName || '' }}
+              </button>
+              <label
+                class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:empty)]:top-2 peer-[&:not(:empty)]:-translate-y-3 peer-[&:not(:empty)]:text-xs peer-[&:not(:empty)]:text-slate-700"
+              >
+                Product Group *
+              </label>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg
+                  class="h-4 w-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+
+              <div
+                *ngIf="showGroupDropdown"
+                class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+              >
+                <!-- Search input -->
+                <div class="p-2 border-b">
+                  <div class="relative">
+                    <input
+                      type="text"
+                      [(ngModel)]="groupSearchTerm"
+                      (input)="groupSearchTerm = $event.target.value"
+                      placeholder="Search groups..."
+                      class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                      autofocus
+                    />
+                  </div>
+                </div>
+
+                <!-- Group list -->
+                <div class="py-1">
+                  <div
+                    *ngFor="let group of filteredGroups"
+                    (click)="selectGroup(group)"
+                    class="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                  >
+                    {{ group.itemGroupName }}
+                  </div>
+
+                  <div *ngIf="filteredGroups.length === 0" class="px-4 py-3 text-sm text-gray-500">
+                    No groups found
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Unit with Floating Label -->
+          <div class="relative">
+            <select
+              [(ngModel)]="editFormData.unit"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition appearance-none"
+            >
+              <option value=""></option>
+              <option value="piece">Piece</option>
+              <option value="gram">Gram</option>
+              <option value="liter">Liter</option>
+              <option value="kg">Kilogram</option>
+              <option value="pack">Pack</option>
+              <option value="box">Box</option>
+            </select>
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not([value=''])]:top-2 peer-[&:not([value=''])]:-translate-y-3 peer-[&:not([value=''])]:text-xs peer-[&:not([value=''])]:text-slate-700"
+            >
+              Unit *
+            </label>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg
+                class="h-4 w-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Opening Stock with Floating Label -->
+          <div class="relative">
+            <input
+              type="number"
+              [(ngModel)]="editFormData.openingStock"
+              min="0"
+              step="1"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder=" "
+            />
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+            >
+              Opening Stock *
+            </label>
+          </div>
+
+          <!-- Serial Number (True/False) with Floating Label -->
+          <div class="relative">
+            <select
+              [(ngModel)]="editFormData.serialNo"
+              class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition appearance-none"
+            >
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <label
+              class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not([value='false'])]:top-2 peer-[&:not([value='false'])]:-translate-y-3 peer-[&:not([value='false'])]:text-xs peer-[&:not([value='false'])]:text-slate-700"
+            >
+              Serial Number Tracking *
+            </label>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg
+                class="h-4 w-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Price Details Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Cost Price with Floating Label -->
+            <div class="relative">
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  [(ngModel)]="editFormData.costPrice"
+                  min="0"
+                  step="0.01"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  placeholder=" "
+                />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Cost Price *
+                </label>
+              </div>
+            </div>
+
+            <!-- Sale Price with Floating Label -->
+            <div class="relative">
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  [(ngModel)]="editFormData.salePrice"
+                  min="0"
+                  step="0.01"
+                  (input)="updateFinalPriceInEdit()"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  placeholder=" "
+                />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Sale Price *
+                </label>
+              </div>
+            </div>
+
+            <!-- Discount with Floating Label -->
+            <div class="relative">
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  [(ngModel)]="editFormData.discount"
+                  min="0"
+                  step="0.01"
+                  (input)="updateFinalPriceInEdit()"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  placeholder=" "
+                />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Discount
+                </label>
+              </div>
+            </div>
+
+            <!-- Final Price with Floating Label -->
+            <div class="relative">
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  [(ngModel)]="editFormData.finalPrice"
+                  min="0"
+                  step="0.01"
+                  class="peer w-full pl-8 pr-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  placeholder=" "
+                  readonly
+                />
+                <label
+                  class="absolute left-8 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+                >
+                  Final Price *
+                </label>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Auto-calculated: Sale Price - Discount</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-gray-50 px-6 py-4 border-t flex justify-end gap-3">
+        <button
+          (click)="closeEditProductModal()"
+          class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="saveProductEdit()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barcode Modal -->
+  <div *ngIf="showBarcodeModalIndex !== -1">
+    <div
+      *ngIf="showBarcodeModalIndex >= 0 && showBarcodeModalIndex < productRows.length"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="bg-gray-50 px-6 py-4 border-b">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Barcode Management</h3>
+              <p class="text-sm text-gray-600 mt-1">
+                {{ productRows[showBarcodeModalIndex].productName }} - Quantity:
+                {{ productRows[showBarcodeModalIndex].quantity }}
+              </p>
+              <p
+                *ngIf="!productRows[showBarcodeModalIndex].isSerialTracking"
+                class="text-xs text-gray-500 mt-1"
+              >
+                Serial tracking is disabled. Barcodes are optional.
+              </p>
+              <p
+                *ngIf="productRows[showBarcodeModalIndex].isSerialTracking"
+                class="text-xs text-blue-500 mt-1"
+              >
+                Serial tracking enabled. Barcodes are recommended.
+              </p>
+            </div>
+            <button
+              (click)="closeBarcodeModal()"
+              class="text-gray-400 hover:text-gray-600 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto" style="max-height: calc(80vh - 140px)">
+          <!-- Barcode Input with Floating Label -->
+          <div class="mb-6">
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="productRows[showBarcodeModalIndex].newBarcode"
+                (keyup.enter)="addBarcode(showBarcodeModalIndex)"
+                [disabled]="!productRows[showBarcodeModalIndex].isSerialTracking"
+                class="peer w-full px-3 pt-3 pb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                placeholder=" "
+              />
+              <label
+                class="absolute left-3 bg-white px-1 text-gray-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-blue-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+              >
+                Enter Barcode
+              </label>
+            </div>
+            <div class="flex gap-3 mt-4">
+              <button
+                (click)="addBarcode(showBarcodeModalIndex)"
+                [disabled]="
+                  !productRows[showBarcodeModalIndex].newBarcode.trim() ||
+                  !productRows[showBarcodeModalIndex].isSerialTracking
+                "
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 flex-1 justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                ADD BARCODE
+              </button>
+            </div>
+            <p
+              *ngIf="!productRows[showBarcodeModalIndex].isSerialTracking"
+              class="text-xs text-gray-500 mt-2"
+            >
+              Serial tracking is disabled. Barcodes are not required.
+            </p>
+          </div>
+
+          <!-- Barcodes List -->
+          <div class="mb-6">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">
+              Added Barcodes ({{ productRows[showBarcodeModalIndex].barcodes.length }})
+              <span
+                *ngIf="productRows[showBarcodeModalIndex].barcodeSaved"
+                class="ml-2 text-green-600 text-xs"
+                >✓ Saved</span
+              >
+            </h4>
+
+            <div
+              *ngIf="productRows[showBarcodeModalIndex].barcodes.length === 0"
+              class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 mx-auto text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                />
+              </svg>
+              <p class="mt-2 text-gray-500">No barcodes added yet</p>
+              <p class="text-xs text-gray-400 mt-1">
+                {{
+                  productRows[showBarcodeModalIndex].isSerialTracking
+                    ? 'Barcodes are recommended for serial tracking'
+                    : 'Barcodes are not required for non-serial items'
+                }}
+              </p>
+            </div>
+
+            <div *ngIf="productRows[showBarcodeModalIndex].barcodes.length > 0" class="space-y-2">
+              <div
+                *ngFor="
+                  let barcode of productRows[showBarcodeModalIndex].barcodes;
+                  let bIndex = index
+                "
+                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-sm font-medium text-gray-600">{{ bIndex + 1 }}.</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-gray-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <span class="font-mono text-gray-800">{{ barcode }}</span>
+                </div>
+                <button
+                  (click)="removeBarcode(showBarcodeModalIndex, bIndex)"
+                  [disabled]="!productRows[showBarcodeModalIndex].isSerialTracking"
+                  class="text-red-500 hover:text-red-700 transition p-1 rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-gray-50 px-6 py-4 border-t flex justify-end gap-3">
+          <button
+            (click)="closeBarcodeModal()"
+            class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+          >
+            CANCEL
+          </button>
+          <button
+            (click)="saveBarcodes(showBarcodeModalIndex)"
+            [disabled]="savingBarcodes"
+            class="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base"
+          >
+            <span
+              *ngIf="savingBarcodes"
+              class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"
+            ></span>
+            {{ savingBarcodes ? 'Saving...' : 'SAVE BARCODES' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

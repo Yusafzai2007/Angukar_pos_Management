@@ -18,7 +18,7 @@
 <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
   <div class="w-full max-w-sm mx-auto">
     <div class="bg-white shadow-md rounded-lg pt-10 pb-8 px-8 flex flex-col items-center">
-      <div class="w-14 h-14 rounded-full bg-slate-900 flex items-center justify-center mb-6">
+      <div class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="w-7 h-7 text-white"
@@ -40,52 +40,82 @@
       </p>
 
       <form
-        class="w-full space-y-8"
+        class="w-full space-y-6"
         (ngSubmit)="onSubmit()"
         #signinForm="ngForm"
         autocomplete="off"
       >
-        <div class="floating-label-group">
-          <input
-            id="email"
-            type="email"
-            class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-            placeholder=" "
-            [(ngModel)]="userLogin.email"
-            name="email"
-            required
-            autocomplete="off"
-            #emailInput="ngModel"
-          />
-          <label class="floating-label" for="email" [class.active]="userLogin.email || emailInput.touched">
-            Email Address <span class="text-red-500">*</span>
-          </label>
-        </div>
+    <div class="relative w-full">
+  <input
+    id="email"
+    type="email"
+    [(ngModel)]="userLogin.email"
+    name="email"
+    placeholder=" "
+    required
+    autocomplete="off"
+    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent 
+           border border-slate-400 rounded-sm 
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 
+           transition-colors"
+  />
 
-        <div class="floating-label-group">
-          <div class="password-container">
-            <input
-              id="password"
-              [type]="showPassword ? 'text' : 'password'"
-              class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-              placeholder=" "
-              [(ngModel)]="userLogin.password"
-              name="password"
-              required
-              #passwordInput="ngModel"
-            />
-            <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
-              <i class="far" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
-            <label
-              class="floating-label"
-              for="password"
-              [class.active]="userLogin.password || passwordInput.touched"
-            >
-              Password <span class="text-red-500">*</span>
-            </label>
-          </div>
-        </div>
+  <label
+    for="email"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none 
+           transition-all duration-200 
+           top-1/2 -translate-y-1/2 text-md
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1 
+           peer-[&:not(:placeholder-shown)]:-translate-y-3 
+           peer-[&:not(:placeholder-shown)]:text-sm 
+           peer-[&:not(:placeholder-shown)]:text-slate-700"
+  >
+    Email Address <span class="text-red-500">*</span>
+  </label>
+</div>
+
+
+        <div class="relative w-full">
+  <!-- Password Input -->
+  <input
+    id="password"
+    [type]="showPassword ? 'text' : 'password'"
+    [(ngModel)]="userLogin.password"
+    name="password"
+    placeholder=" "
+    required
+    class="peer block w-full px-7 pr-10 pt-3 pb-2 text-sm text-slate-900 bg-transparent
+           border border-slate-400 rounded-sm
+           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
+           transition-colors"
+  />
+
+  <!-- Floating Label -->
+  <label
+    for="password"
+    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
+           transition-all duration-200
+           top-1/2 -translate-y-1/2 text-md
+           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
+           peer-[&:not(:placeholder-shown)]:top-1
+           peer-[&:not(:placeholder-shown)]:-translate-y-3
+           peer-[&:not(:placeholder-shown)]:text-sm
+           peer-[&:not(:placeholder-shown)]:text-slate-700"
+  >
+    Password <span class="text-red-500">*</span>
+  </label>
+
+  <!-- Eye Toggle Button -->
+  <button
+    type="button"
+    (click)="togglePasswordVisibility()"
+    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-indigo-500"
+  >
+    <i class="far" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+  </button>
+</div>
+
 
         <button
           type="submit"

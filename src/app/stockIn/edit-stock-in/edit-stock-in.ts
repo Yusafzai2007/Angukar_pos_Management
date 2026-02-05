@@ -1,61 +1,58 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { StockApiResponse, StockItem, Product } from '../../Typescript/add_product/add_product';
+import { Router, RouterLink } from '@angular/router';
 import { StockInStockInService } from '../../api_service/stock-in';
+import { ActivatedRoute } from '@angular/router';
+import { EditBarcode, EditStockInData, EditStockInResponse, EditStockItem } from '../../Typescript/edit_stcokIn';
 import { StockInCategory, StockInCategoryResponse } from '../../Typescript/category/stockIn';
 import { ServiceData } from '../../create_account/api_service/service-data';
 import { ItemGroup } from '../../Typescript/product_group';
-import { FetchStockIn } from "../fetch-stock-in/fetch-stock-in";
+import { StockApiResponse, StockItem } from '../../Typescript/add_product/add_product';
 
 @Component({
-  selector: 'app-stockin',
-  standalone: true,
-  imports: [CommonModule, FormsModule, FetchStockIn],
-  templateUrl: './stockin.html',
-  styleUrls: ['./stockin.css']
+  selector: 'app-edit-stock-in',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './edit-stock-in.html',
+  styleUrl: './edit-stock-in.css'
 })
-export class Stockin implements OnInit {
-  // Data arrays
-  productsList: StockItem[] = [];
-  filteredProducts: StockItem[] = [];
+export class EditStockIn implements OnInit {
+ 
+  // Data
+  editStockInData!: EditStockInData;
   stockInCategories: StockInCategory[] = [];
   filteredCategories: StockInCategory[] = [];
   productGroups: ItemGroup[] = [];
-
+  productsList: StockItem[] = [];
+  filteredProducts: StockItem[] = [];
+  
   // UI states
   loading: boolean = false;
   submitting: boolean = false;
   savingBarcodes: boolean = false;
-  loadingGroups: boolean = false;
-
+  
   // Form visibility
-  showMainForm: boolean = false;
-  showProductSearchModal: boolean = false;
-  showEditProductModal: boolean = false;
-  showBarcodeModalIndex: number = -1;
-  showGroupDropdown: boolean = false;
   showCategoryDropdown: boolean = false;
-
+  showGroupDropdown: boolean = false;
+  showBarcodeModalIndex: number = -1;
+  showEditProductModal: boolean = false;
+  showProductSearchModal: boolean = false;
+  
+  // Search
+  categorySearch: string = '';
+  groupSearchTerm: string = '';
+  productSearchTerm: string = '';
+  
   // Current editing row index
   editingRowIndex: number = -1;
   selectedRowIndex: number = -1;
-
-  // Search
-  productSearchTerm: string = '';
-  groupSearchTerm: string = '';
-  categorySearch: string = '';
-
-  // Store the created StockIn ID
-  currentStockInId: string | null = null;
-  stockInNumber: string | null = null;
-
+  
   // Notification state
   showNotification: boolean = false;
   notificationMessage: string = '';
   notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
-
-  // Product rows array
+  
+  // Product rows array - Updated to include isNewProduct flag
   productRows: Array<{
     _id: string;
     productName: string;
@@ -77,12 +74,15 @@ export class Stockin implements OnInit {
     isSerialTracking: boolean;
     productGroupName: string;
     productGroupId: string;
+    originalStockAdded: number;
+    barcodeData: EditBarcode[];
+    isNewProduct: boolean; 
   }> = [];
 
   // Main form data
   stockInData = {
     stcokIn_price: 0,
-    stockInDate: new Date().toISOString().split('T')[0],
+    stockInDate: '',
     stockInCategoryId: '',
     stockInCategoryName: '',
     invoiceNo: '',
@@ -102,33 +102,44 @@ export class Stockin implements OnInit {
     finalPrice: 0,
     productGroupName: '',
     productGroupId: '',
-    serialNo: false
+    serialNo: false,
+    barcodes: [] as string[]
   };
 
-  // Table headers
-  tableheader: string[] = [
-    'Item Name *',
-    'SKU/Model',
-    'Unit',
-    'Status',
-    'Cost Price',
-    'Opening',
-    'Remaining',
-    'Stock In *',
-    'Total After',
-    'Barcodes',
-    'Actions'
-  ];
 
   constructor(
     private service: StockInStockInService,
+    private active: ActivatedRoute,
+    private router: Router,
     private services: ServiceData
   ) {}
 
   ngOnInit(): void {
-    this.getProducts();
-    this.getStockInCategories();
-    this.loadProductGroups();
+    const stockInId = this.active.snapshot.paramMap.get("id");
+    console.log("Stock In ID:", stockInId);
+
+    if (stockInId) {
+      this.loading = true;
+      this.service.Id_stcoIn(stockInId).subscribe({
+        next: (res: EditStockInResponse) => {
+          console.log(res);
+          if (res.data.length > 0) {
+            this.editStockInData = res.data[0];
+            console.log("editStockInData", this.editStockInData);
+            this.loadStockInData();
+            this.getStockInCategories();
+            this.loadProductGroups();
+            this.getAllProducts(); // Load all products for search
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error("Error loading stock in data:", err);
+          this.showNotificationMessage('Failed to load stock in data', 'error');
+          this.loading = false;
+        }
+      });
+    }
   }
 
   // Notification system
@@ -147,46 +158,79 @@ export class Stockin implements OnInit {
     this.showNotification = false;
   }
 
-  getCurrentDate(): string {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+  // Go back to Stock In list
+  goBack(): void {
+    this.router.navigate(['/admin/StockIn']);
   }
 
-  getProducts(): void {
-    this.loading = true;
-
+  // Load all products for search
+  getAllProducts(): void {
     this.service.products().subscribe({
       next: (res: StockApiResponse) => {
         this.productsList = res.data;
         this.filteredProducts = [...this.productsList];
-        this.loading = false;
       },
       error: (err) => {
         console.error('Error loading products:', err);
         this.showNotificationMessage('Failed to load products', 'error');
-        this.loading = false;
-      },
+      }
     });
   }
 
-  loadProductGroups(): void {
-    this.loadingGroups = true;
-    this.services.get_product_group().subscribe({
-      next: (res: any) => {
-        if (res.success && res.data) {
-          this.productGroups = res.data.filter((group: ItemGroup) => group.isActive);
-        }
-        this.loadingGroups = false;
-      },
-      error: (err) => {
-        console.error('Error loading product groups:', err);
-        this.loadingGroups = false;
-      }
+  // Load stock in data
+  loadStockInData(): void {
+    // Populate main form data
+    const stockDate = this.editStockInData.stockInDate;
+    const formattedDate = stockDate ? stockDate.split('T')[0] : '';
+    
+    this.stockInData = {
+      stcokIn_price: this.editStockInData.stcokIn_price,
+      stockInDate: formattedDate,
+      stockInCategoryId: this.editStockInData.stockInCategoryId._id,
+      stockInCategoryName: this.editStockInData.stockInCategoryId.stockInCategoryName,
+      invoiceNo: this.editStockInData.invoiceNo,
+      notes: this.editStockInData.notes
+    };
+    
+    this.categorySearch = this.editStockInData.stockInCategoryId.stockInCategoryName;
+
+    // Populate product rows from existing data
+    this.productRows = [];
+    this.editStockInData.itemId.forEach((item: EditStockItem, index: number) => {
+      const barcodes = item.barcodes?.map(barcode => barcode.barcode_serila) || [];
+      
+      // Get opening stock and remaining stock from the item data
+      const openingStock = item.openingStock || 0;
+      const remainingStock = item.remainingStock || 0;
+      
+      this.productRows.push({
+        _id: item._id,
+        productName: item.item_Name,
+        modelNoSKU: item.modelNoSKU,
+        unit: item.unit,
+        status: item.isActive ? 'Active' : 'Inactive',
+        costPrice: item.actual_item_price,
+        salePrice: item.selling_item_price,
+        discount: item.item_discount_price,
+        finalPrice: item.item_final_price,
+        openingStock: openingStock,
+        currentStock: remainingStock,
+        quantity: this.editStockInData.stockAdded[index],
+        totalAfter: remainingStock + this.editStockInData.stockAdded[index],
+        barcodes: barcodes,
+        newBarcode: '',
+        barcodeSaved: barcodes.length > 0,
+        stockRecordId: item._id,
+        isSerialTracking: item.serialNo,
+        productGroupName: item.itemGroupId?.itemGroupName || '',
+        productGroupId: item.itemGroupId?._id || '',
+        originalStockAdded: this.editStockInData.stockAdded[index],
+        barcodeData: item.barcodes || [],
+        isNewProduct: false // Existing product
+      });
     });
+
+    this.updateTotalPrice();
   }
 
   getStockInCategories(): void {
@@ -199,6 +243,19 @@ export class Stockin implements OnInit {
         console.error('Error loading categories:', err);
         this.showNotificationMessage('Failed to load categories', 'error');
       },
+    });
+  }
+
+  loadProductGroups(): void {
+    this.services.get_product_group().subscribe({
+      next: (res: any) => {
+        if (res.success && res.data) {
+          this.productGroups = res.data.filter((group: ItemGroup) => group.isActive);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading product groups:', err);
+      }
     });
   }
 
@@ -237,17 +294,8 @@ export class Stockin implements OnInit {
     this.filteredCategories = [...this.stockInCategories];
   }
 
-  toggleMainForm(): void {
-    this.showMainForm = !this.showMainForm;
-    if (this.showMainForm) {
-      this.addProductRow();
-      this.resetFormState();
-    } else {
-      this.resetForm();
-    }
-  }
-
-  addProductRow(): void {
+  // Add new product row (for new products)
+  addNewProductRow(): void {
     this.productRows.push({
       _id: '',
       productName: '',
@@ -268,20 +316,23 @@ export class Stockin implements OnInit {
       stockRecordId: '',
       isSerialTracking: false,
       productGroupName: '',
-      productGroupId: ''
+      productGroupId: '',
+      originalStockAdded: 0,
+      barcodeData: [],
+      isNewProduct: true // Mark as new product
     });
+    
+    this.showNotificationMessage('New product row added. Please select a product.', 'info');
   }
 
-  resetFormState(): void {
-    this.currentStockInId = null;
-    this.stockInNumber = null;
-    this.productRows.forEach(row => {
-      row.barcodeSaved = false;
-      row.barcodes = [];
-    });
-  }
-
+  // Open product search modal
   openProductSearchModal(index: number): void {
+    const row = this.productRows[index];
+    if (!row.isNewProduct) {
+      this.showNotificationMessage('Cannot change existing product. Add a new row for new product.', 'warning');
+      return;
+    }
+    
     this.selectedRowIndex = index;
     this.showProductSearchModal = true;
     this.productSearchTerm = '';
@@ -307,6 +358,7 @@ export class Stockin implements OnInit {
     );
   }
 
+  // Check if product is already selected in any row
   isProductSelected(productId: string): boolean {
     return this.productRows.some(row => row._id === productId);
   }
@@ -319,6 +371,7 @@ export class Stockin implements OnInit {
     return `${baseClass} border-gray-200 hover:border-blue-300 hover:bg-blue-50`;
   }
 
+  // Select product from modal
   selectProductFromModal(product: StockItem): void {
     if (this.selectedRowIndex === -1) return;
 
@@ -334,6 +387,7 @@ export class Stockin implements OnInit {
     this.closeProductSearchModal();
   }
 
+  // Fill product details when selected
   fillProductDetails(index: number, product: StockItem): void {
     const row = this.productRows[index];
     const productData = product.product;
@@ -362,6 +416,7 @@ export class Stockin implements OnInit {
       : Boolean(serialNo);
     
     row.stockRecordId = product._id;
+    row.originalStockAdded = 0; // New product has no original stock
     
     // Get product group info
     if (productData.itemGroupName) {
@@ -390,6 +445,7 @@ export class Stockin implements OnInit {
     
     row.barcodes = [];
     row.barcodeSaved = false;
+    row.isNewProduct = false; // Now it's a selected product
     
     this.updateTotalPrice();
     this.showNotificationMessage(`Product "${row.productName}" selected`, 'success');
@@ -400,6 +456,43 @@ export class Stockin implements OnInit {
     return finalPrice > 0 ? parseFloat(finalPrice.toFixed(2)) : 0;
   }
 
+  // Quantity change handler
+  onQuantityChange(index: number): void {
+    const row = this.productRows[index];
+    if (row.quantity < 0) row.quantity = 0;
+    
+    // Update total after
+    if (row._id) {
+      row.totalAfter = row.currentStock + row.quantity;
+    }
+    
+    this.updateTotalPrice();
+  }
+
+  updateTotalPrice(): void {
+    let total = 0;
+    this.productRows.forEach(row => {
+      if (row._id && row.quantity > 0) {
+        total += row.costPrice * row.quantity;
+      }
+    });
+    this.stockInData.stcokIn_price = parseFloat(total.toFixed(2));
+  }
+
+  // Remove product row
+  removeProductRow(index: number): void {
+    // Check if it's the last row
+    if (this.productRows.length === 1) {
+      this.showNotificationMessage('Cannot remove the last product row', 'warning');
+      return;
+    }
+    
+    this.productRows.splice(index, 1);
+    this.updateTotalPrice();
+    this.showNotificationMessage('Product removed from list', 'info');
+  }
+
+  // Open edit product modal
   openEditProductModal(index: number): void {
     const row = this.productRows[index];
     if (!row._id) {
@@ -420,7 +513,8 @@ export class Stockin implements OnInit {
       finalPrice: row.finalPrice,
       productGroupName: row.productGroupName,
       productGroupId: row.productGroupId,
-      serialNo: row.isSerialTracking
+      serialNo: row.isSerialTracking,
+      barcodes: [...row.barcodes]
     };
     
     this.showEditProductModal = true;
@@ -441,7 +535,8 @@ export class Stockin implements OnInit {
       finalPrice: 0,
       productGroupName: '',
       productGroupId: '',
-      serialNo: false
+      serialNo: false,
+      barcodes: []
     };
   }
 
@@ -469,6 +564,7 @@ export class Stockin implements OnInit {
     row.productGroupName = this.editFormData.productGroupName;
     row.productGroupId = this.editFormData.productGroupId;
     row.isSerialTracking = this.editFormData.serialNo;
+    row.barcodes = [...this.editFormData.barcodes];
     
     // Update product via API
     const productPayload = {
@@ -489,8 +585,9 @@ export class Stockin implements OnInit {
       next: (itemRes: any) => {
         this.showNotificationMessage('Product updated successfully!', 'success');
         this.closeEditProductModal();
-        this.getProducts();
         this.updateTotalPrice();
+        // Refresh product list
+        this.getAllProducts();
       },
       error: (err) => {
         console.error('Error updating product:', err);
@@ -499,52 +596,12 @@ export class Stockin implements OnInit {
     });
   }
 
-  onQuantityChange(index: number): void {
-    const row = this.productRows[index];
-    if (row.quantity < 0) row.quantity = 0;
-    row.totalAfter = row.currentStock + row.quantity;
-    
-    if (row.barcodes.length > row.quantity) {
-      row.barcodes = row.barcodes.slice(0, row.quantity);
-      row.barcodeSaved = false;
-    }
-    
-    this.updateTotalPrice();
-  }
-
-  updateTotalPrice(): void {
-    let total = 0;
-    this.productRows.forEach(row => {
-      if (row._id && row.quantity > 0) {
-        total += row.costPrice * row.quantity;
-      }
-    });
-    this.stockInData.stcokIn_price = parseFloat(total.toFixed(2));
-  }
-
-  removeProductRow(index: number): void {
-    this.productRows.splice(index, 1);
-    if (this.productRows.length === 0) {
-      this.addProductRow();
-    }
-    this.updateTotalPrice();
-  }
-
   // Barcode Management
   openBarcodeModal(index: number): void {
     const row = this.productRows[index];
     if (!row._id) {
       this.showNotificationMessage('Please select a product first', 'warning');
       return;
-    }
-    if (row.quantity <= 0) {
-      this.showNotificationMessage('Please enter quantity greater than 0', 'warning');
-      return;
-    }
-    
-    // If serial tracking is disabled, show message but allow opening modal
-    if (!row.isSerialTracking) {
-      this.showNotificationMessage('Serial tracking is disabled for this product. Barcodes are optional.', 'info');
     }
     
     this.showBarcodeModalIndex = index;
@@ -566,11 +623,6 @@ export class Stockin implements OnInit {
       return;
     }
 
-    if (row.barcodes.length >= row.quantity) {
-      this.showNotificationMessage(`Maximum ${row.quantity} barcodes allowed`, 'warning');
-      return;
-    }
-
     row.barcodes.push(row.newBarcode.trim());
     row.newBarcode = '';
     row.barcodeSaved = false;
@@ -585,16 +637,10 @@ export class Stockin implements OnInit {
     const row = this.productRows[index];
     if (!row._id) return;
 
-    // If serial tracking is enabled, require exact number of barcodes
-    if (row.isSerialTracking && row.barcodes.length !== row.quantity) {
-      this.showNotificationMessage(`For serial tracking, need exactly ${row.quantity} barcodes`, 'error');
-      return;
-    }
-
-    // If serial tracking is disabled, barcodes are optional
+    // Barcodes are always optional
     const payload = {
       barcode_serila: row.barcodes,
-      stockInId: this.currentStockInId,
+      stockInId: this.editStockInData._id,
       stockoutId: null
     };
 
@@ -614,7 +660,7 @@ export class Stockin implements OnInit {
     });
   }
 
-  // Validate form before submission
+  // Form validation
   isFormValid(): boolean {
     if (!this.stockInData.stockInCategoryId) {
       return false;
@@ -630,17 +676,11 @@ export class Stockin implements OnInit {
       return false;
     }
 
-    // Check barcode requirements for serial tracking products
-    // for (const row of validRows) {
-    //   if (row.isSerialTracking && row.barcodes.length < row.quantity && !row.barcodeSaved) {
-    //     return false;
-    //   }
-    // }
-
     return true;
   }
 
-  submitStockIn(): void {
+  // Update Stock In
+  updateStockIn(): void {
     if (!this.isFormValid()) {
       this.showNotificationMessage('Please fill all required fields and add at least one product with quantity', 'error');
       return;
@@ -667,7 +707,7 @@ export class Stockin implements OnInit {
       return total + (row.costPrice * row.quantity);
     }, 0);
     
-    // Prepare payload
+    // Prepare payload for backend update
     const payload = {
       ...this.stockInData,
       stcokIn_price: parseFloat(totalPrice.toFixed(2)),
@@ -675,32 +715,29 @@ export class Stockin implements OnInit {
       stockAdded: validRows.map(row => row.quantity)
     };
 
-    console.log('Submitting Stock In with payload:', payload);
+    console.log('Updating Stock In with payload:', payload);
 
-    this.service.stockIn(payload).subscribe({
+    const stockInId = this.editStockInData._id;
+    this.service.update_stockIn(stockInId, payload).subscribe({
       next: (res: any) => {
         this.submitting = false;
+        this.showNotificationMessage('Stock In updated successfully!', 'success');
         
-        if (res.data && res.data._id) {
-          this.currentStockInId = res.data._id;
-          this.stockInNumber = res.data.stockInNumber || `STOCK-${new Date().getTime()}`;
-        }
-        
-        this.showNotificationMessage(`Stock In created successfully! Stock In Number: ${this.stockInNumber}`, 'success');
-        this.resetForm();
-        this.toggleMainForm();
+        // Redirect back to stock in list after 2 seconds
+        setTimeout(() => {
+          this.router.navigate(['/admin/StockIn']);
+        }, 2000);
       },
       error: (err) => {
-        console.error('Error creating Stock In:', err);
+        console.error('Error updating Stock In:', err);
         
-        // Handle specific error codes
-        let errorMessage = 'Failed to create stock in';
+        let errorMessage = 'Failed to update stock in';
         if (err.status === 400) {
           errorMessage = err.error?.message || 'Bad request. Please check your data.';
+        } else if (err.status === 404) {
+          errorMessage = 'Stock in record not found';
         } else if (err.status === 409) {
           errorMessage = 'Invoice number already exists';
-        } else if (err.status === 404) {
-          errorMessage = 'One or more products not found';
         }
         
         this.showNotificationMessage(errorMessage, 'error');
@@ -709,20 +746,25 @@ export class Stockin implements OnInit {
     });
   }
 
-  resetForm(): void {
-    this.stockInData = {
-      stcokIn_price: 0,
-      stockInDate: new Date().toISOString().split('T')[0],
-      stockInCategoryId: '',
-      stockInCategoryName: '',
-      invoiceNo: '',
-      notes: ''
-    };
-    this.productRows = [];
-    this.currentStockInId = null;
-    this.stockInNumber = null;
-    this.categorySearch = '';
-    this.filteredCategories = [...this.stockInCategories];
+  // Delete Stock In
+  deleteStockIn(): void {
+    if (confirm('Are you sure you want to delete this stock in record? This action cannot be undone.')) {
+      const stockInId = this.editStockInData._id;
+      this.service.delete_stockIn(stockInId).subscribe({
+        next: (res: any) => {
+          this.showNotificationMessage('Stock In deleted successfully!', 'success');
+          
+          // Redirect back to stock in list after 1 second
+          setTimeout(() => {
+            this.router.navigate(['/admin/StockIn']);
+          }, 1000);
+        },
+        error: (err) => {
+          console.error('Error deleting Stock In:', err);
+          this.showNotificationMessage('Failed to delete stock in', 'error');
+        }
+      });
+    }
   }
 
   getStatusColor(status: string): string {
@@ -734,7 +776,7 @@ export class Stockin implements OnInit {
   }
 
   getBarcodeButtonClass(row: any): string {
-    if (!row._id || row.quantity <= 0) {
+    if (!row._id) {
       return 'bg-blue-100 text-blue-700 opacity-50 cursor-not-allowed';
     }
     
@@ -753,10 +795,9 @@ export class Stockin implements OnInit {
 
   getBarcodeButtonTitle(row: any): string {
     if (!row._id) return 'Select product first';
-    if (row.quantity <= 0) return 'Enter quantity first';
-    if (!row.isSerialTracking) return 'Serial tracking disabled (optional)';
-    if (row.barcodeSaved) return `Barcodes saved: ${row.barcodes.length}/${row.quantity}`;
-    return `Add barcodes: ${row.barcodes.length}/${row.quantity}`;
+    if (!row.isSerialTracking) return 'Serial tracking disabled';
+    if (row.barcodeSaved) return `Barcodes saved: ${row.barcodes.length} added`;
+    return `Add barcodes: ${row.barcodes.length} added`;
   }
 
   toggleGroupDropdown(): void {
@@ -778,4 +819,33 @@ export class Stockin implements OnInit {
       group.itemGroupName.toLowerCase().includes(this.groupSearchTerm.toLowerCase())
     );
   }
+
+
+tableHeader: string[] = [
+  'Item Name *',
+  'SKU/Model',
+  'Unit',
+  'Status',
+  'Cost Price',
+  'Opening',
+  'Remaining',
+  'Original Qty',
+  'New Qty *',
+  'Barcodes',
+  'Actions'
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,267 +1,316 @@
-<div class="bg-white container mx-auto p-4">
-<div class="flex justify-between items-center mb-6">
-  <h2 class="text-2xl font-bold text-gray-800">Stock-In List</h2>
-  
-  <div class="space-x-2">
-    <button 
-      (click)="toggleFilters()"
-      class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center space-x-2"
+<div>
+  <p class="px-4 text-xl">Stock-In Records ({{ filteredRows.length }})</p>
+</div>
+
+<div class="p-4">
+  <!-- Filters Section -->
+  <div class="filters-container w-[85vw]" [class.filters-open]="showFilters">
+    <div class="shadow-lg p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
+      <div class="md:space-y-0 space-y-4 md:flex md:space-x-4 items-end">
+        <!-- Item Name Filter -->
+        <div class="relative w-full">
+          <input
+            type="text"
+            [(ngModel)]="searchItemName"
+            (ngModelChange)="applyFilters()"
+            placeholder=" "
+            class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors"
+          />
+          <label
+            class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+          >
+            Item Name
+          </label>
+        </div>
+
+        <!-- Notes Filter -->
+        <div class="relative w-full">
+          <input
+            type="text"
+            [(ngModel)]="searchNotes"
+            (ngModelChange)="applyFilters()"
+            placeholder=" "
+            class="peer block w-full px-3 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors"
+          />
+          <label
+            class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+          >
+            Notes
+          </label>
+        </div>
+
+        <!-- Invoice No Filter -->
+        <div class="relative w-full">
+          <input
+            type="text"
+            [(ngModel)]="searchInvoiceNo"
+            (ngModelChange)="applyFilters()"
+            placeholder=" "
+            class="peer block w-full px-3 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors"
+          />
+          <label
+            class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+          >
+            Invoice No
+          </label>
+        </div>
+
+        <!-- Is Active Filter -->
+        <div class="relative w-full">
+          <select
+            [(ngModel)]="searchIsActive"
+            (ngModelChange)="applyFilters()"
+            class="peer block w-full px-3 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors appearance-none"
+          >
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <label
+            class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+          >
+            Status
+          </label>
+          <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Category Filter with Dropdown -->
+        <div class="relative w-full">
+          <div class="relative">
+              <input
+      type="text"
+      [(ngModel)]="categorySearch"
+      (click)="toggleCategoryDropdown()"
+      (input)="applyFilters()"
+      placeholder=" "
+      class="peer block w-full px-3 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors"
+    />
+    <label
+      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm
+             peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500
+             peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-      </svg>
-      <span>{{ showFilters ? 'Hide Filters' : 'Show Filters' }}</span>
-    </button>
-  </div>
-</div>
+      Category
+    </label>
 
-<!-- Filters Section -->
-<div 
-  class="filters-container"
-  [class.filters-open]="showFilters"
->
-  <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200 shadow-sm">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Clear button when category is selected -->
+            <button
+              *ngIf="searchCategoryId"
+              (click)="clearCategory()"
+              class="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              type="button"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <!-- Dropdown arrow -->
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+            
+            <!-- Category Dropdown -->
+            <div
+              *ngIf="showCategoryDropdown"
+              class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+            >
+            
+              <div class="max-h-48 overflow-y-auto">
+                <button
+                  *ngFor="let category of getFilteredCategories()"
+                  (click)="selectCategory(category._id, category.stockInCategoryName)"
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors"
+                >
+                  {{ category.stockInCategoryName }}
+                </button>
+                <div *ngIf="getFilteredCategories().length === 0" class="px-4 py-2 text-sm text-gray-500">
+                  No categories found
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <!-- Item Name Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchItemName"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900  px-3"
-        />
-        <label class="floating-label" [class.active]="searchItemName">
-          Item Name
-        </label>
+        <!-- Model/SKU Filter -->
+        <div class="relative w-full">
+          <input
+            type="text"
+            [(ngModel)]="searchModelSKU"
+            (ngModelChange)="applyFilters()"
+            placeholder=" "
+            class="peer block w-full px-3 pt-3 pb-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition-colors"
+          />
+          <label
+            class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:text-slate-700"
+          >
+            Model/SKU
+          </label>
+        </div>
+
+        <!-- Clear All Button -->
+        <div class="flex">
+          <button
+            (click)="clearFilters()"
+            class="px-2 py-2 ring-1 ring-blue-500 text-gray-800 rounded-lg transition duration-200 w-full"
+          >
+            Clear
+          </button>
+        </div>
       </div>
-
-      <!-- Item Description Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchItemDescription"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900  px-3"
-        />
-        <label class="floating-label" [class.active]="searchItemDescription">
-          Item Description
-        </label>
-      </div>
-
-      <!-- Invoice No Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchInvoiceNo"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-        />
-        <label class="floating-label" [class.active]="searchInvoiceNo">
-          Invoice No
-        </label>
-      </div>
-
-      <!-- Group Name Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchItemGroupName"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-        />
-        <label class="floating-label" [class.active]="searchItemGroupName">
-          Group Name
-        </label>
-      </div>
-
-      <!-- Category Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchCategoryName"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-        />
-        <label class="floating-label" [class.active]="searchCategoryName">
-          Category
-        </label>
-      </div>
-
-      <!-- Model/SKU Filter -->
-      <div class="floating-label-group">
-        <input
-          type="text"
-          [(ngModel)]="searchModelSKU"
-          (ngModelChange)="applyFilters()"
-          placeholder=" "
-          class="w-full rounded border border-slate-300 custom-focus text-base text-slate-900 py-3.5 px-3"
-        />
-        <label class="floating-label" [class.active]="searchModelSKU">
-          Model/SKU
-        </label>
-      </div>
-
-    </div>
-
-    <div class="mt-4 flex justify-end space-x-2">
-      <button
-        (click)="clearFilters()"
-        class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200"
-      >
-        Clear All
-      </button>
-      <button
-        (click)="applyFilters()"
-        class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-200"
-      >
-        Apply Filters
-      </button>
     </div>
   </div>
-</div>
-
-
 
   <!-- Table Section -->
-  <div class="overflow-x-auto bg-white rounded-lg shadow">
+  <div class="overflow-x-auto bg-white rounded-lg w-[85vw]">
     <table class="min-w-full border border-gray-300">
       <thead class="bg-gray-100">
-        <tr>
-          <th class="border px-4 py-3 text-left">#</th>
-          <th class="border px-4 py-3 text-left">Invoice No</th>
-          <th class="border px-4 py-3 text-left">Item Details</th>
-          <th class="border px-4 py-3 text-left">Group Details</th>
-          <th class="border px-4 py-3 text-left">Stock Added</th>
-          <th class="border px-4 py-3 text-left">Stock Price</th>
-          <th class="border px-4 py-3 text-left">Category Details</th>
-          <th class="border px-4 py-3 text-left">Date</th>
-          <th class="border px-4 py-3 text-left">Notes</th>
-          <th class="border px-4 py-3 text-left">Actions</th>
+        <tr class="border-b border-gray-200">
+          <th
+            class="text-slate-800 text-sm px-4 py-3 text-left"
+            *ngFor="let table of tableheader"
+          >
+            {{ table }}
+          </th>
         </tr>
       </thead>
 
       <tbody>
-   <tr 
-  *ngFor="let row of filteredRows; let i = index"
-  class="transition duration-150"
->
-          <td class="border px-4 py-2">{{ i + 1 }}</td>
-          <td class="border px-4 py-2 font-medium">{{ row.invoiceNo }}</td>
-          
-          <!-- Item Details Column -->
-         <td class="border px-4 py-2">
-  <div class="flex items-center gap-2">
-    <i class="fa-solid fa-eye text-sm text-blue-600 cursor-pointer" 
-    *ngIf="row.item"
-      (click)="openItemModal(row.item)"
-      
-    ></i>
-
-    <div class="font-medium">
-      {{ row.item?.item_Name || 'N/A' }}
-    </div>
-
-    <!-- <button
-      *ngIf="row.item"
-      (click)="openItemModal(row.item)"
-      class="text-blue-600 hover:text-blue-800 text-sm underline"
-    >
-      View Item Details
-    </button> -->
-
-    <span *ngIf="!row.item" class="text-gray-400 text-sm">No item data</span>
-  </div>
-</td>
-
-          
-          <!-- Group Details Column -->
-          <td class="border px-4 py-2">
-  <div class="flex items-center gap-2">
-    <i
-      class="fa-solid fa-layer-group text-sm text-blue-600 cursor-pointer"
-      *ngIf="row.item?.itemGroupId"
-      (click)="openItemGroupModal(row.item.itemGroupId)"
-    ></i>
-
-    <div class="font-medium">
-      {{ row.item?.itemGroupId?.itemGroupName || 'N/A' }}
-    </div>
-
-    <span *ngIf="!row.item?.itemGroupId" class="text-gray-400 text-sm">
-      No group data
-    </span>
-  </div>
-</td>
-
-          
-          <td class="border px-4 py-2 text-center">{{ row.stockAdded || 0 }}</td>
-          <td class="border px-4 py-2">${{ row.stockPrice || 0 }}</td>
-          
-          <!-- Category Details Column -->
-        <td class="border px-4 py-2">
-  <div class="flex items-center gap-2">
-    <i
-      class="fa-solid fa-tags text-sm text-blue-600 cursor-pointer"
-      *ngIf="row.category"
-      (click)="openCategoryModal(row.category)"
-    ></i>
-
-    <div class="font-medium">
-      {{ row.category?.stockInCategoryName || 'N/A' }}
-    </div>
-
-    <span *ngIf="!row.category" class="text-gray-400 text-sm">
-      No category data
-    </span>
-  </div>
-</td>
-
-<td class="border px-4 py-2">{{ row.createdAt | date:"shortDate" }}</td>
-          
-          <!-- Notes Column -->
-          <td class="border px-4 py-2">
+        <tr
+          *ngFor="let row of filteredRows; let i = index"
+          class="transition duration-150 border-b border-gray-200 hover:bg-gray-50"
+        >
+          <td class="px-4 py-2">{{ i + 1 }}</td>
+          <!-- Item Names Column - Shows item name or count -->
+          <td class="px-4 py-2 font-medium">
+            {{ getItemDisplayName(row.stockInId) }}
+          </td>
+          <td class="px-4 py-2 font-medium">{{ row.invoiceNo }}</td>
+ <!-- Category Name Column -->
+          <td class="px-4 py-2 font-medium">
+            {{ row.category?.stockInCategoryName || 'N/A' }}
+          </td>
+  <td class="px-4 py-2">
             <span class="truncate max-w-xs inline-block" [title]="row.notes">
               {{ row.notes || 'No notes' }}
             </span>
           </td>
-          
+     
+
+
+          <td class="px-4 py-2 text-center">{{ getTotalStockAdded(row.stockInId) }}</td>
+          <td class="px-4 py-2">${{ row.stockPrice || 0 }}</td>
+
+              <!-- Is Active Column -->
+          <td class="px-4 py-2">
+  <span
+    class="px-2 py-1 rounded text-xs font-medium"
+    [ngClass]="row.isActive ? 'bg-green-600 text-white' : 'bg-red-600 text-white'"
+  >
+    {{ row.isActive ? 'Active' : 'Inactive' }}
+  </span>
+</td>
+          <td class="px-4 py-2">{{ row.createdAt| date: 'dd/MM/yyyy'}}</td>
+
+          <!-- Notes Column -->
+        
+          <td class="px-4 py-2">
+            <span class="truncate max-w-xs inline-block">
+              {{ row.createdAt | date: 'dd/MM/yyyy' }}
+            </span>
+          </td>
+          <td class="px-4 py-2">
+            <span class="truncate max-w-xs inline-block">
+              {{ row.updatedAt | date: 'dd/MM/yyyy' }}
+            </span>
+          </td>
+
           <!-- Actions Column -->
-          <td class="border px-4 py-2">
-            <div class="flex space-x-2 justify-center">
+          <td class="px-4 py-2">
+            <div class="flex justify-center">
+              <!-- Eye Icon (View Items) -->
+              <button
+                (click)="openItemsModal(row.stockInId)"
+                class="text-blue-600 hover:text-white p-2 hover:bg-blue-500 rounded-full transition"
+                title="View Items"
+              >
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="-3.12 -3.12 30.24 30.24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M6.30147 15.5771C4.77832 14.2684 3.6904 12.7726 3.18002 12C3.6904 11.2274 4.77832 9.73158 6.30147 8.42294C7.87402 7.07185 9.81574 6 12 6C14.1843 6 16.1261 7.07185 17.6986 8.42294C19.2218 9.73158 20.3097 11.2274 20.8201 12C20.3097 12.7726 19.2218 14.2684 17.6986 15.5771C16.1261 16.9282 14.1843 18 12 18C9.81574 18 7.87402 16.9282 6.30147 15.5771ZM12 4C9.14754 4 6.75717 5.39462 4.99812 6.90595C3.23268 8.42276 2.00757 10.1376 1.46387 10.9698C1.05306 11.5985 1.05306 12.4015 1.46387 13.0302C2.00757 13.8624 3.23268 15.5772 4.99812 17.0941C6.75717 18.6054 9.14754 20 12 20C14.8525 20 17.2429 18.6054 19.002 17.0941C20.7674 15.5772 21.9925 13.8624 22.5362 13.0302C22.947 12.4015 22.947 11.5985 22.5362 10.9698C21.9925 10.1376 20.7674 8.42276 19.002 6.90595C17.2429 5.39462 14.8525 4 12 4ZM10 12C10 10.8954 10.8955 10 12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8955 14 10 13.1046 10 12ZM12 8C9.7909 8 8.00004 9.79086 8.00004 12C8.00004 14.2091 9.7909 16 12 16C14.2092 16 16 14.2091 16 12C16 9.79086 14.2092 8 12 8Z"
+                  />
+                </svg>
+              </button>
+
               <!-- Edit Icon -->
               <button
                 (click)="editStockIn(row.stockInId)"
-                class="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded"
+  [routerLink]="['/admin/edit_stockIn', row.stockInId]"
+                class="text-blue-600 p-2 rounded-full hover:bg-blue-500 hover:text-white transition"
                 title="Edit"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                <svg
+                  width="14px"
+                  height="14px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005Z"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M11 4H6C4.93913 4 3.92178 4.42142 3.17163 5.17157C2.42149 5.92172 2 6.93913 2 8V18C2 19.0609 2.42149 20.0783 3.17163 20.8284C3.92178 21.5786 4.93913 22 6 22H17C19.21 22 20 20.2 20 18V13"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
                 </svg>
               </button>
-              
+
               <!-- Delete Icon -->
               <button
                 (click)="deleteStockIn(row.stockInId)"
-                class="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded"
+                class="text-red-600 p-2 rounded-full hover:bg-red-500 hover:text-white transition"
                 title="Delete"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </button>
             </div>
           </td>
         </tr>
-        
+
         <!-- Empty State -->
         <tr *ngIf="filteredRows.length === 0">
-          <td colspan="10" class="border px-4 py-8 text-center text-gray-500">
+          <td colspan="12" class="px-4 py-8 text-center text-gray-500">
             No stock-in records found.
           </td>
         </tr>
@@ -269,374 +318,160 @@
     </table>
   </div>
 
-  <!-- ITEM GROUP MODAL -->
-  <div 
-    *ngIf="showItemGroupModal && selectedItemGroup"
+  <!-- ITEMS IN STOCK-IN MODAL -->
+  <div
+    *ngIf="showItemsModal && selectedStockIn"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     (click)="closeAllModals()"
   >
-    <div 
-      class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+    <div
+      class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
       (click)="$event.stopPropagation()"
     >
       <!-- Modal Header -->
-      <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
-        <h3 class="text-lg font-semibold">Item Group Details</h3>
-        <button
-          (click)="closeAllModals()"
-          class="text-white hover:text-gray-200"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="p-6 overflow-y-auto max-h-[60vh]">
-        <table class="min-w-full border border-gray-300 mb-6">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="border px-4 py-2 text-left">Field</th>
-              <th class="border px-4 py-2 text-left">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Group Name</td>
-              <td class="border px-4 py-2">{{ selectedItemGroup.itemGroupName }}</td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Group ID</td>
-              <td class="border px-4 py-2">{{ selectedItemGroup._id }}</td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Status</td>
-              <td class="border px-4 py-2">
-                <span 
-                  class="px-2 py-1 rounded text-xs font-medium"
-                  [ngClass]="{
-                    'bg-green-100 text-green-800': selectedItemGroup.isActive,
-                    'bg-red-100 text-red-800': !selectedItemGroup.isActive
-                  }"
-                >
-                  {{ selectedItemGroup.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Created At</td>
-              <td class="border px-4 py-2">{{ formatDate(selectedItemGroup.createdAt) }}</td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Updated At</td>
-              <td class="border px-4 py-2">{{ formatDate(selectedItemGroup.updatedAt) }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Group Description -->
-        <div class="mt-6">
-          <h4 class="font-medium text-gray-700 mb-2">Group Description</h4>
-          <div class="bg-gray-50 border border-gray-300 rounded-md p-4 min-h-[100px]">
-            {{ selectedItemGroup.group_description || 'No description available' }}
-          </div>
+      <div class="p-4 flex justify-between items-center border-b">
+        <div>
+          <h3 class="text-lg font-semibold">Items in Stock-In</h3>
+          <p class="text-sm text-gray-600">
+            {{ selectedItems.length }} item(s) found of {{ selectedItems.length }} expected
+          </p>
         </div>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
-        <button
-          (click)="closeAllModals()"
-          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition duration-200"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ITEM MODAL -->
-  <div 
-    *ngIf="showItemModal && selectedItem"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-    (click)="closeAllModals()"
-  >
-    <div 
-      class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-hidden"
-      (click)="$event.stopPropagation()"
-    >
-      <!-- Modal Header -->
-      <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
-        <h3 class="text-lg font-semibold">Item Details</h3>
-        <button
-          (click)="closeAllModals()"
-          class="text-white hover:text-gray-200"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <button (click)="closeAllModals()" class="text-gray-600 hover:text-gray-800">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
-      
+
       <!-- Modal Body -->
       <div class="p-6 overflow-y-auto max-h-[60vh]">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Left Column -->
-          <div class="space-y-4">
-            <div>
-              <h4 class="font-medium text-gray-700 mb-2">Basic Information</h4>
-              <table class="min-w-full border border-gray-300">
-                <tbody>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Item Name</td>
-                    <td class="border px-4 py-2">{{ selectedItem.item_Name }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Model/SKU</td>
-                    <td class="border px-4 py-2">{{ selectedItem.modelNoSKU }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Unit</td>
-                    <td class="border px-4 py-2">{{ selectedItem.unit }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Serial No</td>
-                    <td class="border px-4 py-2">
-                      <span 
-                        class="px-2 py-1 rounded text-xs font-medium"
-                        [ngClass]="{
-                          'bg-blue-100 text-blue-800': selectedItem.serialNo,
-                          'bg-gray-100 text-gray-800': !selectedItem.serialNo
-                        }"
-                      >
-                        {{ selectedItem.serialNo ? 'Yes' : 'No' }}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Status</td>
-                    <td class="border px-4 py-2">
-                      <span 
-                        class="px-2 py-1 rounded text-xs font-medium"
-                        [ngClass]="{
-                          'bg-green-100 text-green-800': selectedItem.isActive,
-                          'bg-red-100 text-red-800': !selectedItem.isActive
-                        }"
-                      >
-                        {{ selectedItem.isActive ? 'Active' : 'Inactive' }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Pricing Information -->
-            <div>
-              <h4 class="font-medium text-gray-700 mb-2">Pricing Information</h4>
-              <table class="min-w-full border border-gray-300">
-                <tbody>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Actual Price</td>
-                    <td class="border px-4 py-2">${{ selectedItem.actual_item_price }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Selling Price</td>
-                    <td class="border px-4 py-2">${{ selectedItem.selling_item_price }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Discount Price</td>
-                    <td class="border px-4 py-2">${{ selectedItem.item_discount_price }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Final Price</td>
-                    <td class="border px-4 py-2">${{ selectedItem.item_final_price }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Right Column -->
-          <div class="space-y-4">
-            <!-- Timestamps -->
-            <div>
-              <h4 class="font-medium text-gray-700 mb-2">Timestamps</h4>
-              <table class="min-w-full border border-gray-300">
-                <tbody>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Created At</td>
-                    <td class="border px-4 py-2">{{ formatDate(selectedItem.createdAt) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Updated At</td>
-                    <td class="border px-4 py-2">{{ formatDate(selectedItem.updatedAt) }}</td>
-                  </tr>
-                  <tr>
-                    <td class="border px-4 py-2 font-medium">Item ID</td>
-                    <td class="border px-4 py-2 text-xs">{{ selectedItem._id }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Item Description -->
-            <div>
-              <h4 class="font-medium text-gray-700 mb-2">Item Description</h4>
-              <div class="bg-gray-50 border border-gray-300 rounded-md p-4 min-h-[150px]">
-                {{ selectedItem.item_Description || 'No description available' }}
-              </div>
-            </div>
-
-            <!-- Barcodes Count - Clickable -->
-            <div>
-              <h4 class="font-medium text-gray-700 mb-2">Barcodes</h4>
-              <div 
-                class="bg-gray-50 border border-gray-300 rounded-md p-4 cursor-pointer hover:bg-gray-100 transition duration-200"
-                (click)="openBarcodeModal(selectedItem.barcodes || [], selectedItem.item_Name || '')"
+        <!-- Items Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border text-sm px-4 py-3 text-left" *ngFor="let table of eyemodel">
+                  {{ table }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let itemData of selectedItems; let i = index"
+                class="hover:bg-gray-50 transition duration-150 border-b border-gray-200"
               >
-                <div class="flex items-center justify-between">
-                  <div>
-                    <span>Total Barcodes:</span>
-                    <span class="font-medium ml-2">{{ selectedItem.barcodes?.length || 0 }}</span>
-                  </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <p class="text-sm text-gray-500 mt-1">Click to view all barcodes</p>
-              </div>
-            </div>
-          </div>
+                <td class="px-4 py-2">{{ i + 1 }}</td>
+                <td class="px-4 py-2 font-medium">{{ itemData.item.item_Name || 'N/A' }}</td>
+                <td class="px-4 py-2">{{ itemData.item.modelNoSKU || 'N/A' }}</td>
+                <td class="px-4 py-2">{{ itemData.item.itemGroupId?.itemGroupName || 'N/A' }}</td>
+                <td class="px-4 py-2">
+                  <span
+                    class="px-2 py-1 rounded text-xs font-medium"
+                    [ngClass]="{
+                      'bg-green-600 text-white rounded-lg': itemData.item.isActive,
+                      'bg-red-100 text-red-800': !itemData.item.isActive,
+                    }"
+                  >
+                    {{ itemData.item.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="px-4 py-2 text-center">{{ itemData.item.openingStock || 0 }}</td>
+                <td class="px-4 py-2 text-center">{{ itemData.item.remainingStock || 0 }}</td>
+                <td class="px-4 py-2 text-center">{{ itemData.stockAdded || 0 }}</td>
+                <td class="px-4 py-2 text-center">{{ itemData.item.unit || 'N/A' }}</td>
+                <td class="px-4 py-2 text-center">
+                  <button
+                    *ngIf="
+                      itemData.item.serialNo &&
+                      itemData.item.barcodes &&
+                      itemData.item.barcodes.length > 0
+                    "
+                    (click)="openBarcodeModal(itemData.item.barcodes, itemData.item.item_Name)"
+                    class="px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded text-sm transition duration-200"
+                  >
+                    Yes
+                  </button>
+                  <span
+                    *ngIf="
+                      !itemData.item.serialNo ||
+                      !itemData.item.barcodes ||
+                      itemData.item.barcodes.length === 0
+                    "
+                    class="text-gray-500 text-sm"
+                  >
+                    {{ itemData.item.serialNo ? 'No Barcodes' : 'No' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      
+
       <!-- Modal Footer -->
-      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
-        <button
-          (click)="closeAllModals()"
-          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition duration-200"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CATEGORY MODAL -->
-  <div 
-    *ngIf="showCategoryModal && selectedCategory"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-    (click)="closeAllModals()"
-  >
-    <div 
-      class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
-      (click)="$event.stopPropagation()"
-    >
-      <!-- Modal Header -->
-      <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
-        <h3 class="text-lg font-semibold">Category Details</h3>
-        <button
-          (click)="closeAllModals()"
-          class="text-white hover:text-gray-200"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <!-- Modal Body -->
-      <div class="p-6 overflow-y-auto max-h-[60vh]">
-        <table class="min-w-full border border-gray-300 mb-6">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="border px-4 py-2 text-left">Field</th>
-              <th class="border px-4 py-2 text-left">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Category Name</td>
-              <td class="border px-4 py-2">{{ selectedCategory.stockInCategoryName }}</td>
-            </tr>
-            <!-- <tr>
-              <td class="border px-4 py-2 font-medium">Category ID</td>
-              <td class="border px-4 py-2">{{ selectedCategory._id }}</td>
-            </tr> -->
-            <tr>
-              <td class="border px-4 py-2 font-medium">Status</td>
-              <td class="border px-4 py-2">
-                <span 
-                  class="px-2 py-1 rounded text-xs font-medium"
-                  [ngClass]="{
-                    'bg-green-100 text-green-800': selectedCategory.isActive,
-                    'bg-red-100 text-red-800': !selectedCategory.isActive
-                  }"
-                >
-                  {{ selectedCategory.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Created At</td>
-              <td class="border px-4 py-2">{{ formatDate(selectedCategory.createdAt) }}</td>
-            </tr>
-            <tr>
-              <td class="border px-4 py-2 font-medium">Updated At</td>
-              <td class="border px-4 py-2">{{ formatDate(selectedCategory.updatedAt) }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Category Description -->
-        <div class="mt-6">
-          <h4 class="font-medium text-gray-700 mb-2">Category Description</h4>
-          <div class="bg-gray-50 border border-gray-300 rounded-md p-4 min-h-[100px]">
-            {{ selectedCategory.category_description || 'No description available' }}
-          </div>
+      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+        <div class="text-sm text-gray-600">
+          Created: {{ formatDate(selectedStockIn.createdAt) }} | Updated:
+          {{ formatDate(selectedStockIn.updatedAt) }}
         </div>
-      </div>
-      
-      <!-- Modal Footer -->
-      <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
-        <button
-          (click)="closeAllModals()"
-          class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg transition duration-200"
-        >
-          Close
-        </button>
+        <div class="space-x-2">
+          <button
+            (click)="closeAllModals()"
+            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition duration-200"
+          >
+            Close
+          </button>
+        
+        </div>
       </div>
     </div>
   </div>
 
   <!-- BARCODE MODAL -->
-  <div 
+  <div
     *ngIf="showBarcodeModal && selectedBarcodes.length > 0"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
     (click)="closeAllModals()"
   >
-    <div 
+    <div
       class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
       (click)="$event.stopPropagation()"
     >
       <!-- Modal Header -->
-      <div class="bg-indigo-600 text-white p-4 flex justify-between items-center">
+      <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
         <div>
           <h3 class="text-lg font-semibold">Barcode Details</h3>
-          <p class="text-sm text-indigo-200">{{ selectedItemName }}</p>
+          <p class="text-sm text-blue-200">{{ selectedItemName }}</p>
         </div>
-        <button
-          (click)="closeAllModals()"
-          class="text-white hover:text-gray-200"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        <button (click)="closeAllModals()" class="text-white hover:text-gray-200">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
-      
+
       <!-- Modal Body -->
       <div class="p-6 overflow-y-auto max-h-[70vh]">
         <!-- Summary Card -->
@@ -645,18 +480,6 @@
             <div class="text-center">
               <div class="text-2xl font-bold text-blue-600">{{ selectedBarcodes.length }}</div>
               <div class="text-sm text-gray-600">Total Barcodes</div>
-            </div>
-            <div class="text-center">
-              <!-- <div class="text-2xl font-bold text-green-600">
-                {{ selectedBarcodes.filter(b => b.stockInId && !b.stockoutId).length }}
-              </div> -->
-              <div class="text-sm text-gray-600">In Stock</div>
-            </div>
-            <div class="text-center">
-              <!-- <div class="text-2xl font-bold text-red-600">
-                {{ selectedBarcodes.filter(b => b.stockoutId).length }}
-              </div> -->
-              <div class="text-sm text-gray-600">Out of Stock</div>
             </div>
           </div>
         </div>
@@ -668,14 +491,12 @@
               <tr>
                 <th class="border px-4 py-3 text-left">#</th>
                 <th class="border px-4 py-3 text-left">Barcode Serial</th>
-                <th class="border px-4 py-3 text-left">Status</th>
                 <th class="border px-4 py-3 text-left">Created At</th>
                 <th class="border px-4 py-3 text-left">Updated At</th>
-                <th class="border px-4 py-3 text-left">Barcode ID</th>
               </tr>
             </thead>
             <tbody>
-              <tr 
+              <tr
                 *ngFor="let barcode of selectedBarcodes; let i = index"
                 class="hover:bg-gray-50 transition duration-150"
               >
@@ -683,84 +504,40 @@
                 <td class="border px-4 py-2 font-mono font-medium">
                   <span class="bg-gray-100 px-2 py-1 rounded">{{ barcode.barcode_serila }}</span>
                 </td>
-                <td class="border px-4 py-2">
-                  <span 
-                    class="px-3 py-1 rounded-full text-xs font-medium"
-                    [ngClass]="getBarcodeStatusColor(barcode)"
-                  >
-                    {{ getBarcodeStatus(barcode) }}
-                  </span>
-                </td>
                 <td class="border px-4 py-2">{{ formatDate(barcode.createdAt) }}</td>
                 <td class="border px-4 py-2">{{ formatDate(barcode.updatedAt) }}</td>
-                <td class="border px-4 py-2 text-xs text-gray-500">
-                  <span class="truncate block max-w-[150px]">{{ barcode._id }}</span>
-                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Barcode Grid View -->
-        <div class="mt-8">
-          <h4 class="font-medium text-gray-700 mb-4">Barcode Cards View</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div 
-              *ngFor="let barcode of selectedBarcodes; let i = index"
-              class="border border-gray-300 rounded-lg p-4 hover:shadow-md transition duration-200"
-            >
-              <div class="flex justify-between items-start mb-3">
-                <span class="font-medium text-gray-700">Barcode #{{ i + 1 }}</span>
-                <span 
-                  class="px-2 py-1 rounded text-xs font-medium"
-                  [ngClass]="getBarcodeStatusColor(barcode)"
-                >
-                  {{ getBarcodeStatus(barcode) }}
-                </span>
-              </div>
-              
-              <div class="space-y-2">
-                <div>
-                  <div class="text-sm text-gray-500">Serial Number</div>
-                  <div class="font-mono font-medium text-lg bg-gray-100 p-2 rounded text-center">
-                    {{ barcode.barcode_serila }}
-                  </div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <div class="text-gray-500">Created</div>
-                    <div>{{ formatDate(barcode.createdAt) }}</div>
-                  </div>
-                  <div>
-                    <div class="text-gray-500">Updated</div>
-                    <div>{{ formatDate(barcode.updatedAt) }}</div>
-                  </div>
-                </div>
-                
-                <div class="pt-2 border-t">
-                  <div class="text-xs text-gray-500">ID:</div>
-                  <div class="text-xs truncate">{{ barcode._id }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Empty State for Barcodes -->
         <div *ngIf="selectedBarcodes.length === 0" class="text-center py-12">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-16 w-16 mx-auto text-gray-300 mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
           <h3 class="text-lg font-medium text-gray-700 mb-2">No Barcodes Found</h3>
           <p class="text-gray-500">This item doesn't have any barcodes assigned yet.</p>
         </div>
       </div>
-      
+
       <!-- Modal Footer -->
       <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
         <div class="text-sm text-gray-600">
-          Showing {{ selectedBarcodes.length }} barcode{{ selectedBarcodes.length !== 1 ? 's' : '' }}
+          Showing {{ selectedBarcodes.length }} barcode{{
+            selectedBarcodes.length !== 1 ? 's' : ''
+          }}
         </div>
         <div class="space-x-2">
           <button
@@ -768,16 +545,6 @@
             class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition duration-200"
           >
             Close
-          </button>
-          <button
-            *ngIf="selectedBarcodes.length > 0"
-            (click)="printBarcodes()"
-            class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition duration-200 flex items-center space-x-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
-            </svg>
-            <span>Print Barcodes</span>
           </button>
         </div>
       </div>

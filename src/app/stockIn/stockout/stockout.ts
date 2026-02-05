@@ -22,6 +22,7 @@ export class Stockout implements OnInit {
   productsList: StockOutItem[] = [];
   filteredProducts: StockOutItem[] = [];
   stockOutCategories: StockOutCategoryDisplay[] = [];
+  filteredCategories: StockOutCategoryDisplay[] = [];
   productGroups: ItemGroup[] = [];
 
   // UI states
@@ -38,6 +39,7 @@ export class Stockout implements OnInit {
   showEditProductModal: boolean = false;
   showBarcodeModalIndex: number = -1;
   showGroupDropdown: boolean = false;
+  showCategoryDropdown: boolean = false;
 
   // Current editing row index
   editingRowIndex: number = -1;
@@ -46,13 +48,19 @@ export class Stockout implements OnInit {
   // Search
   productSearchTerm: string = '';
   groupSearchTerm: string = '';
+  categorySearch: string = '';
 
   // Store the created StockOut ID
   currentStockOutId: string | null = null;
   stockOutSubmitted: boolean = false;
   stockOutNumber: string | null = null;
 
-  // Product rows array
+  // Notification state
+  showNotification: boolean = false;
+  notificationMessage: string = '';
+  notificationType: 'success' | 'error' | 'info' | 'warning' = 'success';
+
+  // Product rows array (removed lineTotal)
   productRows: Array<{
     _id: string;
     productName: string;
@@ -77,7 +85,6 @@ export class Stockout implements OnInit {
     productGroupName: string;
     productGroupId: string;
     itemGroupId: string;
-    lineTotal: number;
   }> = [];
 
   // Main form data
@@ -90,7 +97,7 @@ export class Stockout implements OnInit {
     notes: '',
   };
 
-  // Edit form data
+  // Edit form data (added serialNo)
   editFormData = {
     productId: '',
     openingStock: 0,
@@ -103,6 +110,7 @@ export class Stockout implements OnInit {
     finalPrice: 0,
     productGroupName: '',
     productGroupId: '',
+    serialNo: false,
   };
 
   constructor(
@@ -114,6 +122,22 @@ export class Stockout implements OnInit {
     this.getProducts();
     this.getStockOutCategories();
     this.loadProductGroups();
+  }
+
+  // Notification system
+  showNotificationMessage(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success'): void {
+    this.notificationMessage = message;
+    this.notificationType = type;
+    this.showNotification = true;
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 5000);
+  }
+
+  closeNotification(): void {
+    this.showNotification = false;
   }
 
   getCurrentDate(): string {
@@ -163,6 +187,7 @@ export class Stockout implements OnInit {
     this.stockOutService.get_stockOut_category().subscribe({
       next: (res: StockOutCategoryResponse) => {
         this.stockOutCategories = res.data.filter((category) => category.isActive);
+        this.filteredCategories = [...this.stockOutCategories];
       },
       error: (err) => {
         console.error('Error loading stock out categories:', err);
@@ -171,13 +196,39 @@ export class Stockout implements OnInit {
     });
   }
 
-  onCategorySelect(): void {
-    const selectedCategory = this.stockOutCategories.find(
-      (cat) => cat._id === this.stockOutData.stockOutCategoryId,
-    );
-    if (selectedCategory) {
-      this.stockOutData.stockOutCategoryName = selectedCategory.stockoutCategoryName;
+  // Category dropdown methods
+  toggleCategoryDropdown(): void {
+    this.showCategoryDropdown = !this.showCategoryDropdown;
+  }
+
+  onCategorySearchChange(): void {
+    this.filterCategories();
+  }
+
+  filterCategories(): void {
+    if (!this.categorySearch) {
+      this.filteredCategories = [...this.stockOutCategories];
+      return;
     }
+
+    const searchTerm = this.categorySearch.toLowerCase();
+    this.filteredCategories = this.stockOutCategories.filter(category =>
+      category.stockoutCategoryName.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectCategory(categoryId: string, categoryName: string): void {
+    this.stockOutData.stockOutCategoryId = categoryId;
+    this.stockOutData.stockOutCategoryName = categoryName;
+    this.showCategoryDropdown = false;
+    this.categorySearch = categoryName;
+  }
+
+  clearCategory(): void {
+    this.stockOutData.stockOutCategoryId = '';
+    this.stockOutData.stockOutCategoryName = '';
+    this.categorySearch = '';
+    this.filteredCategories = [...this.stockOutCategories];
   }
 
   toggleMainForm(): void {
@@ -215,7 +266,6 @@ export class Stockout implements OnInit {
       productGroupName: '',
       productGroupId: '',
       itemGroupId: '',
-      lineTotal: 0,
     });
   }
 
@@ -259,6 +309,19 @@ export class Stockout implements OnInit {
 
   selectProductFromModal(product: StockOutItem): void {
     if (this.selectedRowIndex !== -1) {
+      // Check if product is already added
+      const isAlreadyAdded = this.productRows.some(
+        (row, idx) => idx !== this.selectedRowIndex && row._id === product.product._id
+      );
+      
+      if (isAlreadyAdded) {
+        this.showNotificationMessage(
+          `${product.product.item_Name} is already added to the list.`,
+          'warning'
+        );
+        return;
+      }
+      
       this.fillProductDetails(this.selectedRowIndex, product);
       this.closeProductSearchModal();
     }
@@ -284,7 +347,6 @@ export class Stockout implements OnInit {
     row.currentStock = product.totalRemainingStock;
     row.quantity = 1;
     row.totalAfter = row.currentStock - row.quantity;
-    row.lineTotal = row.salePrice * row.quantity;
 
     this.getProductGroupInfo(productData, row);
 
@@ -335,7 +397,7 @@ export class Stockout implements OnInit {
   openEditProductModal(index: number): void {
     const row = this.productRows[index];
     if (!row._id) {
-      this.error = 'Please select a product first';
+      this.showNotificationMessage('Please select a product first', 'error');
       return;
     }
 
@@ -352,6 +414,7 @@ export class Stockout implements OnInit {
       finalPrice: row.finalPrice,
       productGroupName: row.productGroupName,
       productGroupId: row.productGroupId,
+      serialNo: row.isSerialTracking,
     };
 
     this.showEditProductModal = true;
@@ -372,6 +435,7 @@ export class Stockout implements OnInit {
       finalPrice: 0,
       productGroupName: '',
       productGroupId: '',
+      serialNo: false,
     };
   }
 
@@ -398,6 +462,7 @@ export class Stockout implements OnInit {
     row.finalPrice = this.editFormData.finalPrice;
     row.productGroupName = this.editFormData.productGroupName;
     row.productGroupId = this.editFormData.productGroupId;
+    row.isSerialTracking = this.editFormData.serialNo;
 
     // Update product via API
     const productPayload = {
@@ -409,25 +474,24 @@ export class Stockout implements OnInit {
       item_discount_price: this.editFormData.discount,
       item_final_price: this.editFormData.finalPrice,
       modelNoSKU: this.editFormData.modelNoSKU,
-      serialNo: row.isSerialTracking,
+      serialNo: this.editFormData.serialNo,
       unit: this.editFormData.unit,
       isActive: row.status === 'Active',
     };
 
     this.services.edit_item(row._id, productPayload).subscribe({
       next: (itemRes: any) => {
-        this.successMessage = 'Product updated successfully!';
+        this.showNotificationMessage('Product updated successfully!', 'success');
         this.closeEditProductModal();
         this.getProducts();
         this.updateTotalSale();
-
-        setTimeout(() => {
-          this.successMessage = null;
-        }, 3000);
       },
       error: (err) => {
         console.error('Error updating product:', err);
-        this.error = err.error?.message || 'Failed to update product details';
+        this.showNotificationMessage(
+          err.error?.message || 'Failed to update product details',
+          'error'
+        );
       },
     });
   }
@@ -439,12 +503,13 @@ export class Stockout implements OnInit {
     // Check if quantity exceeds current stock
     if (row.quantity > row.currentStock) {
       row.quantity = row.currentStock;
-      this.error = `Cannot sell more than available stock (${row.currentStock})`;
-      setTimeout(() => (this.error = null), 3000);
+      this.showNotificationMessage(
+        `Cannot sell more than available stock (${row.currentStock})`,
+        'error'
+      );
     }
 
     row.totalAfter = row.currentStock - row.quantity;
-    row.lineTotal = row.salePrice * row.quantity;
 
     if (row.barcodes.length > row.quantity) {
       row.barcodes = row.barcodes.slice(0, row.quantity);
@@ -458,7 +523,7 @@ export class Stockout implements OnInit {
     let total = 0;
     this.productRows.forEach((row) => {
       if (row._id && row.quantity > 0) {
-        total += row.finalPrice * row.quantity;
+        total += row.salePrice * row.quantity;
       }
     });
     this.stockOutData.Total_sale = parseFloat(total.toFixed(2));
@@ -475,19 +540,15 @@ export class Stockout implements OnInit {
   openBarcodeModal(index: number): void {
     const row = this.productRows[index];
     if (!row._id) {
-      this.error = 'Please select a product first';
+      this.showNotificationMessage('Please select a product first', 'error');
       return;
     }
     if (row.quantity <= 0) {
-      this.error = 'Please enter quantity greater than 0';
+      this.showNotificationMessage('Please enter quantity greater than 0', 'error');
       return;
     }
 
-    if (!row.isSerialTracking) {
-      this.error = 'This product does not require barcodes (Serial tracking is disabled)';
-      return;
-    }
-
+    // Barcode is optional now, don't check for serial tracking
     this.showBarcodeModalIndex = index;
   }
 
@@ -498,12 +559,12 @@ export class Stockout implements OnInit {
   addBarcode(index: number): void {
     const row = this.productRows[index];
     if (!row.newBarcode.trim()) {
-      this.error = 'Please enter a barcode';
+      this.showNotificationMessage('Please enter a barcode', 'error');
       return;
     }
 
     if (row.barcodes.includes(row.newBarcode.trim())) {
-      this.error = 'Barcode already exists';
+      this.showNotificationMessage('Barcode already exists', 'error');
       return;
     }
 
@@ -519,33 +580,37 @@ export class Stockout implements OnInit {
     const row = this.productRows[index];
     if (!row._id) return;
 
-    if (row.barcodes.length !== row.quantity) {
-      this.error = `Number of barcodes (${row.barcodes.length}) must match quantity (${row.quantity})`;
-      return;
-    }
-
+    // Barcodes are optional now, so no need to check if length matches quantity
+    // Save whatever barcodes are provided
     const payload = {
       barcode_serila: row.barcodes,
       stockInId: null,
       stockoutId: this.currentStockOutId,
     };
 
+    // If no barcodes, just mark as saved
+    if (row.barcodes.length === 0) {
+      row.barcodeSaved = true;
+      this.showNotificationMessage('No barcodes to save (barcodes are optional)', 'info');
+      this.showBarcodeModalIndex = -1;
+      return;
+    }
+
     this.savingBarcodes = true;
     this.services.add_barcode_serillla(row._id, payload).subscribe({
       next: (res: any) => {
         this.savingBarcodes = false;
         row.barcodeSaved = true;
-        this.successMessage = 'Barcodes saved successfully!';
+        this.showNotificationMessage('Barcodes saved successfully!', 'success');
         this.showBarcodeModalIndex = -1;
-
-        setTimeout(() => {
-          this.successMessage = null;
-        }, 3000);
       },
       error: (err) => {
         this.savingBarcodes = false;
         console.error(err);
-        this.error = err.error?.message || 'Failed to save barcodes';
+        this.showNotificationMessage(
+          err.error?.message || 'Failed to save barcodes',
+          'error'
+        );
       },
     });
   }
@@ -572,20 +637,16 @@ export class Stockout implements OnInit {
       }
     }
 
-    // Check barcode requirements for serial tracking products
-    for (const row of validRows) {
-      if (row.isSerialTracking && row.barcodes.length < row.quantity && !row.barcodeSaved) {
-        return false;
-      }
-    }
-
+    // No barcode validation - barcodes are optional
     return true;
   }
 
   submitStockOut(): void {
     if (!this.isFormValid()) {
-      this.error =
-        'Please fill all required fields and add at least one product with valid quantity';
+      this.showNotificationMessage(
+        'Please fill all required fields and add at least one product with valid quantity',
+        'error'
+      );
       return;
     }
 
@@ -596,7 +657,7 @@ export class Stockout implements OnInit {
     const validRows = this.productRows.filter((row) => row._id && row.quantity > 0);
 
     if (validRows.length === 0) {
-      this.error = 'Please add at least one product with quantity';
+      this.showNotificationMessage('Please add at least one product with quantity', 'error');
       this.submitting = false;
       return;
     }
@@ -626,50 +687,46 @@ export class Stockout implements OnInit {
           this.stockOutNumber = res.data.stockOutNumber || `STOCKOUT-${new Date().getTime()}`;
         }
 
-        this.successMessage = `Stock Out created successfully! Stock Out Number: ${this.stockOutNumber}`;
+        this.showNotificationMessage(
+          `Stock Out created successfully! Stock Out Number: ${this.stockOutNumber}`,
+          'success'
+        );
 
-        // Reset barcode saved status for serial tracking products
+        // Reset barcode saved status for all products
         validRows.forEach((row) => {
-          if (row.isSerialTracking) {
-            row.barcodeSaved = false;
-          }
+          row.barcodeSaved = false;
         });
 
+        // Reset form after successful submission
         setTimeout(() => {
-          this.successMessage = null;
-        }, 5000);
+          this.resetForm();
+          this.toggleMainForm();
+        }, 2000);
       },
       error: (err) => {
         console.error('Error creating Stock Out:', err);
-        this.error = err.error?.message || 'Failed to create stock out';
+        
+        // Handle specific error codes
+        let errorMessage = 'Failed to create stock out';
+        if (err.status === 400) {
+          errorMessage = err.error?.message || 'Bad request. Please check your data.';
+        } else if (err.status === 409) {
+          errorMessage = 'Invoice number already exists';
+        } else if (err.status === 404) {
+          errorMessage = 'One or more products not found';
+        }
+        
+        this.showNotificationMessage(errorMessage, 'error');
         this.submitting = false;
       },
     });
   }
 
   completeStockOut(): void {
-    const serialProducts = this.productRows.filter(
-      (row) => row._id && row.quantity > 0 && row.isSerialTracking,
-    );
-
-    const unsavedSerialProducts = serialProducts.filter((row) => !row.barcodeSaved);
-
-    if (unsavedSerialProducts.length > 0) {
-      const productNames = unsavedSerialProducts.map((row) => row.productName).join(', ');
-      const confirmMessage = `The following products require barcodes but haven't been saved:\n${productNames}\n\nDo you want to continue anyway?`;
-
-      if (!confirm(confirmMessage)) {
-        return;
-      }
-    }
-
+    // Removed as per request - single submit button handles everything
     this.resetForm();
     this.toggleMainForm();
-    this.successMessage = 'Stock Out process completed successfully!';
-
-    setTimeout(() => {
-      this.successMessage = null;
-    }, 3000);
+    this.showNotificationMessage('Stock Out process completed successfully!', 'success');
   }
 
   resetForm(): void {
@@ -687,6 +744,8 @@ export class Stockout implements OnInit {
     this.stockOutSubmitted = false;
     this.error = null;
     this.successMessage = null;
+    this.categorySearch = '';
+    this.filteredCategories = [...this.stockOutCategories];
   }
 
   getStatusColor(status: string): string {
@@ -702,50 +761,23 @@ export class Stockout implements OnInit {
 
   getBarcodeButtonClass(row: any): string {
     if (!row._id || row.quantity <= 0) {
-      return 'flex items-center gap-2 px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed';
-    }
-
-    if (!row.isSerialTracking) {
-      return 'flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg transition text-sm font-medium cursor-not-allowed';
+      return 'flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-500 rounded-lg transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed';
     }
 
     if (row.barcodeSaved) {
       return 'flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg transition text-sm font-medium';
-    } else if (row.barcodes.length === row.quantity) {
+    } else if (row.barcodes.length > 0) {
       return 'flex items-center gap-2 px-3 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-lg transition text-sm font-medium';
     } else {
-      return 'flex items-center gap-2 px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg transition text-sm font-medium';
+      return 'flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg transition text-sm font-medium';
     }
   }
 
   getBarcodeButtonTitle(row: any): string {
     if (!row._id) return 'Select product first';
     if (row.quantity <= 0) return 'Enter quantity first';
-    if (!row.isSerialTracking) return 'Serial tracking disabled';
-    if (row.barcodeSaved) return `Barcodes saved: ${row.barcodes.length}/${row.quantity}`;
-    return `Add/Edit barcodes: ${row.barcodes.length}/${row.quantity}`;
-  }
-
-  generateBarcodesForCurrentProduct(): void {
-    if (this.showBarcodeModalIndex === -1) return;
-
-    const row = this.productRows[this.showBarcodeModalIndex];
-    const needed = row.quantity - row.barcodes.length;
-
-    if (needed <= 0) {
-      this.error = 'No more barcodes needed';
-      return;
-    }
-
-    for (let i = 1; i <= needed; i++) {
-      const timestamp = Date.now();
-      const randomNum = Math.floor(Math.random() * 10000);
-      const newBarcode = `${row.modelNoSKU}-${timestamp}-${randomNum.toString().padStart(4, '0')}`;
-
-      if (!row.barcodes.includes(newBarcode)) {
-        row.barcodes.push(newBarcode);
-      }
-    }
+    if (row.barcodeSaved) return `Barcodes saved: ${row.barcodes.length} (optional)`;
+    return `Add barcodes: ${row.barcodes.length} (optional)`;
   }
 
   toggleGroupDropdown(): void {
@@ -781,7 +813,6 @@ export class Stockout implements OnInit {
     'Remaining',
     'Stock Out *',
     'Total After',
-    'Line Total',
     'Barcodes',
     'Actions',
   ];
