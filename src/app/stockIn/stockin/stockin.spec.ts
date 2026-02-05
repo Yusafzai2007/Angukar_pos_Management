@@ -18,6 +18,7 @@ describe('Stockin', () => {
   });
 
   it('should create', () => {
+    
     expect(component).toBeTruthy();
   });
 });

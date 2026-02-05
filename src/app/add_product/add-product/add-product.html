@@ -72,129 +72,93 @@
                     </label>
                   </div>
 
-                <!-- Actual Price -->
-<div class="relative w-full">
-  <input
-    type="number"
-    id="actualPrice_floating"
-    [(ngModel)]="add_product.actualItemPrice"
-    name="actualItemPrice"
-    placeholder=" "
-    min="0"
-    step="0.01"
-    required
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
-           border border-slate-500 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
-  />
+                  <!-- Actual Price -->
+                  <div class="relative w-full">
+                    <input
+                      type="number"
+                      id="actualPrice_floating"
+                      [(ngModel)]="add_product.actualItemPrice"
+                      name="actualItemPrice"
+                      placeholder=" "
+                      min="0"
+                      step="0.01"
+                      required
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-500 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+                    />
 
-  <label
-    for="actualPrice_floating"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           top-1/2 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm"
-  >
-    Actual Price <span class="text-red-500">*</span>
-  </label>
-</div>
+                    <label
+                      for="actualPrice_floating"
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none top-1/2 -translate-y-1/2 text-md transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                    >
+                      Actual Price <span class="text-red-500">*</span>
+                    </label>
+                  </div>
 
+                  <div class="relative w-full">
+                    <input
+                      type="number"
+                      id="sellingPrice_floating"
+                      [(ngModel)]="add_product.sellingItemPrice"
+                      name="sellingItemPrice"
+                      placeholder=" "
+                      min="0"
+                      step="0.01"
+                      (change)="calculateFinalPrice()"
+                      required
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-500 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+                    />
 
-                <div class="relative w-full">
-  <input
-    type="number"
-    id="sellingPrice_floating"
-    [(ngModel)]="add_product.sellingItemPrice"
-    name="sellingItemPrice"
-    placeholder=" "
-    min="0"
-    step="0.01"
-    (change)="calculateFinalPrice()"
-    required
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
-           border border-slate-500 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
-  />
+                    <label
+                      for="sellingPrice_floating"
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none top-1/2 -translate-y-1/2 text-md transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                    >
+                      Selling Price <span class="text-red-500">*</span>
+                    </label>
+                  </div>
 
-  <label
-    for="sellingPrice_floating"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           top-1/2 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm"
-  >
-    Selling Price <span class="text-red-500">*</span>
-  </label>
-</div>
+                  <!-- Discount -->
+                  <div class="relative w-full">
+                    <input
+                      type="number"
+                      id="discount_floating"
+                      [(ngModel)]="add_product.itemDiscountPrice"
+                      name="itemDiscountPrice"
+                      placeholder=" "
+                      min="0"
+                      step="0.01"
+                      (change)="calculateFinalPrice()"
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-500 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
+                    />
 
+                    <label
+                      for="discount_floating"
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none top-1/2 -translate-y-1/2 text-md transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                    >
+                      Discount
+                    </label>
+                  </div>
 
-             <!-- Discount -->
-<div class="relative w-full">
-  <input
-    type="number"
-    id="discount_floating"
-    [(ngModel)]="add_product.itemDiscountPrice"
-    name="itemDiscountPrice"
-    placeholder=" "
-    min="0"
-    step="0.01"
-    (change)="calculateFinalPrice()"
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
-           border border-slate-500 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400"
-  />
+                  <!-- Final Price -->
+                  <div class="relative w-full">
+                    <input
+                      type="number"
+                      id="finalPrice_floating"
+                      [(ngModel)]="add_product.itemFinalPrice"
+                      name="itemFinalPrice"
+                      placeholder=" "
+                      min="0"
+                      step="0.01"
+                      readonly
+                      class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-slate-100 border border-slate-300 rounded-sm appearance-none focus:outline-none cursor-not-allowed"
+                    />
 
-  <label
-    for="discount_floating"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           top-1/2 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm"
-  >
-    Discount
-  </label>
-</div>
-
-
-                <!-- Final Price -->
-<div class="relative w-full">
-  <input
-    type="number"
-    id="finalPrice_floating"
-    [(ngModel)]="add_product.itemFinalPrice"
-    name="itemFinalPrice"
-    placeholder=" "
-    min="0"
-    step="0.01"
-    readonly
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900
-           bg-slate-100 border border-slate-300 rounded-sm appearance-none
-           focus:outline-none cursor-not-allowed"
-  />
-
-  <label
-    for="finalPrice_floating"
-    class="absolute left-3 bg-slate-100 px-1 text-slate-700 pointer-events-none
-           top-1/2 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm
-           peer-[&:not(:placeholder-shown)]:text-indigo-400"
-  >
-    Final Price <span class="text-red-500">*</span>
-  </label>
-</div>
-
+                    <label
+                      for="finalPrice_floating"
+                      class="absolute left-3 bg-slate-100 px-1 text-slate-700 pointer-events-none top-1/2 -translate-y-1/2 text-md transition-all duration-200 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm peer-[&:not(:placeholder-shown)]:text-indigo-400"
+                    >
+                      Final Price <span class="text-red-500">*</span>
+                    </label>
+                  </div>
                 </div>
 
                 <!-- Status Row -->
@@ -244,131 +208,111 @@
                 <!-- Row 3: Item Group and Unit -->
                 <div class="grid gap-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
                   <!-- Item Group Dropdown -->
-                <div #dropdownContainer class="relative w-full">
-  <!-- Floating Label -->
-  <label
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           transition-all duration-200
-           top-1/2 -translate-y-1/2 text-md"
-    [ngClass]="{
-      'top-1 -translate-y-3 text-sm text-indigo-400': selectedItem,
-      'top-1/2 -translate-y-1/2 text-md text-slate-700': !selectedItem
-    }"
-  >
-    Item Group <span class="text-red-500">*</span>
-  </label>
+                  <div #dropdownContainer class="relative w-full">
+                    <!-- Floating Label -->
+                    <label
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-md"
+                      [ngClass]="{
+                        'top-1 -translate-y-3 text-sm text-indigo-400': selectedItem,
+                        'top-1/2 -translate-y-1/2 text-md text-slate-700': !selectedItem,
+                      }"
+                    >
+                      Item Group <span class="text-red-500">*</span>
+                    </label>
 
-  <!-- Dropdown Button -->
-  <button
-    type="button"
-    (click)="toggleDropdown()"
-    class="block w-full px-3 pt-4 pb-2 text-base text-slate-900 bg-transparent
-           border border-slate-300 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
-           text-left"
-  >
-    {{ selectedItem || '' }}
-    <i
-      class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500 float-right"
-    ></i>
-  </button>
+                    <!-- Dropdown Button -->
+                    <button
+                      type="button"
+                      (click)="toggleDropdown()"
+                      class="block w-full px-3 pt-4 pb-2 text-base text-slate-900 bg-transparent border border-slate-300 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 text-left"
+                    >
+                      {{ selectedItem || '' }}
+                      <i
+                        class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500 float-right"
+                      ></i>
+                    </button>
 
-  <!-- Dropdown Menu -->
-  <div
-    *ngIf="isOpen"
-    class="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg max-h-60 overflow-y-auto"
-  >
-    <ul class="py-1">
-      <li
-        *ngFor="let item of get_product"
-        (click)="selectItem(item); isOpen = false"
-        class="cursor-pointer px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
-      >
-        {{ item.itemGroupName }}
-      </li>
+                    <!-- Dropdown Menu -->
+                    <div
+                      *ngIf="isOpen"
+                      class="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg max-h-60 overflow-y-auto"
+                    >
+                      <ul class="py-1">
+                        <li
+                          *ngFor="let item of get_product"
+                          (click)="selectItem(item); isOpen = false"
+                          class="cursor-pointer px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                        >
+                          {{ item.itemGroupName }}
+                        </li>
 
-      <li
-        *ngIf="get_product.length === 0"
-        class="px-3 py-2 text-sm text-slate-400"
-      >
-        No items found
-      </li>
-    </ul>
-  </div>
-</div>
+                        <li
+                          *ngIf="get_product.length === 0"
+                          class="px-3 py-2 text-sm text-slate-400"
+                        >
+                          No items found
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
 
+                  <!-- Unit Dropdown -->
+                  <div class="relative w-full">
+                    <!-- Floating Label -->
+                    <label
+                      for="unit"
+                      class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200"
+                      [ngClass]="{
+                        'top-1 -translate-y-3 text-sm text-indigo-400': add_product.unit,
+                        'top-1/2 -translate-y-1/2 text-md text-slate-700': !add_product.unit,
+                      }"
+                    >
+                      Unit <span class="text-red-500">*</span>
+                    </label>
 
-                <!-- Unit Dropdown -->
-<div class="relative w-full">
-  <!-- Floating Label -->
-  <label
-    for="unit"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200"
-    [ngClass]="{
-      'top-1 -translate-y-3 text-sm text-indigo-400': add_product.unit,
-      'top-1/2 -translate-y-1/2 text-md text-slate-700': !add_product.unit
-    }"
-  >
-    Unit <span class="text-red-500">*</span>
-  </label>
+                    <!-- Select Dropdown -->
+                    <select
+                      [(ngModel)]="add_product.unit"
+                      name="unit"
+                      id="unit"
+                      required
+                      class="block w-full px-3 pt-2 pb-2 text-base text-slate-900 bg-transparent border border-slate-300 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
+                    >
+                      <option value="" disabled hidden></option>
+                      <option value="piece">Piece</option>
+                      <option value="kg">Kilogram</option>
+                      <option value="gram">Gram</option>
+                      <option value="liter">Liter</option>
+                      <option value="ml">Milliliter</option>
+                      <option value="box">Box</option>
+                      <option value="pack">Pack</option>
+                    </select>
 
-  <!-- Select Dropdown -->
-  <select
-    [(ngModel)]="add_product.unit"
-    name="unit"
-    id="unit"
-    required
-    class="block w-full px-3 pt-2 pb-2 text-base text-slate-900 bg-transparent
-           border border-slate-300 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
-  >
-    <option value="" disabled hidden></option>
-    <option value="piece">Piece</option>
-    <option value="kg">Kilogram</option>
-    <option value="gram">Gram</option>
-    <option value="liter">Liter</option>
-    <option value="ml">Milliliter</option>
-    <option value="box">Box</option>
-    <option value="pack">Pack</option>
-  </select>
-
-  <!-- Dropdown Icon -->
-  <i
-    class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500
-           absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-  ></i>
-</div>
-
+                    <!-- Dropdown Icon -->
+                    <i
+                      class="lucide lucide-chevron-down stroke-[1.5] h-4 w-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    ></i>
+                  </div>
                 </div>
 
-            <div class="relative w-full">
-  <textarea
-    id="description_floating"
-    [(ngModel)]="add_product.itemDescription"
-    name="itemDescription"
-    rows="3"
-    placeholder=" "
-    required
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
-           border border-slate-400 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
-           transition-colors resize-none"
-  ></textarea>
+                <div class="relative w-full">
+                  <textarea
+                    id="description_floating"
+                    [(ngModel)]="add_product.itemDescription"
+                    name="itemDescription"
+                    rows="3"
+                    placeholder=" "
+                    required
+                    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors resize-none"
+                  ></textarea>
 
-  <label
-    for="description_floating"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           top-6 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm"
-  >
-    Description <span class="text-red-500">*</span>
-  </label>
-</div>
-
+                  <label
+                    for="description_floating"
+                    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none top-6 -translate-y-1/2 text-md transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                  >
+                    Description <span class="text-red-500">*</span>
+                  </label>
+                </div>
 
                 <!-- Serial Number Toggle -->
                 <div class="space-y-3">
@@ -424,36 +368,26 @@
                   <div class="grid gap-4 sm:grid-cols-2">
                     <!-- Opening Stock -->
                     <div class="relative w-full">
-                    <div class="relative w-full">
-  <input
-    type="number"
-    id="openingStock_floating"
-    [(ngModel)]="add_product.openingStock"
-    name="openingStock"
-    placeholder=" "
-    min="0"
-    (input)="updateRemainingStock()"
-    required
-    class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent
-           border border-slate-500 rounded-sm appearance-none
-           focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400
-           transition-colors"
-  />
+                      <div class="relative w-full">
+                        <input
+                          type="number"
+                          id="openingStock_floating"
+                          [(ngModel)]="add_product.openingStock"
+                          name="openingStock"
+                          placeholder=" "
+                          min="0"
+                          (input)="updateRemainingStock()"
+                          required
+                          class="peer block w-full px-7 pt-3 pb-2 text-sm text-slate-900 bg-transparent border border-slate-500 rounded-sm appearance-none focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
+                        />
 
-  <label
-    for="openingStock_floating"
-    class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none
-           top-1/2 -translate-y-1/2 text-md
-           transition-all duration-200
-           peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400
-           peer-[&:not(:placeholder-shown)]:top-1
-           peer-[&:not(:placeholder-shown)]:-translate-y-3
-           peer-[&:not(:placeholder-shown)]:text-sm"
-  >
-    Opening Stock <span class="text-red-500">*</span>
-  </label>
-</div>
-
+                        <label
+                          for="openingStock_floating"
+                          class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none top-1/2 -translate-y-1/2 text-md transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm"
+                        >
+                          Opening Stock <span class="text-red-500">*</span>
+                        </label>
+                      </div>
 
                       <!-- Generate Button -->
                       <button
@@ -642,73 +576,60 @@
                 </div>
 
                 <!-- Input Row -->
-             <div class="space-y-2">
-  <!-- Floating Label Input -->
-  <div class="flex flex-col sm:flex-row gap-2">
-    <div class="relative flex-1">
-      <input
-        [(ngModel)]="barcodeInput"
-        name="barcodeInput"
-        type="text"
-        id="barcode_floating"
-        placeholder=" "
-        (keyup.enter)="addBarcode()"
-        class="peer block w-full rounded-md border border-slate-300 bg-white
-               px-3 pt-4 pb-2 text-base font-normal text-slate-900 shadow-sm
-               focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40
-               transition"
-      />
+                <div class="space-y-2">
+                  <!-- Floating Label Input -->
+                  <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="relative flex-1">
+                      <input
+                        [(ngModel)]="barcodeInput"
+                        name="barcodeInput"
+                        type="text"
+                        id="barcode_floating"
+                        placeholder=" "
+                        (keyup.enter)="addBarcode()"
+                        class="peer block w-full rounded-md border border-slate-300 bg-white px-3 pt-4 pb-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition"
+                      />
 
-      <label
-        for="barcode_floating"
-        class="absolute left-3 bg-white px-1 text-slate-600 pointer-events-none
-               top-1/2 -translate-y-1/2 text-sm
-               transition-all duration-200
-               peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500
-               peer-[&:not(:placeholder-shown)]:top-1
-               peer-[&:not(:placeholder-shown)]:-translate-y-3
-               peer-[&:not(:placeholder-shown)]:text-xs"
-      >
-        Add Barcode
-      </label>
-    </div>
+                      <label
+                        for="barcode_floating"
+                        class="absolute left-3 bg-white px-1 text-slate-600 pointer-events-none top-1/2 -translate-y-1/2 text-sm transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs"
+                      >
+                        Add Barcode
+                      </label>
+                    </div>
 
-    <!-- Buttons -->
-    <div class="flex gap-2">
-      <button
-        type="button"
-        (click)="addBarcode()"
-        [disabled]="barcodes.length >= add_product.openingStock"
-        class="inline-flex items-center justify-center rounded-md
-               border border-emerald-500 bg-emerald-500 px-4 py-2
-               text-sm font-medium text-white hover:bg-emerald-600
-               disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4"></i>
-        ADD
-      </button>
+                    <div class="flex gap-2">
+                      <!-- Add Button -->
+                      <button
+                        type="button"
+                        (click)="addBarcode()"
+                        [disabled]="barcodes.length >= add_product.openingStock"
+                        class="inline-flex items-center justify-center rounded-md border border-emerald-500 bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"></i>
+                        <span class="flex-1 text-center">ADD</span>
+                      </button>
 
-      <button
-        type="button"
-        (click)="scanBarcode()"
-        [disabled]="barcodes.length >= add_product.openingStock"
-        class="inline-flex items-center justify-center rounded-md
-               border border-sky-500 bg-white px-4 py-2
-               text-sm font-medium text-sky-600 hover:bg-sky-50
-               disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <i class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4"></i>
-        SCAN
-      </button>
-    </div>
-  </div>
+                      <!-- Scan Button -->
+                      <button
+                        type="button"
+                        (click)="scanBarcode()"
+                        [disabled]="barcodes.length >= add_product.openingStock"
+                        class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <i
+                          class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"
+                        ></i>
+                        <span class="flex-1 text-center">SCAN</span>
+                      </button>
+                    </div>
+                  </div>
 
-  <!-- Helper text -->
-  <p class="text-xs text-slate-500">
-    Press Enter to add barcode. Each barcode must be unique.
-  </p>
-</div>
-
+                  <!-- Helper text -->
+                  <p class="text-xs text-slate-500">
+                    Press Enter to add barcode. Each barcode must be unique.
+                  </p>
+                </div>
 
                 <!-- Validation message -->
                 <div
@@ -804,7 +725,57 @@
                           class="inline-flex items-center justify-center rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors"
                           title="Remove barcode"
                         >
-                          <i class="lucide lucide-trash-2 stroke-[1.5] h-4 w-4"></i>
+                          <svg
+                            width="19px"
+                            height="19px"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                              id="SVGRepo_tracerCarrier"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                              <path
+                                d="M10 11V17"
+                                stroke="#d91717"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>
+                              <path
+                                d="M14 11V17"
+                                stroke="#d91717"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>
+                              <path
+                                d="M4 7H20"
+                                stroke="#d91717"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>
+                              <path
+                                d="M6 7H12H18V18C18 19.6569 16.6569 21 15 21H9C7.34315 21 6 19.6569 6 18V7Z"
+                                stroke="#d91717"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>
+                              <path
+                                d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z"
+                                stroke="#d91717"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              ></path>
+                            </g>
+                          </svg>
                         </button>
                       </div>
                     </div>
