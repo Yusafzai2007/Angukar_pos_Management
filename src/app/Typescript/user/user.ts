@@ -4,6 +4,7 @@ export interface userdata {
   userName: string;
   email: string;
   role: 'user' | 'admin';
+  status:string
   createat: string;
   createdAt: string;
   updatedAt: string;

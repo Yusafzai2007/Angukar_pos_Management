@@ -13,6 +13,7 @@ import { Stockin } from './stockIn/stockin/stockin';
 import { Stockout } from './stockIn/stockout/stockout';
 import { EditStockIn } from './stockIn/edit-stock-in/edit-stock-in';
 import { EditStockout } from './stockIn/edit-stockout/edit-stockout';
+import { AddUserForm } from './add_users/add-user-form/add-user-form';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,7 @@ export const routes: Routes = [
       { path: 'users', component: User },
       { path: 'products/:id', component: EditProduct },
       { path: 'StockIn', component: Stockin },
+      { path: 'add_user', component: AddUserForm },
       { path: 'stockout', component: Stockout },
       { path: 'edit_stockIn/:id', component: EditStockIn },
       { path: 'edit_stockout/:id', component: EditStockout },
