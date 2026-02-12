@@ -303,8 +303,9 @@
             [(ngModel)]="searchQuery"
             (input)="applyFilters()"
             placeholder=" "
-            class="peer block w-full px-7 pt-2 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
+            class="peer  block w-full px-7 pt-2 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
           />
+
 
           <label
             class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-md peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-not-placeholder-shown:top-1 peer-not-placeholder-shown:-translate-y-3 peer-not-placeholder-shown:text-sm peer-not-placeholder-shown:text-slate-700"
@@ -391,7 +392,7 @@
               {{ i + 1 }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm font-semibold text-gray-900">{{ product.itemGroupName }}</div>
+              <div class="text-sm  text-gray-900">{{ product.itemGroupName }}</div>
             </td>
             <td class="px-6 py-4">
               <div
@@ -407,7 +408,7 @@
                   'bg-green-100 text-green-800': product.isActive,
                   'bg-red-100 text-red-800': !product.isActive,
                 }"
-                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                class="px-3 py-1 inline-flex text-xs leading-5 rounded-full"
               >
                 {{ product.isActive ? 'Active' : 'Inactive' }}
               </span>

@@ -33,8 +33,8 @@ export class Login {
 
     this.service.login(this.userLogin).subscribe({
       next: (res) => {
-        console.log('Login successful', res);
-        alert('Login successful!');
+        // console.log('Login successful', res);
+        // alert('Login successful!');
         this.route.navigateByUrl('admin');
       },
       error: (err: HttpErrorResponse) => {

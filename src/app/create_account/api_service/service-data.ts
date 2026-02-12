@@ -13,6 +13,7 @@ import {
 } from '../../Typescript/add_product/add_product';
 import { productstock_record } from '../../Typescript/product_record';
 import { AllUsersResponse } from '../../Typescript/user/user';
+import { singleApiResponse, updateuserdata } from '../../Typescript/singleuser';
 
 export interface ProductPayload {
   itemGroupName: string;
@@ -75,7 +76,7 @@ export class ServiceData {
   }
 
   deleteuser(userId: string) {
-    return this.http.delete(`${this.apiUrl}/deleteuser`);
+    return this.http.delete(`${this.apiUrl}/deleteuser/${userId}`);
   }
 
   logout(data: any = {}) {
@@ -92,6 +93,14 @@ export class ServiceData {
 
   get_user() {
     return this.http.get<AllUsersResponse>(`${this.apiUrl}/users`);
+  }
+
+  update_user(id: string, updatedata: updateuserdata): Observable<any> {
+    return this.http.put(`${this.apiUrl}/updaeuser/${id}`, updatedata);
+  }
+
+  singleuser(userId: string) {
+    return this.http.get<singleApiResponse>(`${this.apiUrl}/singleuser/${userId}`);
   }
 
   currentuser(): Observable<SingleUserResponse> {
@@ -212,4 +221,30 @@ export class ServiceData {
   delete_product(id: string) {
     return this.http.delete(`${this.apiUrl}/delete_item/${id}`);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 }

@@ -26,32 +26,51 @@
         </div>
       </div>
 
-      <!-- Password & Role -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="relative w-full">
-          <input [(ngModel)]="userlogin.password" name="password"
-            [type]="showPassword ? 'text' : 'password'" placeholder=" " required minlength="6"
-            class="peer block w-full px-7 pr-10 pt-4 pb-2 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400" />
-          <label class="floating-label">Password *</label>
+    <!-- Password & Role -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <button type="button" (click)="togglePasswordVisibility()"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
-            {{ showPassword ? 'visibility_off' : 'visibility' }}
-          </button>
-        </div>
+  <!-- Password -->
+  <div class="relative w-full">
+    <input 
+      [(ngModel)]="userlogin.password" 
+      name="password"
+      [type]="showPassword ? 'text' : 'password'" 
+      placeholder=" " 
+      required 
+      minlength="6"
+      class="peer block w-full px-7 pr-10 pt-4 pb-2 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400"
+    />
+    <label class="floating-label">Password *</label>
 
-        <div class="relative w-full">
-          <select [(ngModel)]="userlogin.role" name="role" required
-            class="peer block w-full px-7 pr-10 pt-4 pb-2 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400">
-            <option value="">Select Role</option>
-            <option value="user">User</option>
-            <option value="Admin">Admin</option>
-            <option value="Manager">Manager</option>
-            <option value="Cashier">Cashier</option>
-          </select>
-          <label class="floating-label">Role *</label>
-        </div>
-      </div>
+    <!-- Eye icon toggle -->
+    <button type="button" (click)="togglePasswordVisibility()"
+      class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+      <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.41 21.41 0 014.5-5.94M3 3l18 18"/>
+        <path d="M10.5 10.5a3 3 0 014 4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Role -->
+  <div class="relative w-full">
+    <select [(ngModel)]="userlogin.role" name="role" required
+      class="peer block w-full px-7 pr-10 pt-4 pb-2 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400">
+      <option value="">Select Role</option>
+      <option value="user">User</option>
+      <option value="Admin">Admin</option>
+      <option value="Manager">Manager</option>
+      <option value="Cashier">Cashier</option>
+    </select>
+    <label class="floating-label">Role *</label>
+  </div>
+
+</div>
+
 
       <!-- STATUS -->
       <div>

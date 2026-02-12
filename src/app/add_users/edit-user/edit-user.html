@@ -1,0 +1,123 @@
+<div class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="flex items-center justify-center">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="bg-white rounded-lg shadow-sm border border-gray-200 w-full max-w-2xl p-8 md:p-12">
+
+    <h1 class="text-3xl font-semibold text-gray-900 text-center mb-2">
+      Edit User
+    </h1>
+    <p class="text-base text-gray-500 text-center mb-8">
+      Update user details below.
+    </p>
+
+    <!-- Remove the template reference variable from form tag -->
+    <form (ngSubmit)="submitForm()" class="space-y-6">
+
+      <!-- Username & Email -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="relative w-full">
+          <input 
+            [(ngModel)]="editForm.userName" 
+            name="userName" 
+            placeholder=" " 
+            required
+            class="peer block w-full px-7 pt-3 pb-4 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400" />
+          <label class="floating-label">Username *</label>
+        </div>
+
+        <div class="relative w-full">
+          <input 
+            [(ngModel)]="editForm.email" 
+            name="email" 
+            type="email" 
+            placeholder=" " 
+            required
+            class="peer block w-full px-7 pt-3 pb-4 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400" />
+          <label class="floating-label">Email *</label>
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="relative w-full">
+          <select 
+            [(ngModel)]="editForm.role" 
+            name="role" 
+            required
+            class="peer block w-full px-7 pr-10 pt-4 pb-2 text-sm border border-slate-400 rounded-sm focus:ring-1 focus:ring-indigo-400">
+            <option value="">Select Role</option>
+            <option value="user">User</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Cashier">Cashier</option>
+          </select>
+          <label class="floating-label">Role *</label>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="mb-4">
+        <label class="block text-xs text-gray-600 mb-2">Status</label>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            (click)="setStatus('active')"
+            class="px-6 py-2 rounded-full text-sm border transition-all"
+            [ngClass]="editForm.status === 'active'
+              ? 'border-green-600 text-green-600 bg-green-50'
+              : 'border-gray-300 text-gray-500 hover:border-gray-400'">
+            Active
+          </button>
+
+          <button
+            type="button"
+            (click)="setStatus('inactive')"
+            class="px-6 py-2 rounded-full text-sm border transition-all"
+            [ngClass]="editForm.status === 'inactive'
+              ? 'border-red-600 text-red-600 bg-red-50'
+              : 'border-gray-300 text-gray-500 hover:border-gray-400'">
+            Deactivate
+          </button>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end gap-3 pt-4">
+        <button
+          routerLink="/admin/users"
+          type="button" 
+          class="px-6 py-2.5 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          [disabled]="isSubmitting || !editForm.userName || !editForm.email || !editForm.role"
+          class="px-6 py-2.5 rounded-md text-sm text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
+          <span *ngIf="!isSubmitting">Update User</span>
+          <span *ngIf="isSubmitting" class="flex items-center">
+            <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+            Updating...
+          </span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Debug Info (remove in production) -->
+    <div *ngIf="singledata" class="mt-8 p-4 bg-gray-50 rounded">
+      <h3 class="text-sm font-semibold text-gray-700 mb-2">Current User Data:</h3>
+      <div class="text-xs text-gray-600">
+        <p>Username: {{ singledata.userName }}</p>
+        <p>Email: {{ singledata.email }}</p>
+        <p>Role: {{ singledata.role }}</p>
+        <p>Status: {{ singledata.status }}</p>
+        <p>User ID: {{ singledata._id }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+/* Modal Animation */
+.modal-content {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accordion Content Animation */
+.accordion-content {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Rotate animation for chevron */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Smooth transitions */
+button svg {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Table hover effects */
+tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+/* Button hover effects */
+button {
+  transition: all 0.2s ease;
+}
+
+/* Badge animations */
+span {
+  transition: all 0.2s ease;
+}
+
+/* Input focus effects */
+input:focus, select:focus {
+  transition: all 0.2s ease;
+}
+
+/* Modal backdrop */
+.fixed.inset-0.bg-black {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+/* Card hover effects */
+.bg-white.rounded-lg {
+  transition: box-shadow 0.3s ease;
+}
+
+.bg-white.rounded-lg:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Timeline item animations */
+.bg-gray-50.rounded-lg {
+  transition: all 0.2s ease;
+}
+
+.bg-gray-50.rounded-lg:hover {
+  background-color: #f3f4f6;
+  transform: translateX(4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .accordion-content {
+    animation: slideDown 0.2s ease-in-out;
+  }
+  
+  .modal-content {
+    animation: modalSlideIn 0.2s ease-out;
+  }
+}

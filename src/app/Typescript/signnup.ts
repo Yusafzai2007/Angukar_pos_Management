@@ -10,11 +10,6 @@ export interface Userlogin {
   password: string;
 }
 
-
-
-
-
-
 export interface CurrentUser {
   _id: string;
   userName: string;
@@ -34,14 +29,3 @@ export interface SingleUserResponse {
     users: CurrentUser;
   };
 }
-
-
-
-
-
-
-
-
-
-
-

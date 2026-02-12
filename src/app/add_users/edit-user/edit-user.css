@@ -1,0 +1,57 @@
+.floating-label {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  padding: 0 4px;
+  font-size: 0.875rem;
+  color: #64748b;
+  pointer-events: none;
+  transition: all 0.2s;
+}
+
+.peer:focus ~ .floating-label,
+.peer:not(:placeholder-shown) ~ .floating-label,
+select.peer:valid ~ .floating-label {
+  top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6366f1;
+}
+
+/* Custom Dialog Styles */
+.custom-dialog-container {
+  animation: slideInRight 0.3s ease-out !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Slide in animation from right */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Mat Spinner Customization */
+mat-spinner {
+  margin-right: 8px;
+}
+
+mat-spinner svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Material Icon size */
+mat-icon {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 24px !important;
+}

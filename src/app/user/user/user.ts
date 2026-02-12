@@ -27,6 +27,7 @@ export class User implements OnInit {
   filterName: string = '';
   filterEmail: string = '';
   filterRole: string = 'all';
+  filterStatus: string = 'all';
   
   // Loading state
   isLoading: boolean = false;
@@ -63,35 +64,42 @@ export class User implements OnInit {
     }
   }
 
-  // Apply filters
-  applyFilters() {
-    let filtered = [...this.userdata];
-    
-    // Filter by name
-    if (this.filterName.trim()) {
-      const searchTerm = this.filterName.toLowerCase().trim();
-      filtered = filtered.filter(user => 
-        user.userName?.toLowerCase().includes(searchTerm) || false
-      );
-    }
-    
-    // Filter by email
-    if (this.filterEmail.trim()) {
-      const searchTerm = this.filterEmail.toLowerCase().trim();
-      filtered = filtered.filter(user => 
-        user.email?.toLowerCase().includes(searchTerm) || false
-      );
-    }
-    
-    // Filter by role (supports admin, manager, cashier)
-    if (this.filterRole !== 'all') {
-      filtered = filtered.filter(user => 
-        user.role?.toLowerCase() === this.filterRole.toLowerCase()
-      );
-    }
-    
-    this.filteredUsers = filtered;
+applyFilters() {
+  let filtered = [...this.userdata];
+
+  // Filter by name
+  if (this.filterName?.trim()) {
+    const searchTerm = this.filterName.toLowerCase().trim();
+    filtered = filtered.filter(user =>
+      user.userName?.toLowerCase().includes(searchTerm) || false
+    );
   }
+
+  // Filter by email
+  if (this.filterEmail?.trim()) {
+    const searchTerm = this.filterEmail.toLowerCase().trim();
+    filtered = filtered.filter(user =>
+      user.email?.toLowerCase().includes(searchTerm) || false
+    );
+  }
+
+  // Filter by role
+  if (this.filterRole && this.filterRole !== 'all') {
+    filtered = filtered.filter(user =>
+      user.role?.toLowerCase() === this.filterRole.toLowerCase()
+    );
+  }
+
+  // Filter by status (active/inactive)
+  if (this.filterStatus && this.filterStatus !== 'all') {
+    filtered = filtered.filter(user =>
+      user.status?.toLowerCase() === this.filterStatus.toLowerCase()
+    );
+  }
+
+  this.filteredUsers = filtered;
+}
+
 
   // Clear filters
   clearFilters() {
@@ -176,4 +184,36 @@ export class User implements OnInit {
         </svg>`;
     }
   }
+
+
+ tableheader:string[]=[
+  '#',
+  'UserName',
+  'Email',
+  'Role',
+  'Status',
+  'Created At',
+  'Actions',
+ ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

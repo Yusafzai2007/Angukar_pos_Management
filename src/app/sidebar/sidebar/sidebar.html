@@ -56,57 +56,99 @@
   </div>
 
   <!-- ✅ Sidebar Menu -->
-  <ul class="flex flex-col p-4 space-y-2 overflow-y-auto flex-grow">
+  <ul class="flex flex-col w-[200px] mt-5 space-y-2 overflow-y-auto flex-grow">
     <!-- StockIn Link -->
     <li>
-      <a routerLink="/admin/StockIn" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
-        <i class="fas fa-arrow-circle-down text-white mr-2 text-xs"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+      <a routerLink="/admin/StockIn" class="block hover:bg-gray-700 rounded transition">
+        <div class="flex items-center px-5 py-2">
+          <i class="fas fa-arrow-circle-down text-white mr-2 text-xs"></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+        </div>
       </a>
     </li>
 
     <!-- StockOut Link -->
     <li>
-      <a routerLink="/admin/stockout" class="flex items-center hover:bg-gray-700 rounded px-3 py-2">
-        <i class="fas fa-arrow-circle-up text-white mr-2 text-xs"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
+      <a routerLink="/admin/stockout" class="block hover:bg-gray-700 rounded transition">
+        <div class="flex items-center px-5 py-2">
+          <i class="fas fa-arrow-circle-up text-white mr-2 text-xs"></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
+        </div>
       </a>
     </li>
 
-    <div>
-      <span class="border-b-2 border-white "></span>
-    </div>
+    <li>
+  <span id="divider"></span>
+</li>
+
 
     <!-- Configure Section -->
-    <!-- Configure Button -->
-    <!-- Configure Button -->
     <li class="mt-4">
       <button
         type="button"
-        class="flex items-center w-full hover:bg-gray-700 rounded px-3 py-2 text-left"
+        class="block w-full hover:bg-gray-700 rounded transition"
         (click)="toggleConfigure()"
       >
-        <i class="fas fa-cog text-white mr-2 text-xs"></i>
-        <span [class.hidden]="!isSidebarOpen && !isMobileView">Configure</span>
-        <!-- Chevron removed -->
+        <div class="flex items-center px-5 py-2 text-left">
+          <i class="fas fa-cog text-white mr-2 text-xs"></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView">Configure</span>
+        </div>
       </button>
 
-      <!-- Animated items under Configure -->
+      <!-- Configure Dropdown Content with Animation -->
       <div
-        class="flex flex-col ml-4 mt-2 space-y-2 overflow-hidden transition-all duration-300"
-        [style.maxHeight]="showConfigure ? configureItems.length * 48 + 'px' : '0px'"
+        class="overflow-hidden transition-all duration-500 ease-in-out"
+        [style.maxHeight]="showConfigure ? getConfigureHeight() : '0px'"
+        [style.opacity]="showConfigure ? '1' : '0'"
       >
-        <a
-          *ngFor="let item of configureItems; let i = index"
-          [routerLink]="item.link"
-          class="flex items-center hover:bg-gray-700 rounded text-sm py-2 transform transition-all duration-300"
-          [style.opacity]="showConfigure ? '1' : '0'"
-          [style.transform]="showConfigure ? 'translateX(0)' : 'translateX(-20px)'"
-          [style.transitionDelay]="showConfigure ? i * 100 + 'ms' : '0ms'"
-        >
-          <i [class]="item.icon + ' mr-2 text-white text-xs'"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">{{ item.name }}</span>
-        </a>
+        <div class="mt-2 space-y-2">
+          <!-- 📌 User Management Heading -->
+          <div class="block w-full">
+            <div class="px-5 pt-2 pb-1">
+              <h1 class="text-xs text-slate-400 font-medium  tracking-wide">
+                User Management
+              </h1>
+            </div>
+          </div>
+
+          <!-- 👥 Users Link -->
+          <a
+            routerLink="/admin/users"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-users mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Users</span>
+            </div>
+          </a>
+
+          <!-- Divider -->
+          <div class="my-3"></div>
+
+          <!-- 📌 Inventory Management Heading -->
+          <div class="block w-full">
+            <div class="px-5 pt-1 pb-1">
+              <h1 class="text-xs text-slate-400 font-medium  tracking-wide">
+                Inventory Management
+              </h1>
+            </div>
+          </div>
+
+          <!-- 📦 All Other Configure Items -->
+          <ng-container *ngFor="let item of getInventoryItems()">
+            <a
+              [routerLink]="item.link"
+              class="block w-full hover:bg-gray-700 rounded transition"
+            >
+              <div class="flex items-center px-5 py-2 text-sm">
+                <i [class]="item.icon + ' mr-2 text-white text-xs'"></i>
+                <span [class.hidden]="!isSidebarOpen && !isMobileView">
+                  {{ item.name }}
+                </span>
+              </div>
+            </a>
+          </ng-container>
+        </div>
       </div>
     </li>
   </ul>
@@ -127,7 +169,7 @@
 <div
   [class.lg:pl-52]="isSidebarOpen"
   [class.lg:pl-20]="!isSidebarOpen && !isMobileView"
-  class="pt-16 transition-all duration-300 min-h-screen "
+  class="pt-16 transition-all duration-300 bg-white min-h-screen"
 >
   <router-outlet></router-outlet>
 </div>
