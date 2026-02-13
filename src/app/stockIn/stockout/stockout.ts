@@ -686,6 +686,8 @@ export class Stockout implements OnInit {
           this.currentStockOutId = res.data._id;
           this.stockOutNumber = res.data.stockOutNumber || `STOCKOUT-${new Date().getTime()}`;
         }
+   this.resetForm();
+          this.toggleMainForm();
 
         this.showNotificationMessage(
           `Stock Out created successfully! Stock Out Number: ${this.stockOutNumber}`,
@@ -697,11 +699,11 @@ export class Stockout implements OnInit {
           row.barcodeSaved = false;
         });
 
-        // Reset form after successful submission
-        setTimeout(() => {
-          this.resetForm();
-          this.toggleMainForm();
-        }, 2000);
+        // // Reset form after successful submission
+        // setTimeout(() => {
+        //   this.resetForm();
+        //   this.toggleMainForm();
+        // }, 2000);
       },
       error: (err) => {
         console.error('Error creating Stock Out:', err);

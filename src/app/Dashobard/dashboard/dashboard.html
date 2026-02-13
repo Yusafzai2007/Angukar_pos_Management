@@ -1,0 +1,293 @@
+<!-- Stats Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-12 ">
+  <!-- Total Products Card -->
+  <div
+    class="group  bg-white border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-cyan-200/50 hover:border-cyan-300 transition-all duration-300 hover:-translate-y-1"
+  >
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+          <span>📦</span> Total Products
+        </p>
+        <p class="text-3xl font-bold text-gray-900">{{ productsList.length }}</p>
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span>
+          All inventory items
+        </p>
+      </div>
+      <div
+        class="p-4 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+      >
+        <div
+          class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl shadow-lg shadow-cyan-200/50"
+        >
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Stock Card -->
+  <div
+    class="group bg-white border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-purple-200/50 hover:border-purple-300 transition-all duration-300 hover:-translate-y-1"
+  >
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+          <span>📊</span> Total Stock
+        </p>
+        <p class="text-3xl font-bold text-gray-900">{{ getTotalStockCount() }}</p>
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+          Units in inventory
+        </p>
+      </div>
+      <div
+        class="p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+      >
+        <div
+          class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-purple-500 to-violet-400 rounded-xl shadow-lg shadow-purple-200/50"
+        >
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Stock Out Card -->
+  <div
+    class="group bg-white border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-orange-200/50 hover:border-orange-300 transition-all duration-300 hover:-translate-y-1"
+  >
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+          <span>📤</span> Total Stock Out
+        </p>
+        <p class="text-3xl font-bold text-gray-900">{{ getTotalStockOutQuantity() }}</p>
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-orange-400 rounded-full"></span>
+          Items sold/used
+        </p>
+      </div>
+      <div
+        class="p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+      >
+        <div
+          class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-200/50"
+        >
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Sales Card -->
+  <div
+    class="group bg-white border border-gray-200 rounded-2xl p-6 shadow-lg hover:shadow-green-200/50 hover:border-green-300 transition-all duration-300 hover:-translate-y-1"
+  >
+    <div class="flex items-center justify-between">
+      <div class="w-full">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-sm font-medium text-gray-600 flex items-center gap-2">
+            <span>💰</span> Total Sales
+          </p>
+          <!-- Month Filter -->
+          <div class="relative">
+            <select
+              #monthSelect
+              (change)="filterSalesByMonth(monthSelect.value)"
+              class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 pr-8 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent appearance-none cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              <option value="all">All Time</option>
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+            <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+              <svg
+                class="w-4 h-4 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-900">
+          ₹{{ getFilteredTotalSale() | number: '1.0-0' }}
+        </p>
+        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+          {{
+            selectedMonth === 'all'
+              ? 'All time revenue'
+              : getMonthName(parseInt(selectedMonth)) + ' revenue'
+          }}
+        </p>
+        <p *ngIf="selectedMonth !== 'all'" class="text-xs text-green-600 mt-1 font-medium">
+          ↑ {{ getMonthlyGrowth() }}% vs last month
+        </p>
+      </div>
+      <div
+        class="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ml-4"
+      >
+        <div
+          class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg shadow-green-200/50"
+        >
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Stock Out Transactions Table -->
+<!-- <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <span class="w-1.5 h-6 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></span>
+        Recent Stock Out Transactions
+      </h3>
+      <p class="text-xs text-gray-500 mt-1">Latest inventory movements</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-3 py-1.5 bg-cyan-50 text-cyan-700 text-xs font-medium rounded-full">
+        {{ stockOutItems.length }} Transactions
+      </span>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-200">
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Invoice No
+          </th>
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Date
+          </th>
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Items
+          </th>
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Quantity
+          </th>
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Total Sale
+          </th>
+          <th
+            class="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Status
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let item of stockOutItems"
+          class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+        >
+          <td class="py-3 px-4 font-medium text-gray-900">{{ item.invoiceNo }}</td>
+          <td class="py-3 px-4 text-gray-600">{{ item.stockOutDate | date: 'dd MMM yyyy' }}</td>
+          <td class="py-3 px-4">
+            <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
+              {{ item.itemId.length }} item(s)
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="font-medium">{{ getTotalQuantity(item.quantity) }}</span>
+            <span class="text-xs text-gray-500 ml-1">units</span>
+          </td>
+          <td class="py-3 px-4 font-semibold text-gray-900">
+            ₹{{ item.Total_sale | number: '1.0-0' }}
+          </td>
+          <td class="py-3 px-4">
+            <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+              Completed
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="stockOutItems.length === 0">
+          <td colspan="6" class="py-8 text-center text-gray-500">
+            <div class="flex flex-col items-center gap-2">
+              <svg
+                class="w-12 h-12 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <p class="text-sm">No stock out transactions found</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> -->
+
+
+
+<app-chartjs></app-chartjs>

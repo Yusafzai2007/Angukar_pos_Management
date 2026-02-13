@@ -28,10 +28,6 @@ export class Sidebar implements OnInit {
     { name: 'Product_group', link: '/admin/product_group', icon: 'fas fa-layer-group' },
     { name: 'Add_Product', link: '/admin/add_product', icon: 'fas fa-plus-square' },
     { name: 'Products', link: '/admin/products', icon: 'fas fa-boxes' },
-    { name: 'StockIn Category', link: '/admin/stockIn_category', icon: 'fas fa-tags' },
-    { name: 'Stockout Category', link: '/admin/stockout_category', icon: 'fas fa-tags' },
-    { name: 'Users', link: '/admin/users', icon: 'fas fa-users' },
-    { name: 'Stock Transactions', link: '/admin/stock_transaction', icon: 'fas fa-exchange-alt' },
   ];
 
   constructor(
@@ -59,13 +55,15 @@ export class Sidebar implements OnInit {
   }
 
   getInventoryItems() {
-    return this.configureItems.filter(item => item.name !== 'Users');
+    return this.configureItems;
   }
 
   getConfigureHeight(): string {
-    const baseHeight = 180;
-    const itemHeight = 40;
-    return baseHeight + (this.getInventoryItems().length * itemHeight) + 'px';
+    // User Management section (Users) = 40px
+    // Inventory Management section (3 items) = 120px
+    // Stock Management section (5 items) = 200px
+    // Headers and dividers = 120px
+    return '480px';
   }
 
   get shouldShowSidebar() {

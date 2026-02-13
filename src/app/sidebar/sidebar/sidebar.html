@@ -57,32 +57,33 @@
 
   <!-- ✅ Sidebar Menu -->
   <ul class="flex flex-col w-[200px] mt-5 space-y-2 overflow-y-auto flex-grow">
-    <!-- StockIn Link -->
+    <!-- 📊 Dashboard Link (at the top) -->
     <li>
-      <a routerLink="/admin/StockIn" class="block hover:bg-gray-700 rounded transition">
+      <a routerLink="/admin/dashboard" class="block hover:bg-gray-700 rounded transition">
         <div class="flex items-center px-5 py-2">
-          <i class="fas fa-arrow-circle-down text-white mr-2 text-xs"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+          <i class="fas fa-tachometer-alt text-white mr-2 text-xs"></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView">Dashboard</span>
         </div>
       </a>
+      
+          <a
+            routerLink="/admin/stock_transaction"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-exchange-alt mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Stock Transactions</span>
+            </div>
+          </a>
     </li>
 
-    <!-- StockOut Link -->
+    <!-- Divider after Dashboard -->
     <li>
-      <a routerLink="/admin/stockout" class="block hover:bg-gray-700 rounded transition">
-        <div class="flex items-center px-5 py-2">
-          <i class="fas fa-arrow-circle-up text-white mr-2 text-xs"></i>
-          <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
-        </div>
-      </a>
-    </li>
-
-    <li>
-  <span id="divider"></span>
+  <span class="block w-full ring-1 ring-slate-600"></span>
 </li>
 
 
-    <!-- Configure Section -->
+    <!-- Configure Section (Main dropdown) -->
     <li class="mt-4">
       <button
         type="button"
@@ -105,7 +106,7 @@
           <!-- 📌 User Management Heading -->
           <div class="block w-full">
             <div class="px-5 pt-2 pb-1">
-              <h1 class="text-xs text-slate-400 font-medium  tracking-wide">
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
                 User Management
               </h1>
             </div>
@@ -128,13 +129,13 @@
           <!-- 📌 Inventory Management Heading -->
           <div class="block w-full">
             <div class="px-5 pt-1 pb-1">
-              <h1 class="text-xs text-slate-400 font-medium  tracking-wide">
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
                 Inventory Management
               </h1>
             </div>
           </div>
 
-          <!-- 📦 All Other Configure Items -->
+          <!-- 📦 All Inventory Items (Product_group, Add_Product, Products) -->
           <ng-container *ngFor="let item of getInventoryItems()">
             <a
               [routerLink]="item.link"
@@ -148,6 +149,60 @@
               </div>
             </a>
           </ng-container>
+
+          <!-- Divider -->
+          <div class="my-3"></div>
+
+          <!-- 📌 Stock Management Heading -->
+          <div class="block w-full">
+            <div class="px-5 pt-1 pb-1">
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
+                Stock Management
+              </h1>
+            </div>
+          </div>
+
+          <!-- 📦 Stock Management Items (StockIn, StockOut, StockIn Category, Stockout Category, Stock Transactions) -->
+          <a
+            routerLink="/admin/StockIn"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-arrow-circle-down mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
+            </div>
+          </a>
+          
+          <a
+            routerLink="/admin/stockout"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-arrow-circle-up mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
+            </div>
+          </a>
+          
+          <a
+            routerLink="/admin/stockIn_category"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-tags mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn Category</span>
+            </div>
+          </a>
+          
+          <a
+            routerLink="/admin/stockout_category"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
+            <div class="flex items-center px-5 py-2 text-sm">
+              <i class="fas fa-tags mr-2 text-white text-xs"></i>
+              <span [class.hidden]="!isSidebarOpen && !isMobileView">Stockout Category</span>
+            </div>
+          </a>
+          
         </div>
       </div>
     </li>

@@ -17,6 +17,7 @@ import { AddUserForm } from './add_users/add-user-form/add-user-form';
 import { EditUser } from './add_users/edit-user/edit-user';
 import { StockTransaction } from './transaction/stock-transaction/stock-transaction';
 import { authGuard } from './auth-guard';
+import { Dashboard } from './Dashobard/dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -47,6 +48,7 @@ export const routes: Routes = [
       { path: 'edit_stockout/:id', component: EditStockout },
       { path: 'edit_user/:id', component: EditUser },
       { path: 'stock_transaction', component: StockTransaction },
+      { path: 'dashboard', component: Dashboard },
     ],
   },
 ];
