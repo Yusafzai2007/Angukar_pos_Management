@@ -22,16 +22,16 @@ export class User implements OnInit {
   // Data variables
   userdata: userdata[] = [];
   filteredUsers: userdata[] = [];
-  
+
   // Filter variables
   filterName: string = '';
   filterEmail: string = '';
   filterRole: string = 'all';
   filterStatus: string = 'all';
-  
+
   // Loading state
   isLoading: boolean = false;
-  
+
   // Delete modal variables
   showDeleteModal: boolean = false;
   deleteUser: userdata | null = null;
@@ -52,7 +52,7 @@ export class User implements OnInit {
         console.error('Error fetching users:', error);
         this.isLoading = false;
         // Optional: Show error message to user
-      }
+      },
     });
   }
 
@@ -64,42 +64,39 @@ export class User implements OnInit {
     }
   }
 
-applyFilters() {
-  let filtered = [...this.userdata];
+  applyFilters() {
+    let filtered = [...this.userdata];
 
-  // Filter by name
-  if (this.filterName?.trim()) {
-    const searchTerm = this.filterName.toLowerCase().trim();
-    filtered = filtered.filter(user =>
-      user.userName?.toLowerCase().includes(searchTerm) || false
-    );
+    // Filter by name
+    if (this.filterName?.trim()) {
+      const searchTerm = this.filterName.toLowerCase().trim();
+      filtered = filtered.filter(
+        (user) => user.userName?.toLowerCase().includes(searchTerm) || false,
+      );
+    }
+
+    // Filter by email
+    if (this.filterEmail?.trim()) {
+      const searchTerm = this.filterEmail.toLowerCase().trim();
+      filtered = filtered.filter((user) => user.email?.toLowerCase().includes(searchTerm) || false);
+    }
+
+    // Filter by role
+    if (this.filterRole && this.filterRole !== 'all') {
+      filtered = filtered.filter(
+        (user) => user.role?.toLowerCase() === this.filterRole.toLowerCase(),
+      );
+    }
+
+    // Filter by status (active/inactive)
+    if (this.filterStatus && this.filterStatus !== 'all') {
+      filtered = filtered.filter(
+        (user) => user.status?.toLowerCase() === this.filterStatus.toLowerCase(),
+      );
+    }
+
+    this.filteredUsers = filtered;
   }
-
-  // Filter by email
-  if (this.filterEmail?.trim()) {
-    const searchTerm = this.filterEmail.toLowerCase().trim();
-    filtered = filtered.filter(user =>
-      user.email?.toLowerCase().includes(searchTerm) || false
-    );
-  }
-
-  // Filter by role
-  if (this.filterRole && this.filterRole !== 'all') {
-    filtered = filtered.filter(user =>
-      user.role?.toLowerCase() === this.filterRole.toLowerCase()
-    );
-  }
-
-  // Filter by status (active/inactive)
-  if (this.filterStatus && this.filterStatus !== 'all') {
-    filtered = filtered.filter(user =>
-      user.status?.toLowerCase() === this.filterStatus.toLowerCase()
-    );
-  }
-
-  this.filteredUsers = filtered;
-}
-
 
   // Clear filters
   clearFilters() {
@@ -133,8 +130,8 @@ applyFilters() {
         console.log('Delete response:', res);
 
         // Remove from frontend
-        this.userdata = this.userdata.filter(u => u._id !== userId);
-        this.filteredUsers = this.filteredUsers.filter(u => u._id !== userId);
+        this.userdata = this.userdata.filter((u) => u._id !== userId);
+        this.filteredUsers = this.filteredUsers.filter((u) => u._id !== userId);
 
         alert(`User "${this.deleteUser?.userName}" deleted successfully`);
         this.closeDeleteModal();
@@ -142,7 +139,7 @@ applyFilters() {
       error: (err) => {
         console.error('Delete failed', err);
         alert('Failed to delete user');
-      }
+      },
     });
   }
 
@@ -185,35 +182,5 @@ applyFilters() {
     }
   }
 
-
- tableheader:string[]=[
-  '#',
-  'UserName',
-  'Email',
-  'Role',
-  'Status',
-  'Created At',
-  'Actions',
- ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  tableheader: string[] = ['#', 'UserName', 'Email', 'Role', 'Status', 'Created At', 'Actions'];
 }

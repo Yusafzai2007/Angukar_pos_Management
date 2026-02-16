@@ -1,21 +1,19 @@
-// Transaction details for Stock-In
 export interface StockInTransaction {
   _id: string;
   itemId: string[];
   stcokIn_price: number;
   stockAdded: number[];
-  stockInDate: string; // ISO string
+  stockInDate: string; 
   stockInCategoryId: string;
   invoiceNo: string;
   notes: string;
   isActive: boolean;
-  transactions: any[]; // can define if nested transactions exist
+  transactions: any[]; 
   createdAt: string;
   updatedAt: string;
   __v: number;
 }
 
-// Transaction details for Stock-Out
 export interface StockOutTransaction {
   _id: string;
   itemId: string[];
@@ -32,11 +30,10 @@ export interface StockOutTransaction {
   id: string;
 }
 
-// Individual transaction in ItemStockRecord
 export interface StockTransactiondata {
   _id: string;
   quantity: number;
-  type: "Opening" | "Stock-In" | "Stock-Out";
+  type: 'Opening' | 'Stock-In' | 'Stock-Out';
   reference: string;
   costPrice: number;
   salePrice: number;
@@ -46,7 +43,6 @@ export interface StockTransactiondata {
   fullTransaction: StockInTransaction | StockOutTransaction | null;
 }
 
-// Product information
 export interface Product {
   _id: string;
   item_Name: string;
@@ -56,7 +52,6 @@ export interface Product {
   updatedAt: string;
 }
 
-// Stock record for each product
 export interface ItemStockRecordType {
   _id: string;
   productId: Product;
@@ -68,7 +63,6 @@ export interface ItemStockRecordType {
   __v: number;
 }
 
-// API response wrapper
 export interface StockRecordResponse {
   data: ItemStockRecordType[];
   message: string;
