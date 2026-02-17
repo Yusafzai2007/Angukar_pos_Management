@@ -6,7 +6,6 @@ import {
   ServiceData,
   EditProductPayload,
   EditStockPayload,
-  EditBarcodePayload,
   CreateBarcodePayload,
 } from '../../create_account/api_service/service-data';
 
@@ -43,9 +42,14 @@ export class EditProduct implements OnInit {
 
   originalProduct: any = null;
   originalOpeningStock: number = 0;
+  originalRemainingStock: number = 0;
 
+  // Stock adjustment inputs
+  addStockAmount: number = 0;
+  removeStockAmount: number = 0;
+
+  // Barcode management
   barcodeInput: string = '';
-
   existingBarcodes: Array<{
     _id: string;
     barcode_serila: string;
@@ -53,9 +57,9 @@ export class EditProduct implements OnInit {
     tempValue?: string;
     isChanged?: boolean;
   }> = [];
-
   newBarcodes: string[] = [];
 
+  // UI states
   isLoading = false;
   isSaving = false;
   isOpen = false;
@@ -65,6 +69,11 @@ export class EditProduct implements OnInit {
   barcodeToDelete: string | null = null;
   showAddBarcodeModal = false;
   bulkBarcodeInput: string = '';
+
+  // Transactions
+  allTransactions: any[] = [];
+  recentTransactions: any[] = [];
+  transactionCount: number = 0;
 
   constructor(
     private service: ServiceData,
@@ -89,6 +98,13 @@ export class EditProduct implements OnInit {
           this.productData = res.data[0];
           this.product = res.data[0].product;
           this.barcodes = res.data[0].barcodes;
+
+          // Load transactions
+          if (res.data[0].allTransactions && res.data[0].allTransactions.length > 0) {
+            this.allTransactions = res.data[0].allTransactions.flat();
+            this.recentTransactions = this.allTransactions.slice(-5).reverse();
+            this.transactionCount = this.allTransactions.length;
+          }
 
           if (this.productData._id) {
             this.stockRecordId = this.productData._id;
@@ -121,6 +137,7 @@ export class EditProduct implements OnInit {
 
           this.originalProduct = { ...this.editProduct };
           this.originalOpeningStock = this.editProduct.openingStock;
+          this.originalRemainingStock = this.editProduct.remainingStock;
 
           if (this.product.itemGroupId) {
             this.getProductGroupName();
@@ -169,10 +186,72 @@ export class EditProduct implements OnInit {
     this.editProduct.item_final_price = Math.max(0, sellingPrice - discount);
   }
 
-  updateRemainingStock(): void {
-    this.editProduct.remainingStock = this.editProduct.openingStock;
+  // Stock Management Methods
+  addStock(): void {
+    if (this.addStockAmount && this.addStockAmount > 0) {
+      // Add to both opening and remaining stock
+      this.editProduct.openingStock += Number(this.addStockAmount);
+      this.editProduct.remainingStock += Number(this.addStockAmount);
+
+      // Add to recent transactions for visual feedback
+      const newTransaction = {
+        type: 'Stock-In',
+        quantity: this.addStockAmount,
+        date: new Date(),
+      };
+      this.recentTransactions.unshift(newTransaction);
+      this.transactionCount++;
+
+      // Clear input
+      this.addStockAmount = 0;
+
+      console.log(
+        `Added ${this.addStockAmount} stock. New opening: ${this.editProduct.openingStock}, New remaining: ${this.editProduct.remainingStock}`,
+      );
+    }
   }
 
+  removeStock(): void {
+    if (this.removeStockAmount && this.removeStockAmount > 0) {
+      if (this.removeStockAmount <= this.editProduct.remainingStock) {
+        // Remove from both opening and remaining stock
+        this.editProduct.openingStock -= Number(this.removeStockAmount);
+        this.editProduct.remainingStock -= Number(this.removeStockAmount);
+
+        // Add to recent transactions for visual feedback
+        const newTransaction = {
+          type: 'Stock-Out',
+          quantity: this.removeStockAmount,
+          date: new Date(),
+        };
+        this.recentTransactions.unshift(newTransaction);
+        this.transactionCount++;
+
+        // Clear input
+        this.removeStockAmount = 0;
+
+        console.log(
+          `Removed ${this.removeStockAmount} stock. New opening: ${this.editProduct.openingStock}, New remaining: ${this.editProduct.remainingStock}`,
+        );
+      } else {
+        alert(
+          `Cannot remove ${this.removeStockAmount} stock. Only ${this.editProduct.remainingStock} remaining!`,
+        );
+      }
+    }
+  }
+
+  quickAddStock(amount: number): void {
+    this.addStockAmount = amount;
+    this.addStock();
+  }
+
+  quickRemoveStock(amount: number): void {
+    this.removeStockAmount = amount;
+    this.removeStock();
+  }
+
+  // Barcode Methods
   startEditBarcode(index: number): void {
     this.existingBarcodes[index].isEditing = true;
     this.existingBarcodes[index].tempValue = this.existingBarcodes[index].barcode_serila;
@@ -236,21 +315,27 @@ export class EditProduct implements OnInit {
   }
 
   addSingleBarcode(): void {
-    if (this.barcodeInput.trim()) {
-      const barcode = this.barcodeInput.trim();
+    if (!this.barcodeInput.trim()) return;
 
-      const isDuplicate =
-        this.existingBarcodes.some((b) => b.barcode_serila === barcode) ||
-        this.newBarcodes.includes(barcode);
-
-      if (isDuplicate) {
-        alert('This barcode already exists!');
-        return;
-      }
-
-      this.newBarcodes.push(barcode);
-      this.barcodeInput = '';
+    // Check if we already have a barcode
+    if (this.existingBarcodes.length + this.newBarcodes.length >= 1) {
+      alert('Only one barcode can be added for this product!');
+      return;
     }
+
+    const barcode = this.barcodeInput.trim();
+
+    const isDuplicate =
+      this.existingBarcodes.some((b) => b.barcode_serila === barcode) ||
+      this.newBarcodes.includes(barcode);
+
+    if (isDuplicate) {
+      alert('This barcode already exists!');
+      return;
+    }
+
+    this.newBarcodes.push(barcode);
+    this.barcodeInput = '';
   }
 
   removeNewBarcode(index: number): void {
@@ -270,48 +355,52 @@ export class EditProduct implements OnInit {
   addBulkBarcodes(): void {
     if (!this.bulkBarcodeInput.trim()) return;
 
+    // Check if we already have a barcode
+    if (this.existingBarcodes.length + this.newBarcodes.length >= 1) {
+      alert('Only one barcode can be added for this product!');
+      this.closeAddBarcodeModal();
+      return;
+    }
+
     const barcodes = this.bulkBarcodeInput
       .split(/[\n,]/)
       .map((b) => b.trim())
       .filter((b) => b.length > 0);
 
+    // Only take the first barcode
+    const firstBarcode = barcodes[0];
+
     const existingBarcodes = this.existingBarcodes.map((b) => b.barcode_serila);
     const allExistingBarcodes = [...existingBarcodes, ...this.newBarcodes];
 
-    const uniqueNewBarcodes = barcodes.filter((b) => !allExistingBarcodes.includes(b));
-
-    if (uniqueNewBarcodes.length > 0) {
-      this.newBarcodes.push(...uniqueNewBarcodes);
+    if (!allExistingBarcodes.includes(firstBarcode)) {
+      this.newBarcodes.push(firstBarcode);
+      if (barcodes.length > 1) {
+        alert(`Only the first barcode "${firstBarcode}" was added. Only one barcode is allowed.`);
+      }
       this.closeAddBarcodeModal();
     } else {
-      alert('All barcodes already exist!');
+      alert('This barcode already exists!');
     }
   }
 
-  generateBarcodes(): void {
-    const count =
-      this.editProduct.openingStock - (this.existingBarcodes.length + this.newBarcodes.length);
-    if (count <= 0) {
-      alert('No more barcodes needed');
+  generateSingleBarcode(): void {
+    // Check if we already have a barcode
+    if (this.existingBarcodes.length + this.newBarcodes.length >= 1) {
+      alert('Only one barcode can be added for this product!');
       return;
     }
 
-    const existingBarcodes = this.existingBarcodes.map((b) => b.barcode_serila);
-    const allExistingBarcodes = [...existingBarcodes, ...this.newBarcodes];
+    const prefix = this.editProduct.modelNoSKU
+      ? this.editProduct.modelNoSKU.substring(0, 3).toUpperCase()
+      : 'PRD';
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0');
+    const newBarcode = `${prefix}-${timestamp}-${random}`;
 
-    for (let i = 1; i <= count; i++) {
-      let newBarcode;
-      let attempts = 0;
-
-      do {
-        newBarcode = `BRC-${Date.now()}-${(i + attempts).toString().padStart(3, '0')}`;
-        attempts++;
-      } while (allExistingBarcodes.includes(newBarcode) && attempts < 10);
-
-      if (!allExistingBarcodes.includes(newBarcode)) {
-        this.newBarcodes.push(newBarcode);
-      }
-    }
+    this.newBarcodes.push(newBarcode);
   }
 
   clearAllNewBarcodes(): void {
@@ -320,13 +409,6 @@ export class EditProduct implements OnInit {
         this.newBarcodes = [];
       }
     }
-  }
-
-  scanBarcode(): void {
-    const randomBarcode = `SCAN-${Math.floor(Math.random() * 1000000)
-      .toString()
-      .padStart(6, '0')}`;
-    this.barcodeInput = randomBarcode;
   }
 
   toggleDropdown(): void {
@@ -364,10 +446,14 @@ export class EditProduct implements OnInit {
 
         // 2. Update stock record if opening stock changed
         if (this.stockRecordId && this.editProduct.openingStock !== this.originalOpeningStock) {
-          const stockUpdateData: EditStockPayload = {
-            openingStock: this.editProduct.openingStock,
-          };
-          await this.service.edit_stock_record(this.stockRecordId, stockUpdateData).toPromise();
+          try {
+            const stockUpdateData: EditStockPayload = {
+              openingStock: this.editProduct.openingStock,
+            };
+            await this.service.edit_stock_record(this.stockRecordId, stockUpdateData).toPromise();
+          } catch (stockError) {
+            console.log('Stock record update failed, but continuing with barcode updates');
+          }
         }
 
         // 3. Handle barcode updates
@@ -399,20 +485,10 @@ export class EditProduct implements OnInit {
         this.isSaving = false;
         alert('Product updated successfully!');
         this.router.navigateByUrl('admin/products');
-        this.loadProductData();
       } catch (error: any) {
         this.isSaving = false;
         console.error('Update failed:', error);
-
-        if (error.status === 404) {
-          if (error.url?.includes('edit_product_stock_record')) {
-            alert('Stock record not found.');
-          } else {
-            alert('Resource not found.');
-          }
-        } else {
-          alert(`Failed to update product: ${error.message || 'Unknown error'}`);
-        }
+        alert(`Failed to update product: ${error.message || 'Unknown error'}`);
       }
     }
   }
@@ -430,6 +506,8 @@ export class EditProduct implements OnInit {
       }));
       this.newBarcodes = [];
       this.barcodeInput = '';
+      this.addStockAmount = 0;
+      this.removeStockAmount = 0;
     }
   }
 
@@ -451,10 +529,10 @@ export class EditProduct implements OnInit {
     const hasValidPrices =
       this.editProduct.actual_item_price >= 0 && this.editProduct.selling_item_price >= 0;
 
+    // For serial number, we don't require barcodes to match opening stock
     if (this.editProduct.serialNo) {
-      const totalBarcodes = this.existingBarcodes.length + this.newBarcodes.length;
-      const hasValidBarcodes = totalBarcodes === this.editProduct.openingStock;
-      return !hasRequiredFields || !hasValidPrices || !hasValidBarcodes;
+      const hasValidOpeningStock = this.editProduct.openingStock >= 0;
+      return !hasRequiredFields || !hasValidPrices || !hasValidOpeningStock;
     }
 
     return !hasRequiredFields || !hasValidPrices;
@@ -475,7 +553,9 @@ export class EditProduct implements OnInit {
       this.editProduct.item_Description !== this.originalProduct.item_Description ||
       this.editProduct.itemGroupName !== this.originalProduct.itemGroupName;
 
-    const stockChanged = this.editProduct.openingStock !== this.originalOpeningStock;
+    const stockChanged =
+      this.editProduct.openingStock !== this.originalOpeningStock ||
+      this.editProduct.remainingStock !== this.originalRemainingStock;
 
     const barcodesChanged =
       this.existingBarcodes.some((b) => b.isChanged) || this.newBarcodes.length > 0;
