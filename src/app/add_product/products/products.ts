@@ -38,8 +38,24 @@ export class ProductsComponent implements OnInit {
   itemNameFilter: string = '';
   skuFilter: string = '';
   statusFilter: string = 'all';
-  minDiscountFilter: number | null = null;
-  maxDiscountFilter: number | null = null;
+  descriptionFilter: string = '';
+
+  showFilters: boolean = false;
+
+  tableheader: string[] = [
+    '#',
+    'Item Name',
+    'SKU/Model',
+    'Unit',
+    'Status',
+    'Cost',
+    'Price',
+    'Discount',
+    'Final',
+    'Opening',
+    'Remaining',
+    'Barcodes',
+  ];
 
   constructor(
     private service: ServiceData,
@@ -68,32 +84,10 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  // Get active products count
-  getActiveProductsCount(): number {
-    return this.productsList.filter((product) => product.product.isActive).length;
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
   }
 
-  // Get total stock count
-  getTotalStockCount(): number {
-    return this.productsList.reduce((total, product) => total + product.totalRemainingStock, 0);
-  }
-
-  // Get total barcodes count
-  getTotalBarcodesCount(): number {
-    return this.productsList.reduce((total, product) => total + product.barcodes.length, 0);
-  }
-
-  // Get current date for header
-  getCurrentDate(): string {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }
-
-  // Apply all filters
   filterProducts(): void {
     this.filteredProducts = this.productsList.filter((product) => {
       // Item Name filter
@@ -120,12 +114,12 @@ export class ProductsComponent implements OnInit {
         }
       }
 
-      // Discount filter
-      const discount = product.product.item_discount_price;
-      if (this.minDiscountFilter !== null && discount < this.minDiscountFilter) {
-        return false;
-      }
-      if (this.maxDiscountFilter !== null && discount > this.maxDiscountFilter) {
+      // Description filter
+      if (
+        this.descriptionFilter &&
+        product.product.item_Description &&
+        !product.product.item_Description.toLowerCase().includes(this.descriptionFilter.toLowerCase())
+      ) {
         return false;
       }
 
@@ -133,48 +127,41 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  // Clear all filters
   clearFilters(): void {
     this.itemNameFilter = '';
     this.skuFilter = '';
     this.statusFilter = 'all';
-    this.minDiscountFilter = null;
-    this.maxDiscountFilter = null;
+    this.descriptionFilter = '';
     this.filteredProducts = [...this.productsList];
   }
 
-  // Open description modal
+  getCurrentDate(): string {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
   openDescriptionModal(product: StockItem): void {
     this.selectedProduct = product;
     this.selectedDescription = product.product.item_Description;
     this.showDescriptionModal = true;
   }
 
-  // Open transactions modal
   openTransactionsModal(product: StockItem): void {
     this.selectedProduct = product;
-    // Flatten the nested transactions array
     this.selectedTransactions = product.allTransactions.flat();
     this.showTransactionsModal = true;
   }
 
-  // Open barcodes modal
   openBarcodesModal(product: StockItem): void {
     this.selectedProduct = product;
     this.selectedBarcodes = product.barcodes;
     this.showBarcodesModal = true;
   }
 
-  // Edit product
-  editProduct(product: StockItem): void {
-    // Implement edit functionality
-    console.log('Editing product:', product);
-    this.router.navigate(['/products', product.product._id]);
-
-    // You can navigate to edit page or open edit modal here
-  }
-
-  // Close all modals
   closeModal(): void {
     this.showDescriptionModal = false;
     this.showTransactionsModal = false;
@@ -185,7 +172,6 @@ export class ProductsComponent implements OnInit {
     this.selectedBarcodes = [];
   }
 
-  // Format date for display
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -197,73 +183,59 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  // Get transaction type color
-  getTransactionTypeColor(type: string): string {
-    switch (type) {
-      case 'Opening':
-        return 'bg-blue-900/30 text-blue-400 border border-blue-800/50';
-      case 'In':
-        return 'bg-green-900/30 text-green-400 border border-green-800/50';
-      case 'Out':
-        return 'bg-red-900/30 text-red-400 border border-red-800/50';
-      default:
-        return 'bg-gray-800 text-gray-400 border border-gray-700';
+  delete_products(id: string): void {
+    if (confirm('Are you sure you want to delete this product group?')) {
+      this.service.delete_product(id).subscribe({
+        next: (res) => {
+          console.log(res);
+          alert('Product group deleted successfully!');
+          this.getProducts();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('An error occurred while deleting the product group.');
+        }
+      });
     }
   }
-  showFilters: boolean = false;
 
-  toggleFilters() {
-    this.showFilters = !this.showFilters;
+
+
+
+tableheaderbody: string[] = [
+  '#',
+  'Type',
+  'Date',
+  'Quantity',
+  'Cost Price',
+  'Sale Price',
+  'Discount ',
+  'Final Price',
+
+
+
+]
+
+
+
+
+
+
+
+
+
+
+
+toggleStatusFilter(): void {
+  if (this.statusFilter === 'all') {
+    this.statusFilter = 'active';
+  } else if (this.statusFilter === 'active') {
+    this.statusFilter = 'inactive';
+  } else {
+    this.statusFilter = 'all';
   }
-
-  tableheader: string[] = [
-    '#',
-    'Item Name',
-    'SKU/Model',
-    'Unit',
-    'Status',
-    'Cost',
-    'Price',
-    'Discount',
-    'Final',
-    'Opening',
-    'Remaining',
-    'Barcodes',
-  ];
-
-
-
-
-
-delete_products(id: string): void {
-  if (confirm('Are you sure you want to delete this product group?')) {
-    this.service.delete_product(id).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert('Product group deleted successfully!');
-
-     
-      },
-      error: (err) => {
-        console.error(err);
-        alert('An error occurred while deleting the product group.');
-      }
-    });
-  }
+  this.filterProducts(); // Apply filter immediately
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

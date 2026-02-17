@@ -360,7 +360,7 @@
                       <span
                         class="text-xs font-medium px-2 py-1 rounded bg-indigo-50 text-indigo-700"
                       >
-                        Barcodes: {{ barcodes.length }}/{{ add_product.openingStock }}
+                        Barcodes: {{ barcodes.length }}
                       </span>
                     </div>
                   </div>
@@ -388,17 +388,6 @@
                           Opening Stock <span class="text-red-500">*</span>
                         </label>
                       </div>
-
-                      <!-- Generate Button -->
-                      <button
-                        *ngIf="add_product.serialNo && add_product.openingStock > 0"
-                        type="button"
-                        (click)="generateBarcodes()"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
-                      >
-                        <i class="lucide lucide-refresh-ccw stroke-[1.5] h-3 w-3 mr-1"></i>
-                        Gen
-                      </button>
                     </div>
 
                     <div class="relative w-full">
@@ -429,43 +418,18 @@
                     </div>
                   </div>
 
-                  <!-- Warning for serial number -->
+                  <!-- Info message for serial number -->
                   <div *ngIf="add_product.serialNo" class="space-y-2">
                     <div class="p-3 bg-blue-50 border border-blue-200 rounded-md">
                       <p class="text-sm text-blue-700 flex items-start">
                         <i class="lucide lucide-info stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
                         <span>
-                          Serial number tracking enabled.
-                          <span *ngIf="add_product.openingStock > 0">
-                            Please add exactly
-                            <strong>{{ add_product.openingStock }}</strong> unique barcodes.
-                          </span>
-                          <span *ngIf="add_product.openingStock === 0">
-                            Set opening stock to enable barcode management.
+                          Serial number tracking enabled. You can add one barcode for this product.
+                          <span *ngIf="barcodes.length > 0" class="font-medium">
+                            Currently {{ barcodes.length }} barcode(s) added.
                           </span>
                         </span>
                       </p>
-                    </div>
-
-                    <!-- Progress bar for barcodes -->
-                    <div
-                      *ngIf="add_product.serialNo && add_product.openingStock > 0"
-                      class="space-y-1"
-                    >
-                      <div class="flex justify-between text-xs text-slate-600">
-                        <span>Barcode Progress</span>
-                        <span>{{ barcodes.length }}/{{ add_product.openingStock }}</span>
-                      </div>
-                      <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          class="h-full transition-all duration-300"
-                          [ngClass]="{
-                            'bg-emerald-500': barcodes.length === add_product.openingStock,
-                            'bg-indigo-500': barcodes.length !== add_product.openingStock,
-                          }"
-                          [style.width.%]="(barcodes.length / add_product.openingStock) * 100"
-                        ></div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -537,7 +501,7 @@
                     Barcode Management
                   </h2>
                   <p class="mt-1 text-sm text-slate-500">
-                    Add unique barcodes for serial number tracking
+                    Add a barcode for serial number tracking (optional)
                   </p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -551,24 +515,24 @@
 
               <div class="px-5 sm:px-6 py-4 space-y-4 flex-1 flex flex-col">
                 <!-- Quick Actions -->
-                <div *ngIf="add_product.openingStock > 0" class="flex flex-col sm:flex-row gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                   <div class="flex-1">
                     <p class="text-sm text-slate-600 mb-1">Quick Actions</p>
                     <div class="flex flex-wrap gap-2">
                       <button
                         type="button"
-                        (click)="generateBarcodes()"
+                        (click)="generateBarcode()"
                         class="inline-flex items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
                       >
-                        <i class="lucide lucide-plus-circle stroke-[1.5] h-3 w-3 mr-1.5"></i>
-                        Generate {{ add_product.openingStock }} Barcodes
+                        <i class="fa-solid fa-house-chimney-medical stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        Generate Single Barcode
                       </button>
                       <button
                         type="button"
                         (click)="clearAllBarcodes()"
                         class="inline-flex items-center justify-center rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
                       >
-                        <i class="lucide lucide-trash-2 stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        <i class="fa-solid fa-xmark stroke-[1.5] h-3 w-3 mr-1.5"></i>
                         Clear All
                       </button>
                     </div>
@@ -587,14 +551,14 @@
                         id="barcode_floating"
                         placeholder=" "
                         (keyup.enter)="addBarcode()"
-                        class="peer block w-full rounded-md border border-slate-300 bg-white px-3 pt-4 pb-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition"
+                        class="peer block w-full rounded-md border border-slate-300 bg-white px-3 pt-2 pb-2 text-base font-normal text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/40 transition"
                       />
 
                       <label
                         for="barcode_floating"
                         class="absolute left-3 bg-white px-1 text-slate-600 pointer-events-none top-1/2 -translate-y-1/2 text-sm transition-all duration-200 peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-xs peer-focus:text-indigo-500 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-xs"
                       >
-                        Add Barcode
+                        Add Barcode (Optional)
                       </label>
                     </div>
 
@@ -603,10 +567,9 @@
                       <button
                         type="button"
                         (click)="addBarcode()"
-                        [disabled]="barcodes.length >= add_product.openingStock"
-                        class="inline-flex items-center justify-center rounded-md border border-emerald-500 bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="inline-flex items-center justify-center rounded-md border border-emerald-500 px-4 py-1 text-sm font-medium text-green-500 hover:bg-emerald-100"
                       >
-                        <i class="lucide lucide-plus stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"></i>
+                        <i class="fa-sharp-duotone fa-regular fa-plus stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"></i>
                         <span class="flex-1 text-center">ADD</span>
                       </button>
 
@@ -614,12 +577,9 @@
                       <button
                         type="button"
                         (click)="scanBarcode()"
-                        [disabled]="barcodes.length >= add_product.openingStock"
-                        class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="inline-flex items-center justify-center rounded-md border border-sky-500 bg-white px-4 py-2 text-sm font-medium text-sky-600 hover:bg-sky-50"
                       >
-                        <i
-                          class="lucide lucide-scan-line stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"
-                        ></i>
+                        <i class="fa-sharp-duotone fa-regular fa-plus stroke-[1.5] mr-1.5 h-4 w-4 flex-shrink-0"></i>
                         <span class="flex-1 text-center">SCAN</span>
                       </button>
                     </div>
@@ -627,43 +587,20 @@
 
                   <!-- Helper text -->
                   <p class="text-xs text-slate-500">
-                    Press Enter to add barcode. Each barcode must be unique.
-                  </p>
-                </div>
-
-                <!-- Validation message -->
-                <div
-                  *ngIf="
-                    add_product.serialNo &&
-                    barcodes.length !== add_product.openingStock &&
-                    barcodes.length > 0
-                  "
-                  class="p-3 bg-amber-50 border border-amber-200 rounded-md"
-                >
-                  <p class="text-sm text-amber-700 flex items-start">
-                    <i class="lucide lucide-alert-triangle stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
-                    <span
-                      >Need {{ add_product.openingStock - barcodes.length }} more barcode(s) to
-                      match opening stock.</span
-                    >
+                    Press Enter to add barcode. You can add one or multiple barcodes.
                   </p>
                 </div>
 
                 <!-- Success message -->
                 <div
-                  *ngIf="
-                    add_product.serialNo &&
-                    barcodes.length === add_product.openingStock &&
-                    add_product.openingStock > 0
-                  "
+                  *ngIf="add_product.serialNo && barcodes.length > 0"
                   class="p-3 bg-emerald-50 border border-emerald-200 rounded-md"
                 >
                   <p class="text-sm text-emerald-700 flex items-start">
                     <i class="lucide lucide-check-circle stroke-[1.5] h-4 w-4 mr-2 mt-0.5"></i>
-                    <span
-                      >Perfect! All {{ add_product.openingStock }} barcodes added. Ready to
-                      save.</span
-                    >
+                    <span>
+                      {{ barcodes.length }} barcode(s) added. Ready to save.
+                    </span>
                   </p>
                 </div>
 
@@ -672,7 +609,7 @@
                   <div class="flex items-center justify-between">
                     <label class="block text-sm font-medium text-slate-700"> Barcode List </label>
                     <span class="text-xs text-slate-500">
-                      {{ barcodes.length }}/{{ add_product.openingStock }}
+                      Total: {{ barcodes.length }}
                     </span>
                   </div>
 
@@ -682,16 +619,15 @@
                       <i class="lucide lucide-barcode mx-auto h-10 w-10 text-slate-300"></i>
                       <p class="mt-3 text-sm font-medium text-slate-700">No barcodes added yet</p>
                       <p class="mt-1 text-xs text-slate-500">
-                        Add barcodes manually or generate them automatically
+                        Add barcodes manually or generate one automatically
                       </p>
                       <button
-                        *ngIf="add_product.openingStock > 0"
                         type="button"
-                        (click)="generateBarcodes()"
+                        (click)="generateBarcode()"
                         class="mt-4 inline-flex items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
                       >
                         <i class="lucide lucide-zap stroke-[1.5] h-3 w-3 mr-1.5"></i>
-                        Generate {{ add_product.openingStock }} Barcodes
+                        Generate Single Barcode
                       </button>
                     </div>
 
@@ -715,7 +651,7 @@
                               {{ barcode }}
                             </p>
                             <p class="text-xs font-normal text-slate-500">
-                              Serial {{ i + 1 }} of {{ add_product.openingStock }}
+                              Barcode {{ i + 1 }}
                             </p>
                           </div>
                         </div>
@@ -794,13 +730,7 @@
                     </div>
                     <div class="space-y-1">
                       <p class="text-xs text-slate-500">Barcodes Added</p>
-                      <p
-                        class="text-lg font-semibold"
-                        [ngClass]="{
-                          'text-emerald-600': barcodes.length === add_product.openingStock,
-                          'text-amber-600': barcodes.length !== add_product.openingStock,
-                        }"
-                      >
+                      <p class="text-lg font-semibold text-indigo-600">
                         {{ barcodes.length }}
                       </p>
                     </div>
@@ -811,10 +741,9 @@
                       <i
                         class="lucide lucide-info stroke-[1.5] h-3 w-3 mr-1.5 mt-0.5 flex-shrink-0"
                       ></i>
-                      <span
-                        >Each item needs a unique barcode. Total barcodes must match opening stock
-                        quantity.</span
-                      >
+                      <span>
+                        Barcodes are optional. You can add one or multiple barcodes regardless of opening stock quantity.
+                      </span>
                     </p>
                   </div>
                 </div>

@@ -420,7 +420,9 @@
                           (click)="generateBarcodes()"
                           class="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-3 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
                         >
-                          <i class="lucide lucide-refresh-ccw stroke-[1.5] h-3 w-3 mr-1"></i>
+                          <i
+                            class="fa-solid fa-house-chimney-medical stroke-[1.5] h-3 w-3 mr-1"
+                          ></i>
                           Gen
                         </button>
                       </div>
@@ -590,7 +592,7 @@
                         "
                         class="inline-flex items-center justify-center rounded-md border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <i class="lucide lucide-plus-circle stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        <i class="fa-solid fa-house-chimney-medical stroke-[1.5] h-3 w-3 mr-1"></i>
                         Add Multiple
                       </button>
                       <button
@@ -601,7 +603,7 @@
                         "
                         class="inline-flex items-center justify-center rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <i class="lucide lucide-zap stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        <i class="fa-solid fa-plus stroke-[1.5] h-3 w-3 mr-1.5"></i>
                         Generate
                       </button>
                       <button
@@ -610,7 +612,7 @@
                         [disabled]="newBarcodes.length === 0"
                         class="inline-flex items-center justify-center rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <i class="lucide lucide-trash-2 stroke-[1.5] h-3 w-3 mr-1.5"></i>
+                        <i class="fa-solid fa-x stroke-[1.5] h-3 w-3 mr-1.5"></i>
                         Clear New
                       </button>
                     </div>
@@ -843,7 +845,7 @@
                             class="inline-flex items-center justify-center rounded-md p-1.5 text-red-500 hover:bg-red-50 transition-colors"
                             title="Remove barcode"
                           >
-                            <i class="lucide lucide-trash-2 stroke-[1.5] h-4 w-4"></i>
+                            <i class="fa-solid fa-trash h-4 w-4"></i>
                           </button>
                         </div>
                       </div>

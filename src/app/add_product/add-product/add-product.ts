@@ -97,21 +97,6 @@ export class AddProduct {
       return true;
     }
 
-    // Serial number specific validation
-    if (this.add_product.serialNo) {
-      if (this.add_product.openingStock <= 0) {
-        console.log('Button disabled: Opening stock must be > 0 for serial tracking');
-        return true;
-      }
-
-      if (this.barcodes.length !== this.add_product.openingStock) {
-        console.log(
-          `Button disabled: Barcodes (${this.barcodes.length}) don't match opening stock (${this.add_product.openingStock})`,
-        );
-        return true;
-      }
-    }
-
     console.log('Button enabled: All validations passed');
     return false;
   }
@@ -187,25 +172,8 @@ export class AddProduct {
       this.calculateFinalPrice();
     }
 
-    // Serial number validation
-    if (this.add_product.serialNo) {
-      if (this.add_product.openingStock <= 0) {
-        alert('Opening Stock must be greater than 0 for serial number tracking');
-        return;
-      }
-
-      if (this.barcodes.length === 0) {
-        alert('Please add barcodes for serial number tracking');
-        return;
-      }
-
-      if (this.barcodes.length !== this.add_product.openingStock) {
-        alert(
-          `Number of barcodes (${this.barcodes.length}) must exactly match opening stock (${this.add_product.openingStock})`,
-        );
-        return;
-      }
-
+    // Serial number validation - only check for duplicate barcodes if any
+    if (this.add_product.serialNo && this.barcodes.length > 0) {
       // Check for duplicate barcodes
       const uniqueBarcodes = new Set(this.barcodes);
       if (uniqueBarcodes.size !== this.barcodes.length) {
@@ -220,32 +188,36 @@ export class AddProduct {
     this.adding_product();
   }
 
-  // Generate barcodes based on opening stock
-  generateBarcodes() {
-    if (!this.add_product.serialNo || this.add_product.openingStock <= 0) {
-      alert('Please enable serial number tracking and set opening stock first.');
+  // Generate a single barcode
+  generateBarcode() {
+    if (!this.add_product.serialNo) {
+      alert('Please enable serial number tracking first.');
       return;
     }
 
-    this.barcodes = []; // Clear existing barcodes
+    const prefix = this.add_product.modelNoSKU
+      ? this.add_product.modelNoSKU.substring(0, 3).toUpperCase()
+      : 'ITM';
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const barcode = `${prefix}-${timestamp}-${random}`;
 
-    // Generate unique barcodes based on opening stock
-    for (let i = 1; i <= this.add_product.openingStock; i++) {
-      const prefix = this.add_product.modelNoSKU
-        ? this.add_product.modelNoSKU.substring(0, 3).toUpperCase()
-        : 'ITM';
-      const timestamp = Date.now().toString().slice(-6);
-      const barcode = `${prefix}-${timestamp}-${String(i).padStart(3, '0')}`;
+    // Check for duplicate
+    if (!this.barcodes.includes(barcode)) {
       this.barcodes.push(barcode);
+      console.log(`Generated barcode: ${barcode}`);
+    } else {
+      // Try again if duplicate
+      this.generateBarcode();
     }
-
-    console.log(`Generated ${this.add_product.openingStock} barcodes`);
   }
 
   // Clear all barcodes
   clearAllBarcodes() {
-    this.barcodes = [];
-    this.barcodeInput = '';
+    if (confirm('Are you sure you want to clear all barcodes?')) {
+      this.barcodes = [];
+      this.barcodeInput = '';
+    }
   }
 
   updateRemainingStock() {
@@ -259,12 +231,6 @@ export class AddProduct {
       return;
     }
 
-    // Check if we've reached the limit
-    if (this.barcodes.length >= this.add_product.openingStock) {
-      alert(`Maximum ${this.add_product.openingStock} barcodes allowed.`);
-      return;
-    }
-
     // Check for duplicate barcode
     if (this.barcodes.includes(this.barcodeInput.trim())) {
       alert('This barcode already exists!');
@@ -274,17 +240,17 @@ export class AddProduct {
     this.barcodes.push(this.barcodeInput.trim());
     this.barcodeInput = '';
 
-    console.log(`Added barcode. Total: ${this.barcodes.length}/${this.add_product.openingStock}`);
+    console.log(`Added barcode. Total: ${this.barcodes.length}`);
   }
 
   removeBarcode(index: number) {
     this.barcodes.splice(index, 1);
-    console.log(`Removed barcode. Total: ${this.barcodes.length}/${this.add_product.openingStock}`);
+    console.log(`Removed barcode. Total: ${this.barcodes.length}`);
   }
 
   scanBarcode() {
-    if (this.barcodes.length >= this.add_product.openingStock) {
-      alert(`Maximum ${this.add_product.openingStock} barcodes allowed.`);
+    if (!this.add_product.serialNo) {
+      alert('Please enable serial number tracking first.');
       return;
     }
 
@@ -306,7 +272,7 @@ export class AddProduct {
     this.barcodes.push(scannedBarcode);
     this.barcodeInput = '';
 
-    console.log(`Scanned barcode. Total: ${this.barcodes.length}/${this.add_product.openingStock}`);
+    console.log(`Scanned barcode. Total: ${this.barcodes.length}`);
   }
 
   async adding_product() {
@@ -368,7 +334,7 @@ export class AddProduct {
         console.log('✅ Stock record created:', stockResponse);
       }
 
-      // Step 3: Create barcode records (only if serial number is required)
+      // Step 3: Create barcode records (only if serial number is required and barcodes exist)
       if (this.add_product.serialNo && this.barcodes.length > 0) {
         console.log('Step 3: Creating barcode records for product:', productId);
 
@@ -384,7 +350,8 @@ export class AddProduct {
         console.log('✅ Barcode records created:', barcodeResponse);
       }
 
-      alert('✅ Product, stock record and barcodes created successfully!');
+      alert('✅ Product and stock record created successfully!' + 
+            (this.barcodes.length > 0 ? ' Barcodes also added.' : ''));
       this.resetForm();
     } catch (error: any) {
       console.error('❌ Error:', error);
