@@ -107,7 +107,7 @@
 
   <!-- ================= FILTER TOGGLE BAR ================= -->
   <div
-    class="flex items-center justify-between w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 transition"
+    class="flex items-center justify-between w-full p-4 bg-white border border-gray-200 rounded-lg  cursor-pointer hover:bg-gray-50 transition"
     (click)="toggleFilters()"
   >
     <!-- Left Side -->
@@ -259,7 +259,7 @@
 
   <!-- Products Table -->
   <div
-    class="bg-white mt-7 border border-gray-200 rounded-2xl overflow-x-hidden"
+    class="bg-white mt-3 border border-gray-200 rounded-2xl overflow-x-hidden"
     *ngIf="filteredProducts.length"
   >
     <div class="overflow-x-auto relative">
@@ -289,7 +289,7 @@
             <td class="px-8 py-3 whitespace-nowrap">
               <div class="flex items-center">
                 <span
-                  class=" flex items-center justify-center bg-gray-100 text-gray-700 rounded-lg text-sm font-bold"
+                  class="flex items-center justify-center bg-gray-100 text-gray-700 rounded-lg text-sm font-bold"
                 >
                   {{ i + 1 }}
                 </span>
@@ -298,7 +298,7 @@
 
             <!-- Item Name -->
             <td class="px-8 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ p.product.item_Name }}</div>
+              <div class="text-sm font-medium text-gray-900">{{ p.product.item_Name }}</div>
               <!-- <div class="text-xs text-gray-500 mt-1 truncate max-w-xs">
                 {{ p.product.item_Description | slice: 0 : 50 }}...
               </div> -->
@@ -306,7 +306,7 @@
 
             <!-- SKU/Model -->
             <td class="px-8 whitespace-nowrap">
-              <div class="text-sm text-gray-700 font-mono">{{ p.product.modelNoSKU }}</div>
+              <div class="text-sm  text-gray-700 font-mono">{{ p.product.modelNoSKU }}</div>
             </td>
 
             <!-- Unit -->
@@ -317,7 +317,7 @@
             </td>
 
             <!-- Status -->
-            <td class="px-8  whitespace-nowrap">
+            <td class="px-8 whitespace-nowrap">
               <span
                 [ngClass]="
                   p.product.isActive
@@ -337,14 +337,14 @@
             <!-- Actual Price -->
             <td class="px-8 whitespace-nowrap">
               <div class="text-sm font-medium text-gray-700">
-                ₹{{ p.product.actual_item_price }}
+                {{ p.product.actual_item_price }}
               </div>
             </td>
 
             <!-- Selling Price -->
             <td class="px-8 whitespace-nowrap">
               <div class="text-sm font-medium text-green-600">
-                ₹{{ p.product.selling_item_price }}
+                {{ p.product.selling_item_price }}
               </div>
             </td>
 
@@ -357,7 +357,7 @@
 
             <!-- Final Price -->
             <td class="px-8 whitespace-nowrap">
-              <div class="text-sm font-bold text-blue-600">₹{{ p.product.item_final_price }}</div>
+              <div class="text-sm font-bold text-blue-600">{{ p.product.item_final_price }}</div>
             </td>
 
             <!-- Opening Stock -->
@@ -383,19 +383,34 @@
                 </div>
               </div>
             </td>
+            <!-- Barcodes -->
+            <td class="px-8 whitespace-nowrap">
+              <div class="text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <span class="text-sm  ">{{p.product.createdAt | date: 'dd-MMM-yyyy' }}</span>
+                </div>
+              </div>
+            </td>
+            <!-- Barcodes -->
+            <td class="px-8 whitespace-nowrap">
+              <div class="text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <span class="text-sm  ">{{ p.product.updatedAt | date: 'dd-MMM-yyyy' }}</span>
+                </div>
+              </div>
+            </td>
 
             <!-- Actions -->
-            <td
-              class="px-8 whitespace-nowrap bg-white md:sticky md:right-0 md:bg-white md:border-l md:border-gray-200"
+             <td
+              class="px-6 py-4 whitespace-nowrap bg-white md:sticky md:right-0 md:bg-gradient-to-l md:from-white md:via-white md:to-transparent md:border-l md:border-gray-200"
             >
-              <div class="flex items-center gap-1">
-                <!-- Description Eye Icon -->
+              <div class="flex items-center gap-2">
                 <button
                   (click)="openDescriptionModal(p)"
-                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500"
                   title="View Description"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -411,13 +426,12 @@
                   </svg>
                 </button>
 
-                <!-- Transactions Icon -->
                 <button
                   (click)="openTransactionsModal(p)"
-                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 hover:border-emerald-500"
                   title="View Transactions"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -427,13 +441,12 @@
                   </svg>
                 </button>
 
-                <!-- Barcodes Icon -->
                 <button
                   (click)="openBarcodesModal(p)"
-                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-purple-600 hover:bg-purple-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 hover:border-purple-500"
                   title="View Barcodes"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -443,13 +456,12 @@
                   </svg>
                 </button>
 
-                <!-- Edit Icon -->
                 <button
                   [routerLink]="['/admin/products', p?.product?._id]"
-                  class="p-2.5 bg-white text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-indigo-600 hover:bg-indigo-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 hover:border-indigo-500"
                   title="Edit Product"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -459,13 +471,12 @@
                   </svg>
                 </button>
 
-                <!-- Delete Button -->
                 <button
                   (click)="delete_products(p._id)"
-                  class="p-2.5 bg-white text-red-600 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110"
+                  class="p-2.5 bg-white text-red-600 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 hover:scale-110 shadow-sm hover:shadow-md border border-gray-200 hover:border-red-500"
                   title="Delete"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
@@ -578,131 +589,139 @@
     </div>
   </div>
 
-  <!-- Transactions Modal -->
+ <!-- Transactions Modal -->
+<div
+  *ngIf="showTransactionsModal"
+  class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+>
   <div
-    *ngIf="showTransactionsModal"
-    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+    class="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-5xl mx-auto max-h-[90vh] overflow-hidden"
   >
     <div
-      class="bg-white border border-gray-200 rounded-2xl shadow-2xl w-full max-w-5xl mx-auto max-h-[90vh] overflow-hidden"
+      class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-2xl"
     >
-      <div
-        class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-2xl"
-      >
-        <div class="flex justify-between items-center">
-          <div>
-            <h3 class="text-2xl font-bold text-gray-900">📊 Transaction History</h3>
-            <div class="flex items-center gap-4 mt-2">
-              <p class="text-gray-600 text-sm" *ngIf="selectedProduct">
-                {{ selectedProduct.product.item_Name }}
-              </p>
-              <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                {{ selectedTransactions.length }} transactions
-              </span>
-            </div>
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-2xl font-bold text-gray-900">📊 Transaction History</h3>
+          <div class="flex items-center gap-4 mt-2">
+            <p class="text-gray-600 text-sm" *ngIf="selectedProduct">
+              {{ selectedProduct.product.item_Name }}
+            </p>
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+              {{ selectedTransactions.length }} transactions
+            </span>
           </div>
-          <button
-            (click)="closeModal()"
-            class="text-gray-500 hover:text-gray-700 text-3xl hover:scale-110 transition-transform"
-          >
-            &times;
-          </button>
+        </div>
+        <button
+          (click)="closeModal()"
+          class="text-gray-500 hover:text-gray-700 text-3xl hover:scale-110 transition-transform"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+    <div class="p-8 overflow-y-auto max-h-[70vh]">
+      <div *ngIf="selectedTransactions.length; else noTransactions">
+        <div class="overflow-x-auto bg-white rounded-lg shadow">
+          <table class="min-w-full border border-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="border px-4 py-3 text-left" *ngFor="let data of tableheaderbody">
+                  {{ data }}
+                </th>
+                <!-- New Stock Price Column Header -->
+                <th class="border px-4 py-3 text-left bg-gray-100 text-gray-800 font-bold">
+                  Stock Price
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let transaction of selectedTransactions; let i = index"
+                class="hover:bg-gray-50 transition duration-200"
+              >
+                <td class="border px-4 py-3 text-sm text-gray-600">{{ i + 1 }}</td>
+                <td class="border px-4 py-3 text-sm font-medium">
+                  <span class="inline-flex items-center gap-2">
+                    <span
+                      class="w-2 h-2 rounded-full"
+                      [ngClass]="{
+                        'bg-green-600': transaction.type === 'Stock-In',
+                        'bg-red-600': transaction.type === 'Stock-Out',
+                        'bg-blue-600': transaction.type === 'Opening',
+                      }"
+                    ></span>
+                    {{ transaction.type }}
+                  </span>
+                </td>
+                <td class="border px-4 py-3 text-sm text-gray-500">
+                  {{ transaction.date | date: 'dd-MMM-yyyy' }}
+                </td>
+                <td
+                  class="border px-4 py-3 text-sm font-bold"
+                  [ngClass]="{
+                    'text-green-600': transaction.type === 'Stock-In',
+                    'text-red-600': transaction.type === 'Stock-Out',
+                    'text-blue-600': transaction.type === 'Opening',
+                  }"
+                >
+                  {{ transaction.quantity }}
+                </td>
+                <td class="border px-4 py-3 text-sm text-gray-700">
+                  {{ transaction.costPrice }}
+                </td>
+                <td class="border px-4 py-3 text-sm text-gray-700">
+                  {{ transaction.salePrice }}
+                </td>
+                <td class="border px-4 py-3 text-sm text-gray-700">
+                  {{ transaction.discount }}
+                </td>
+                <td class="border px-4 py-3 text-sm text-gray-700">
+                  {{ transaction.finalPrice }}
+                </td>
+                <!-- New Stock Price Column Data -->
+                <td class="border px-4 py-3 text-sm ">
+                  {{ getStockPrice(transaction) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="p-8 overflow-y-auto max-h-[70vh]">
-        <div *ngIf="selectedTransactions.length; else noTransactions">
-          <div class="overflow-x-auto bg-white rounded-lg shadow">
-            <table class="min-w-full border border-gray-200">
-              <thead class="bg-gray-100">
-                <tr>
-                  <th class="border px-4 py-3 text-left" *ngFor="let data of tableheaderbody">
-                    {{ data }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let transaction of selectedTransactions; let i = index"
-                  class="hover:bg-gray-50 transition duration-200"
-                >
-                  <td class="border px-4 py-3 text-sm text-gray-600">{{ i + 1 }}</td>
-                  <td class="border px-4 py-3 text-sm font-medium">
-                    <span class="inline-flex items-center gap-2">
-                      <span
-                        class="w-2 h-2 rounded-full"
-                        [ngClass]="{
-                          'bg-green-600': transaction.type === 'Stock-In',
-                          'bg-red-600': transaction.type === 'Stock-Out',
-                          'bg-blue-600': transaction.type === 'Opening',
-                        }"
-                      ></span>
-                      {{ transaction.type }}
-                    </span>
-                  </td>
-                  <td class="border px-4 py-3 text-sm text-gray-500">
-                    {{ transaction.date | date: 'dd-MMM-yyyy' }}
-                  </td>
-                  <td
-                    class="border px-4 py-3 text-sm font-bold"
-                    [ngClass]="{
-                      'text-green-600': transaction.type === 'Stock-In',
-                      'text-red-600': transaction.type === 'Stock-Out',
-                      'text-blue-600': transaction.type === 'Opening',
-                    }"
-                  >
-                    {{ transaction.quantity }}
-                  </td>
-                  <td class="border px-4 py-3 text-sm text-gray-700">
-                    {{ transaction.costPrice }}
-                  </td>
-                  <td class="border px-4 py-3 text-sm text-gray-700">
-                    {{ transaction.salePrice }}
-                  </td>
-                  <td class="border px-4 py-3 text-sm text-gray-700">
-                    {{ transaction.discount }}
-                  </td>
-                  <td class="border px-4 py-3 text-sm text-gray-700">
-                    {{ transaction.finalPrice }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <ng-template #noTransactions>
-          <div class="text-center py-16">
-            <div
-              class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-200"
-            >
-              <svg
-                class="w-16 h-16 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            <h4 class="text-xl font-bold text-gray-700 mb-3">No Transactions Found</h4>
-            <p class="text-gray-600">There are no transaction records for this product yet.</p>
-          </div>
-        </ng-template>
-        <div class="flex justify-end mt-8">
-          <button
-            (click)="closeModal()"
-            class="px-8 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all duration-300"
+      <ng-template #noTransactions>
+        <div class="text-center py-16">
+          <div
+            class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center border-2 border-gray-200"
           >
-            Close
-          </button>
+            <svg
+              class="w-16 h-16 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </div>
+          <h4 class="text-xl font-bold text-gray-700 mb-3">No Transactions Found</h4>
+          <p class="text-gray-600">There are no transaction records for this product yet.</p>
         </div>
+      </ng-template>
+      <div class="flex justify-end mt-8">
+        <button
+          (click)="closeModal()"
+          class="px-8 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all duration-300"
+        >
+          Close
+        </button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Barcodes Modal -->
   <div

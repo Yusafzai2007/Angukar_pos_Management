@@ -6,8 +6,11 @@ import {
   StockOutApiResponsedata,
   StockOutItemdata,
 } from '../../Typescript/stcokout/stock_out_data';
-import { StockOutCategoryDisplay, StockOutCategoryResponse } from '../../Typescript/category/stockout_category';
-import { RouterLink } from "@angular/router";
+import {
+  StockOutCategoryDisplay,
+  StockOutCategoryResponse,
+} from '../../Typescript/category/stockout_category';
+import { RouterLink } from '@angular/router';
 
 interface TableRow {
   stockOutId: string;
@@ -48,15 +51,15 @@ export class FetchStockout implements OnInit {
   searchIsActive = '';
   searchCategoryId = '';
   searchModelSKU = '';
-  
+
   // Category dropdown
   showCategoryDropdown = false;
   categorySearch = '';
-  
+
   // Modals
   showItemsModal = false;
   showBarcodeModal = false;
-  
+
   // Selected data for modals
   selectedStockOut: StockOutItemdata | null = null;
   selectedItems: StockOutItem[] = [];
@@ -78,7 +81,7 @@ export class FetchStockout implements OnInit {
     'Stock-Out Date',
     'CreatedAt',
     'UpdatedAt',
-    'Actions'
+    'Actions',
   ];
 
   // Eye modal headers
@@ -92,7 +95,7 @@ export class FetchStockout implements OnInit {
     'Remaining',
     'Quantity',
     'Unit',
-    'Serial No'
+    'Serial No',
   ];
 
   constructor(private service: Stockoutservice) {}
@@ -122,7 +125,7 @@ export class FetchStockout implements OnInit {
         // Calculate total selling price for proportion
         const totalSellingPrice = stockOutItem.itemId.reduce(
           (sum, item) => sum + (item.selling_item_price || 0),
-          0
+          0,
         );
 
         stockOutItem.itemId.forEach((item, index) => {
@@ -133,7 +136,7 @@ export class FetchStockout implements OnInit {
 
           // Calculate sale distribution based on selling price
           let itemSale = 0;
-          
+
           if (stockOutItem.itemId.length === 1) {
             // Single item - use total sale
             itemSale = stockOutItem.Total_sale;
@@ -174,18 +177,18 @@ export class FetchStockout implements OnInit {
   getUniqueTableRows(): TableRow[] {
     const uniqueRows: TableRow[] = [];
     const seenIds = new Set<string>();
-    
+
     // Group by stockOutId and calculate total sale per stock-out
     const stockOutTotals = new Map<string, number>();
-    
-    this.tableRows.forEach(row => {
+
+    this.tableRows.forEach((row) => {
       if (!stockOutTotals.has(row.stockOutId)) {
         stockOutTotals.set(row.stockOutId, 0);
       }
       stockOutTotals.set(row.stockOutId, stockOutTotals.get(row.stockOutId)! + row.totalSale);
     });
-    
-    this.tableRows.forEach(row => {
+
+    this.tableRows.forEach((row) => {
       if (!seenIds.has(row.stockOutId)) {
         seenIds.add(row.stockOutId);
         // Create a copy and set the total sale to the sum of all items
@@ -194,15 +197,15 @@ export class FetchStockout implements OnInit {
         uniqueRows.push(uniqueRow);
       }
     });
-    
+
     return uniqueRows;
   }
 
   // Get item display name for a stock-out record
   getItemDisplayName(stockOutId: string): string {
-    const stockOut = this.stockoutData.find(item => item._id === stockOutId);
+    const stockOut = this.stockoutData.find((item) => item._id === stockOutId);
     if (!stockOut?.itemId) return 'N/A';
-    
+
     if (stockOut.itemId.length === 1) {
       // Single item - show item name
       return stockOut.itemId[0].item_Name || 'N/A';
@@ -214,9 +217,9 @@ export class FetchStockout implements OnInit {
 
   // Get total quantity for a stock-out record
   getTotalQuantity(stockOutId: string): number {
-    const stockOut = this.stockoutData.find(item => item._id === stockOutId);
+    const stockOut = this.stockoutData.find((item) => item._id === stockOutId);
     if (!stockOut?.quantity) return 0;
-    
+
     if (Array.isArray(stockOut.quantity)) {
       return stockOut.quantity.reduce((sum, qty) => sum + (qty || 0), 0);
     }
@@ -225,10 +228,10 @@ export class FetchStockout implements OnInit {
 
   // Open Items Modal
   openItemsModal(stockOutId: string): void {
-    const stockOutItem = this.stockoutData.find(item => item._id === stockOutId);
+    const stockOutItem = this.stockoutData.find((item) => item._id === stockOutId);
     if (stockOutItem) {
       this.selectedStockOut = stockOutItem;
-      
+
       this.selectedItems = [];
       if (stockOutItem.itemId && stockOutItem.itemId.length > 0) {
         stockOutItem.itemId.forEach((item, index) => {
@@ -236,14 +239,14 @@ export class FetchStockout implements OnInit {
             stockOutItem.quantity && stockOutItem.quantity[index] !== undefined
               ? stockOutItem.quantity[index]
               : stockOutItem.quantity?.[0] || 1;
-          
-          this.selectedItems.push({ 
-            item: item, 
-            quantity: quantity 
+
+          this.selectedItems.push({
+            item: item,
+            quantity: quantity,
           });
         });
       }
-      
+
       this.showItemsModal = true;
     }
   }
@@ -296,41 +299,47 @@ export class FetchStockout implements OnInit {
     if (!this.categorySearch) {
       return this.stockOutCategories;
     }
-    return this.stockOutCategories.filter(category =>
-      category.stockoutCategoryName.toLowerCase().includes(this.categorySearch.toLowerCase())
+    return this.stockOutCategories.filter((category) =>
+      category.stockoutCategoryName.toLowerCase().includes(this.categorySearch.toLowerCase()),
     );
   }
 
   applyFilters(): void {
     const uniqueRows = this.getUniqueTableRows();
-    
-    this.filteredRows = uniqueRows.filter(row => {
-      const stockOut = this.stockoutData.find(item => item._id === row.stockOutId);
+
+    this.filteredRows = uniqueRows.filter((row) => {
+      const stockOut = this.stockoutData.find((item) => item._id === row.stockOutId);
       if (!stockOut) return false;
-      
+
       // Check if any item matches the search criteria
-      const hasMatchingItem = !this.searchItemName && !this.searchModelSKU ? true :
-        stockOut.itemId?.some(item => {
-          const itemNameMatch = !this.searchItemName || 
-            item.item_Name?.toLowerCase().includes(this.searchItemName.toLowerCase());
-          const skuMatch = !this.searchModelSKU || 
-            item.modelNoSKU?.toLowerCase().includes(this.searchModelSKU.toLowerCase());
-          return itemNameMatch && skuMatch;
-        });
-      
+      const hasMatchingItem =
+        !this.searchItemName && !this.searchModelSKU
+          ? true
+          : stockOut.itemId?.some((item) => {
+              const itemNameMatch =
+                !this.searchItemName ||
+                item.item_Name?.toLowerCase().includes(this.searchItemName.toLowerCase());
+              const skuMatch =
+                !this.searchModelSKU ||
+                item.modelNoSKU?.toLowerCase().includes(this.searchModelSKU.toLowerCase());
+              return itemNameMatch && skuMatch;
+            });
+
       // Check active status
-      const isActiveMatch = !this.searchIsActive || 
+      const isActiveMatch =
+        !this.searchIsActive ||
         (this.searchIsActive === 'active' && stockOut.isActive) ||
         (this.searchIsActive === 'inactive' && !stockOut.isActive);
-      
+
       // Check category
-      const categoryMatch = !this.searchCategoryId || 
-        stockOut.stockOutCategoryId?._id === this.searchCategoryId;
-      
+      const categoryMatch =
+        !this.searchCategoryId || stockOut.stockOutCategoryId?._id === this.searchCategoryId;
+
       // Check invoice
-      const invoiceMatch = !this.searchInvoiceNo || 
+      const invoiceMatch =
+        !this.searchInvoiceNo ||
         row.invoiceNo?.toLowerCase().includes(this.searchInvoiceNo.toLowerCase());
-      
+
       return hasMatchingItem && isActiveMatch && categoryMatch && invoiceMatch;
     });
   }
@@ -348,7 +357,10 @@ export class FetchStockout implements OnInit {
   deleteStockOut(id: string): void {
     if (confirm('Are you sure you want to delete this stock-out record?')) {
       console.log('Delete stock-out:', id);
-      // Implement delete functionality here
+      this.service.delete_stock_out(id).subscribe((res) => {
+        console.log('Delete response:', res);
+        this.fetch_data();
+      });
     }
   }
 

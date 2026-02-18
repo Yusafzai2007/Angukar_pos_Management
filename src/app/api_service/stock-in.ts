@@ -36,68 +36,37 @@ export class StockInStockInService {
     return this.http.get<StockOutCategoryResponse>(`${this.apiUrl}/get_stockOut_categories`);
   }
 
-
-
   // Strongly typed method
   Id_stcoIn(id: string): Observable<EditStockInResponse> {
     return this.http.get<EditStockInResponse>(`${this.apiUrl}/get_stockInById/${id}`);
   }
 
- 
+  // In your stock-in.service.ts, add these methods:
 
+  update_stockIn(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update_stockIn/${id}`, data);
+  }
 
- 
-// In your stock-in.service.ts, add these methods:
-
-update_stockIn(id: string, data: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/update_stockIn/${id}`, data);
-}
-
-delete_stockIn(id: string): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/delete_stockIn/${id}`);
-}
-
-
-
-
-
-
+  delete_stockIn(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete_stockIn/${id}`);
+  }
 
   // stock-in.service.ts میں یہ methods شامل کریں
 
-// Get stock out by ID
-Id_stockOut(id: string): Observable<edit_stocuout_StockOutApiResponse> {
-  return this.http.get<edit_stocuout_StockOutApiResponse>(`${this.apiUrl}/get_stockOutById/${id}`);
-}
+  // Get stock out by ID
+  Id_stockOut(id: string): Observable<edit_stocuout_StockOutApiResponse> {
+    return this.http.get<edit_stocuout_StockOutApiResponse>(
+      `${this.apiUrl}/get_stockOutById/${id}`,
+    );
+  }
 
-// Update stock out
-update_stockOut(id: string, data: any): Observable<any> {
-  return this.http.put(`${this.apiUrl}/stock-out/${id}`, data);
-}
+  // Update stock out
+  update_stockOut(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/stock-out/${id}`, data);
+  }
 
-// Delete stock out
-delete_stockOut(id: string): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/delete_stockOut/${id}`);
-}
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Delete stock out
+  delete_stockOut(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete_stockOut/${id}`);
+  }
 }

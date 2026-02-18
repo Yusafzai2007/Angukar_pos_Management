@@ -50,26 +50,29 @@ export interface StockItem {
 }
 
 /* =========================
-   TRANSACTION
+   TRANSACTION (UPDATED)
 ========================= */
 
 export interface Transaction {
   _id: string;
   date: string; // ISO Date
   quantity: number;
-  type: 'Opening' | 'Stock-In' | 'Stock-Out'; // <-- updated
+  type: 'Opening' | 'Stock-In' | 'Stock-Out';
   reference: string;
 
-  // New fields
+  // Existing fields
   costPrice: number;
   salePrice: number;
   discount: number;
   finalPrice: number;
+
+  // New fields for stock price calculation
+  stockInCost?: number;      // For Stock-In transactions
+  Total_sale?: number;       // For Stock-Out transactions
 }
 
-
 /* =========================
-   PRODUCT (UPDATED)
+   PRODUCT
 ========================= */
 
 export interface Product {

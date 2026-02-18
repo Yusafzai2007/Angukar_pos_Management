@@ -55,6 +55,19 @@ export class ProductsComponent implements OnInit {
     'Opening',
     'Remaining',
     'Barcodes',
+    'CreatedAt',
+    'UpdatedAt',
+  ];
+
+  tableheaderbody: string[] = [
+    '#',
+    'Type',
+    'Date',
+    'Quantity',
+    'Cost Price',
+    'Sale Price',
+    'Discount',
+    'Final Price',
   ];
 
   constructor(
@@ -199,46 +212,35 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-
-
-
-tableheaderbody: string[] = [
-  '#',
-  'Type',
-  'Date',
-  'Quantity',
-  'Cost Price',
-  'Sale Price',
-  'Discount ',
-  'Final Price',
-
-
-
-]
-
-
-
-
-
-
-
-
-
-
-
-toggleStatusFilter(): void {
-  if (this.statusFilter === 'all') {
-    this.statusFilter = 'active';
-  } else if (this.statusFilter === 'active') {
-    this.statusFilter = 'inactive';
-  } else {
-    this.statusFilter = 'all';
+  toggleStatusFilter(): void {
+    if (this.statusFilter === 'all') {
+      this.statusFilter = 'active';
+    } else if (this.statusFilter === 'active') {
+      this.statusFilter = 'inactive';
+    } else {
+      this.statusFilter = 'all';
+    }
+    this.filterProducts(); // Apply filter immediately
   }
-  this.filterProducts(); // Apply filter immediately
-}
 
-
-
-
-
+  /**
+   * Get stock price based on transaction type:
+   * - Opening: returns 0
+   * - Stock-In: returns stockInCost
+   * - Stock-Out: returns Total_sale
+   */
+  getStockPrice(transaction: Transaction): number {
+    switch(transaction.type) {
+      case 'Opening':
+        return 0;
+      case 'Stock-In':
+        // Use stockInCost if available, otherwise fall back to costPrice
+        return (transaction as any).stockInCost || transaction.costPrice || 0;
+      case 'Stock-Out':
+        // Use Total_sale if available
+        return (transaction as any).Total_sale || 0;
+      default:
+        return 0;
+    }
+  }
 }

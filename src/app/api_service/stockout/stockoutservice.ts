@@ -44,5 +44,27 @@ export class Stockoutservice {
 
 
 
+
+
+delete_stock_out(id: string): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/delete-stock-out/${id}`)
+ } ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 }
