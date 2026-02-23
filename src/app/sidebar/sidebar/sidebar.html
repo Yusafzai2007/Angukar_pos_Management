@@ -19,7 +19,7 @@
       <p class="text-sm text-gray-300 flex items-center gap-2">
         <span>{{ currentUserData?.email }}</span>
 
-        <span class="bg-indigo-600 px-2 py-0.5 rounded-md text-xs">
+        <span class="bg-indigo-700 text-white px-2 py-0.5 rounded-md text-xs">
           {{ currentUserData?.role }}
         </span>
       </p>
@@ -70,8 +70,8 @@
     <!-- 📊 Dashboard Link (at the top) -->
     <li>
       <!-- Dashboard Link with click handler -->
-      <a 
-        routerLink="/admin/dashboard" 
+      <a
+        routerLink="/admin/dashboard"
         (click)="closeSidebarOnMobile()"
         class="block hover:bg-gray-700 rounded transition"
       >
@@ -142,8 +142,8 @@
           </div>
 
           <!-- 👥 Users Link with click handler -->
-          <a 
-            routerLink="/admin/users" 
+          <a
+            routerLink="/admin/users"
             (click)="closeSidebarOnMobile()"
             class="block w-full hover:bg-gray-700 rounded transition"
           >
@@ -165,8 +165,8 @@
 
           <!-- 📦 All Inventory Items (Product_group, Add_Product, Products) with click handlers -->
           <ng-container *ngFor="let item of getInventoryItems()">
-            <a 
-              [routerLink]="item.link" 
+            <a
+              [routerLink]="item.link"
               (click)="closeSidebarOnMobile()"
               class="block w-full hover:bg-gray-700 rounded transition"
             >
@@ -191,8 +191,8 @@
 
           <!-- 📦 Stock Management Items with click handlers -->
           <!-- StockIn Link -->
-          <a 
-            routerLink="/admin/StockIn" 
+          <a
+            routerLink="/admin/StockIn"
             (click)="closeSidebarOnMobile()"
             class="block w-full hover:bg-gray-700 rounded transition"
           >
@@ -203,8 +203,8 @@
           </a>
 
           <!-- StockOut Link -->
-          <a 
-            routerLink="/admin/stockout" 
+          <a
+            routerLink="/admin/stockout"
             (click)="closeSidebarOnMobile()"
             class="block w-full hover:bg-gray-700 rounded transition"
           >
