@@ -9,7 +9,7 @@ import { Stockoutservice } from '../../api_service/stockout/stockoutservice';
 import { ServiceData } from '../../create_account/api_service/service-data';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FetchStockout } from "../fetch-stockout/fetch-stockout";
+import { FetchStockout } from '../fetch-stockout/fetch-stockout';
 
 @Component({
   selector: 'app-stockout',
@@ -125,11 +125,14 @@ export class Stockout implements OnInit {
   }
 
   // Notification system
-  showNotificationMessage(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'success'): void {
+  showNotificationMessage(
+    message: string,
+    type: 'success' | 'error' | 'info' | 'warning' = 'success',
+  ): void {
     this.notificationMessage = message;
     this.notificationType = type;
     this.showNotification = true;
-    
+
     // Auto hide after 5 seconds
     setTimeout(() => {
       this.showNotification = false;
@@ -212,8 +215,8 @@ export class Stockout implements OnInit {
     }
 
     const searchTerm = this.categorySearch.toLowerCase();
-    this.filteredCategories = this.stockOutCategories.filter(category =>
-      category.stockoutCategoryName.toLowerCase().includes(searchTerm)
+    this.filteredCategories = this.stockOutCategories.filter((category) =>
+      category.stockoutCategoryName.toLowerCase().includes(searchTerm),
     );
   }
 
@@ -311,17 +314,17 @@ export class Stockout implements OnInit {
     if (this.selectedRowIndex !== -1) {
       // Check if product is already added
       const isAlreadyAdded = this.productRows.some(
-        (row, idx) => idx !== this.selectedRowIndex && row._id === product.product._id
+        (row, idx) => idx !== this.selectedRowIndex && row._id === product.product._id,
       );
-      
+
       if (isAlreadyAdded) {
         this.showNotificationMessage(
           `${product.product.item_Name} is already added to the list.`,
-          'warning'
+          'warning',
         );
         return;
       }
-      
+
       this.fillProductDetails(this.selectedRowIndex, product);
       this.closeProductSearchModal();
     }
@@ -490,7 +493,7 @@ export class Stockout implements OnInit {
         console.error('Error updating product:', err);
         this.showNotificationMessage(
           err.error?.message || 'Failed to update product details',
-          'error'
+          'error',
         );
       },
     });
@@ -505,7 +508,7 @@ export class Stockout implements OnInit {
       row.quantity = row.currentStock;
       this.showNotificationMessage(
         `Cannot sell more than available stock (${row.currentStock})`,
-        'error'
+        'error',
       );
     }
 
@@ -523,7 +526,7 @@ export class Stockout implements OnInit {
     let total = 0;
     this.productRows.forEach((row) => {
       if (row._id && row.quantity > 0) {
-        total += row.salePrice * row.quantity;
+        total += row.finalPrice * row.quantity;
       }
     });
     this.stockOutData.Total_sale = parseFloat(total.toFixed(2));
@@ -607,10 +610,7 @@ export class Stockout implements OnInit {
       error: (err) => {
         this.savingBarcodes = false;
         console.error(err);
-        this.showNotificationMessage(
-          err.error?.message || 'Failed to save barcodes',
-          'error'
-        );
+        this.showNotificationMessage(err.error?.message || 'Failed to save barcodes', 'error');
       },
     });
   }
@@ -645,7 +645,7 @@ export class Stockout implements OnInit {
     if (!this.isFormValid()) {
       this.showNotificationMessage(
         'Please fill all required fields and add at least one product with valid quantity',
-        'error'
+        'error',
       );
       return;
     }
@@ -686,12 +686,12 @@ export class Stockout implements OnInit {
           this.currentStockOutId = res.data._id;
           this.stockOutNumber = res.data.stockOutNumber || `STOCKOUT-${new Date().getTime()}`;
         }
-   this.resetForm();
-          this.toggleMainForm();
+        this.resetForm();
+        this.toggleMainForm();
 
         this.showNotificationMessage(
           `Stock Out created successfully! Stock Out Number: ${this.stockOutNumber}`,
-          'success'
+          'success',
         );
 
         // Reset barcode saved status for all products
@@ -707,7 +707,7 @@ export class Stockout implements OnInit {
       },
       error: (err) => {
         console.error('Error creating Stock Out:', err);
-        
+
         // Handle specific error codes
         let errorMessage = 'Failed to create stock out';
         if (err.status === 400) {
@@ -717,7 +717,7 @@ export class Stockout implements OnInit {
         } else if (err.status === 404) {
           errorMessage = 'One or more products not found';
         }
-        
+
         this.showNotificationMessage(errorMessage, 'error');
         this.submitting = false;
       },
