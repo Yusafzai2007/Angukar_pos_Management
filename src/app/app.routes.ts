@@ -18,6 +18,7 @@ import { EditUser } from './add_users/edit-user/edit-user';
 import { StockTransaction } from './transaction/stock-transaction/stock-transaction';
 import { authGuard } from './auth-guard';
 import { Dashboard } from './Dashobard/dashboard/dashboard';
+import { ItemStatus } from './transaction/item-status/item-status';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,7 @@ export const routes: Routes = [
       { path: 'edit_user/:id', component: EditUser },
       { path: 'stock_transaction', component: StockTransaction },
       { path: 'dashboard', component: Dashboard },
+      { path: 'Item_transaction', component: ItemStatus },
     ],
   },
 ];

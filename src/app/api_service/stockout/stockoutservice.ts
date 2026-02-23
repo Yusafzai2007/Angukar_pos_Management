@@ -53,7 +53,30 @@ delete_stock_out(id: string): Observable<any> {
 
 
 
-
+// In your Stockoutservice class, add this method:
+get_stockOut_paginated(
+  page: number = 1,
+  limit: number = 10,
+  search: string = '',
+  status: string = 'all',
+  categoryId: string = '',
+  invoiceNo: string = '',
+  itemName: string = '',
+  modelSKU: string = ''
+): Observable<any> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+    search: search,
+    status: status,
+    categoryId: categoryId,
+    invoiceNo: invoiceNo,
+    itemName: itemName,
+    modelSKU: modelSKU
+  });
+  
+  return this.http.get<any>(`${this.apiUrl}/get_all_stockOut?${params.toString()}`);
+}
 
 
 

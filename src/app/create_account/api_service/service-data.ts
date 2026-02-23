@@ -96,7 +96,9 @@ export class ServiceData {
   }
 
   update_user(id: string, updatedata: updateuserdata): Observable<any> {
-    return this.http.put(`${this.apiUrl}/updaeuser/${id}`, updatedata);
+    return this.http.put(`${this.apiUrl}/updateuser/${id}`, updatedata, {
+      withCredentials: true,
+    });
   }
 
   singleuser(userId: string) {
@@ -221,30 +223,4 @@ export class ServiceData {
   delete_product(id: string) {
     return this.http.delete(`${this.apiUrl}/delete_item/${id}`);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
 }

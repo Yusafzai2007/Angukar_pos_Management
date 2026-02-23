@@ -1,0 +1,349 @@
+<div class="p-6 min-h-screen">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Item Status</h1>
+    <p class="text-gray-600">Manage item status and track stock records</p>
+  </div>
+  <div class=" ">
+    <h2 class="text-lg font-semibold text-gray-800">Item Stock Record ({{ totalItems }})</h2>
+  </div>
+
+  <div class="mt-5">
+    <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm flex items-center gap-4">
+      <div class="relative w-64">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          name="itemName"
+          placeholder=" "
+          class="peer block w-full px-7 pt-2 pb-2 text-sm text-slate-900 bg-transparent border border-slate-400 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400 transition-colors"
+        />
+
+        <label
+          class="absolute left-3 bg-white px-1 text-slate-700 pointer-events-none transition-all duration-200 top-1/2 -translate-y-1/2 text-md peer-focus:top-1 peer-focus:-translate-y-3 peer-focus:text-sm peer-focus:text-indigo-400 peer-[&:not(:placeholder-shown)]:top-1 peer-[&:not(:placeholder-shown)]:-translate-y-3 peer-[&:not(:placeholder-shown)]:text-sm peer-[&:not(:placeholder-shown)]:text-slate-700"
+        >
+          Item Name <span class="text-red-500">*</span>
+        </label>
+      </div>
+
+      <div class="relative w-32">
+        <select
+          [(ngModel)]="selectedYear"
+          (ngModelChange)="applyFilters()"
+          class="w-full appearance-none px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-600 cursor-pointer"
+        >
+          <option value="">All Years</option>
+          <option *ngFor="let year of availableYears" [value]="year">
+            {{ year }}
+          </option>
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
+        >
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <button
+        (click)="clearFilters()"
+        class="px-4 py-2 border border-blue-400 rounded text-blue-500 text-sm font-medium tracking-wide hover:bg-blue-50 transition-colors uppercase"
+      >
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden mt-5">
+    <!-- Table Section -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-700">
+        <thead class="bg-gray-50 text-gray-600 text-xs uppercase border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-3 font-medium">ID</th>
+            <th class="px-6 py-3 font-medium">Item</th>
+            <th class="px-6 py-3 font-medium">Model/SKU</th>
+            <th class="px-6 py-3 font-medium">Opening</th>
+            <th class="px-6 py-3 font-medium">Remaining</th>
+            <th class="px-6 py-3 font-medium">Updated At</th>
+            <th class="px-6 py-3 font-medium">Created At</th>
+            <th class="px-6 py-3 font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr
+            *ngFor="let item of filteredItems; let i = index"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td class="px-6 py-3 font-mono text-xs">{{ i + 1 }}</td>
+            <td class="px-6 py-3 font-medium">{{ item.productId.item_Name }}</td>
+            <td class="px-6 py-3">{{ item.productId.modelNoSKU || '-' }}</td>
+            <td class="px-6 py-3">{{ item.openingStock }}</td>
+            <td class="px-6 py-3">
+              <span
+                class="px-2 py-1 rounded-full text-xs font-semibold"
+                [class.bg-green-100]="item.remainingStock > 0"
+                [class.text-green-800]="item.remainingStock > 0"
+                [class.bg-red-100]="item.remainingStock === 0"
+                [class.text-red-800]="item.remainingStock === 0"
+              >
+                {{ item.remainingStock }}
+              </span>
+            </td>
+            <td class="px-6 py-3">{{ item.updatedAt | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3">{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3">
+              <button
+                (click)="openTransactionModal(item)"
+                class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-full transition-colors"
+                title="View Transactions"
+              >
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredItems.length === 0">
+            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+              No items found matching the filters.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction Modal -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 overflow-y-auto" (click)="closeModal()">
+  <div
+    class="fixed inset-0 bg-black transition-opacity duration-300"
+    [class.opacity-50]="showModal"
+    [class.opacity-0]="!showModal"
+  ></div>
+
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div
+      class="relative bg-white rounded-lg shadow-xl w-full max-w-5xl transform transition-all duration-300 ease-out"
+      [class.scale-100]="showModal"
+      [class.scale-95]="!showModal"
+      [class.opacity-100]="showModal"
+      [class.opacity-0]="!showModal"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="font-sans">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Transaction History</h2>
+            <p class="text-sm text-gray-500 uppercase tracking-wide">
+              {{ selectedItem?.productId?.item_Name }} - {{ selectedItem?.productId?.modelNoSKU }}
+            </p>
+          </div>
+          <div class="text-lg font-semibold text-gray-700">
+            Current Stock:
+            <span class="font-bold text-blue-600">{{ selectedItem?.remainingStock }}</span>
+          </div>
+        </div>
+
+        <!-- Date Filters -->
+        <div class="p-6 flex gap-4">
+          <div class="flex-1 relative">
+            <label class="absolute -top-2 left-3 px-1 bg-white text-xs text-gray-400"
+              >From Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="fromDate"
+              (ngModelChange)="filterTransactions()"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex-1 relative">
+            <label class="absolute -top-2 left-3 px-1 bg-white text-xs text-gray-400"
+              >To Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="toDate"
+              (ngModelChange)="filterTransactions()"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div class="mx-6 p-3 bg-white shadow-sm border border-gray-200 rounded-xl">
+          <h3 class="text-lg font-bold text-gray-800 mb-6">Inventory Summary</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="p-4 rounded-xl">
+              <p class="text-xs font-medium uppercase tracking-wider mb-1">Opening Balance</p>
+              <p class="text-3xl font-medium text-blue-700">{{ calculateOpeningBalance() }}</p>
+            </div>
+
+            <div class="p-4 rounded-xl">
+              <p class="text-xs font-medium uppercase tracking-wide mb-1">Remaining Stock</p>
+              <p class="text-3xl font-medium text-purple-700">
+                {{ selectedItem?.remainingStock || 0 }}
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl">
+              <p class="text-xs font-medium uppercase tracking-wider mb-1">Total Stock-In</p>
+              <p class="text-3xl font-medium text-green-700">
+                {{ calculateTotalStockInQuantity() }}
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl">
+              <p class="text-xs font-medium uppercase tracking-wider mb-1">Total Stock-Out</p>
+              <p class="text-3xl font-medium text-red-600">-{{ calculateTotalStockOut() }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <div
+            *ngIf="filteredNonOpeningTransactions.length === 0"
+            class="text-center py-8 text-gray-500 border border-gray-200 rounded-sm"
+          >
+            No transaction history found for this item.
+          </div>
+
+          <!-- Show table only if there are in/out transactions -->
+          <div
+            *ngIf="filteredNonOpeningTransactions.length > 0"
+            class="shadow-md rounded-sm overflow-hidden"
+          >
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="text-gray-500 text-sm border-b border-gray-200">
+                  <th class="py-3 font-medium px-4">Date</th>
+                  <th class="py-3 font-medium px-4">Type</th>
+                  <th class="py-3 font-medium px-4">Quantity</th>
+                  <th class="py-3 font-medium px-4">Reference</th>
+                  <th class="py-3 font-medium text-right px-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr
+                  *ngFor="let transaction of filteredNonOpeningTransactions"
+                  class="text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  <td class="py-4 px-4">{{ transaction.date | date: 'dd/MM/yyyy, HH:mm' }}</td>
+                  <td class="py-4 px-4">
+                    <span
+                      class="px-2 py-1 rounded-full text-xs font-semibold uppercase"
+                      [class.bg-green-100]="transaction.type === 'Stock-In'"
+                      [class.text-green-800]="transaction.type === 'Stock-In'"
+                      [class.bg-red-100]="transaction.type === 'Stock-Out'"
+                      [class.text-red-800]="transaction.type === 'Stock-Out'"
+                    >
+                      {{ transaction.type }}
+                    </span>
+                  </td>
+                  <td
+                    class="py-4 px-4 font-semibold"
+                    [class.text-green-600]="transaction.type === 'Stock-In'"
+                    [class.text-red-600]="transaction.type === 'Stock-Out'"
+                  >
+                    {{ transaction.type === 'Stock-Out' ? '-' : '+' }}{{ transaction.quantity }}
+                  </td>
+                  <td class="py-4 px-4 font-mono text-xs text-gray-500">
+                    {{ transaction.reference || '-' }}
+                  </td>
+                  <td class="py-4 px-4 text-right">
+                    <!-- Stock-In View Button - Updated to use routerLink -->
+                    <button
+                      *ngIf="transaction.type === 'Stock-In'"
+                      [routerLink]="['/admin/edit_stockIn', transaction.reference]"
+                      class="border border-blue-400 text-blue-500 px-3 py-1 rounded flex items-center gap-1 ml-auto hover:bg-blue-50 transition"
+                    >
+                      <span class="text-xs">
+                        <svg
+                          width="18px"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                            stroke="#2f6cac"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path>
+                          <path
+                            d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                            stroke="#2f6cac"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path></svg
+                      ></span>
+                      VIEW
+                    </button>
+
+                    <!-- Stock-Out View Button - Updated to use routerLink -->
+                    <button
+                      *ngIf="transaction.type === 'Stock-Out'"
+                      [routerLink]="['/admin/edit_stockout', transaction.reference]"
+                      class="border border-purple-400 text-purple-500 px-3 py-1 rounded flex items-center gap-1 ml-auto hover:bg-purple-50 transition"
+                    >
+                      <span class="text-xs">
+                        <svg
+                          width="18px"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                              stroke="#9f2d7b"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></path>
+                            <path
+                              d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                              stroke="#9f2d7b"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></path>
+                          </g></svg
+                      ></span>
+                      VIEW
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end rounded-b-lg">
+          <button
+            (click)="closeModal()"
+            class="text-blue-600 font-bold text-sm tracking-widest uppercase hover:underline px-4 py-2"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

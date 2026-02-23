@@ -3,35 +3,6 @@ export interface productGroup {
   group_description: string;
 }
 
-
-
-
-
-
-
-export interface CreateBarcodePayload {
-  barcode_serila: string[];
-  productId: string; // Ensure this exists
-  stockInId: string | null;
-  stockoutId: string | null;
-}
-
-export interface EditProductPayload {
-  itemGroupId?: string; // Add this
-  itemGroupName: string;
-  item_Name: string;
-  item_Description: string;
-  actual_item_price: number;
-  selling_item_price: number;
-  item_discount_price: number;
-  item_final_price: number;
-  modelNoSKU: string;
-  serialNo: boolean;
-  unit: string;
-  isActive: boolean;
-}
-
-
 export interface ItemGroup {
   _id: string;
   itemGroupName: string;
@@ -42,8 +13,18 @@ export interface ItemGroup {
   __v: number;
 }
 
+export interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 export interface ItemGroupResponse {
   data: ItemGroup[];
+  pagination: PaginationInfo;
   message: string;
   statuscode: number;
   success: boolean;

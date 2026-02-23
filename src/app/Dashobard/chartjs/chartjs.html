@@ -1,28 +1,53 @@
 <div class="p-6 md:w-[85vw] w-[99w] mx-auto">
-  <div class="md:flex justify-between">
+  <div class="md:flex justify-between items-start">
     <!-- Header Section -->
     <div class="mb-6">
       <h1 class="md:text-2xl text-xl font-bold text-gray-900">Inventory Management Dashboard</h1>
       <p class="text-sm text-gray-600 mt-1">Track & Monitor Stock in Real-Time</p>
     </div>
 
-    <!-- Year Filter with All Time Option -->
-    <div class="mb-6 bg-white rounded-lg shadow p-2 border border-gray-200">
-      <div class="flex items-center space-x-4">
-        <label class="text-sm font-medium text-gray-700">Select Period:</label>
-        <select
-          (change)="onPeriodChange($event)"
-          class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all" [selected]="selectedPeriod === 'all'">All Time</option>
-          <option
-            *ngFor="let year of availableYears"
-            [value]="year"
-            [selected]="selectedPeriod === year.toString()"
+    <!-- Controls Section -->
+    <div class="mb-6 flex items-center gap-4">
+      <!-- Format Toggle Button -->
+      <div class="bg-white rounded-lg shadow p-1 border border-gray-200">
+        <div class="flex items-center">
+          <button
+            (click)="toggleFormat()"
+            class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-2"
+            [class.bg-blue-600]="!showFullNumbers"
+            [class.text-white]="!showFullNumbers"
+            [class.bg-gray-100]="showFullNumbers"
+            [class.text-gray-700]="showFullNumbers"
           >
-            {{ year }}
-          </option>
-        </select>
+            <svg *ngIf="!showFullNumbers" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+            <svg *ngIf="showFullNumbers" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+            </svg>
+            {{ showFullNumbers ? 'Show Compact (K/M/B)' : 'Show Full Numbers' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Year Filter -->
+      <div class="bg-white rounded-lg shadow p-2 border border-gray-200">
+        <div class="flex items-center space-x-4">
+          <label class="text-sm font-medium text-gray-700">Select Period:</label>
+          <select
+            (change)="onPeriodChange($event)"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all" [selected]="selectedPeriod === 'all'">All Time</option>
+            <option
+              *ngFor="let year of availableYears"
+              [value]="year"
+              [selected]="selectedPeriod === year.toString()"
+            >
+              {{ year }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -46,7 +71,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-600">Total Sales</p>
-          <p class="text-2xl font-semibold text-gray-900">{{ totalSales }}</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ formatNumber(totalSales, 'currency') }}</p>
         </div>
       </div>
     </div>
@@ -70,7 +95,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-600">Total Stock</p>
-          <p class="text-2xl font-semibold text-gray-900">{{ getTotalStockCount() }}</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ formatNumber(getTotalStockCount(), 'number') }}</p>
         </div>
       </div>
     </div>
@@ -94,7 +119,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-600">Total Sold</p>
-          <p class="text-2xl font-semibold text-gray-900">{{ totalQuantity | number }}</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ formatNumber(totalQuantity, 'number') }}</p>
         </div>
       </div>
     </div>
@@ -113,7 +138,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-600">Average Sale</p>
-          <p class="text-2xl font-semibold text-gray-900">{{ averageSale }}</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ formatNumber(averageSale, 'currency') }}</p>
         </div>
       </div>
     </div>
@@ -137,7 +162,7 @@
         </div>
         <div class="ml-4">
           <p class="text-sm font-medium text-gray-600">Total Profit</p>
-          <p class="text-2xl font-semibold text-gray-900">{{ totalProfit }}</p>
+          <p class="text-2xl font-semibold text-gray-900">{{ formatNumber(totalProfit, 'currency') }}</p>
         </div>
       </div>
     </div>
@@ -334,13 +359,13 @@
               {{ item.stockOutCategoryId.stockoutCategoryName || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ item.Total_sale }}
+              {{ formatNumber(item.Total_sale, 'currency') }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ getTotalQuantity(item.quantity) | number }}
+              {{ formatNumber(getTotalQuantity(item.quantity), 'number') }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-              {{ calculateProfit(item) }}
+              {{ formatNumber(calculateProfit(item), 'currency') }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span

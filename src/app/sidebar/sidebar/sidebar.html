@@ -8,11 +8,21 @@
   </div>
 
   <!-- 👤 Right: Static Profile Info -->
-  <div class="hidden lg:flex items-center space-x-4 text-white">
+  <div class="hidden lg:flex items-center gap-4 text-white">
     <i class="fa-solid fa-circle-user text-3xl"></i>
-    <div class="flex flex-col">
-      <p class="font-semibold text-lg">{{ currentUserData?.userName }}</p>
-      <p class="text-sm text-gray-300">{{ currentUserData?.email }}</p>
+
+    <div class="flex flex-col leading-tight">
+      <p class="font-semibold text-lg">
+        {{ currentUserData?.userName }}
+      </p>
+
+      <p class="text-sm text-gray-300 flex items-center gap-2">
+        <span>{{ currentUserData?.email }}</span>
+
+        <span class="bg-indigo-600 px-2 py-0.5 rounded-md text-xs">
+          {{ currentUserData?.role }}
+        </span>
+      </p>
     </div>
   </div>
 
@@ -65,23 +75,34 @@
           <span [class.hidden]="!isSidebarOpen && !isMobileView">Dashboard</span>
         </div>
       </a>
-      
-          <a
-            routerLink="/admin/stock_transaction"
-            class="block w-full hover:bg-gray-700 rounded transition"
-          >
-            <div class="flex items-center px-5 py-2 text-sm">
-              <i class="fas fa-exchange-alt mr-2 text-white text-xs"></i>
-              <span [class.hidden]="!isSidebarOpen && !isMobileView">Stock Transactions</span>
-            </div>
-          </a>
+
+      <a
+        routerLink="/admin/stock_transaction"
+        class="block w-full hover:bg-gray-700 rounded transition"
+      >
+        <div class="flex items-center px-5 py-2 text-sm">
+          <i class="fas fa-exchange-alt mr-2 text-white text-xs"></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView">Stock Transactions</span>
+        </div>
+      </a>
+      <a
+        routerLink="/admin/Item_transaction"
+        class="block w-full hover:bg-gray-700 rounded transition group"
+      >
+        <div class="flex items-center px-5 py-2 text-sm">
+          <i
+            class="fa-sharp fa-solid fa-money-bill-wave mr-3 text-white text-sm opacity-90 group-hover:opacity-100"
+          ></i>
+          <span [class.hidden]="!isSidebarOpen && !isMobileView" class="whitespace-nowrap">
+            Item Status
+          </span>
+        </div>
+      </a>
     </li>
 
-    <!-- Divider after Dashboard -->
     <li>
-  <span class="block w-full ring-1 ring-slate-600"></span>
-</li>
-
+      <span class="block w-full ring-1 ring-slate-600"></span>
+    </li>
 
     <!-- Configure Section (Main dropdown) -->
     <li class="mt-4">
@@ -106,17 +127,12 @@
           <!-- 📌 User Management Heading -->
           <div class="block w-full">
             <div class="px-5 pt-2 pb-1">
-              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
-                User Management
-              </h1>
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">User Management</h1>
             </div>
           </div>
 
           <!-- 👥 Users Link -->
-          <a
-            routerLink="/admin/users"
-            class="block w-full hover:bg-gray-700 rounded transition"
-          >
+          <a routerLink="/admin/users" class="block w-full hover:bg-gray-700 rounded transition">
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-users mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">Users</span>
@@ -129,18 +145,13 @@
           <!-- 📌 Inventory Management Heading -->
           <div class="block w-full">
             <div class="px-5 pt-1 pb-1">
-              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
-                Inventory Management
-              </h1>
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">Inventory Management</h1>
             </div>
           </div>
 
           <!-- 📦 All Inventory Items (Product_group, Add_Product, Products) -->
           <ng-container *ngFor="let item of getInventoryItems()">
-            <a
-              [routerLink]="item.link"
-              class="block w-full hover:bg-gray-700 rounded transition"
-            >
+            <a [routerLink]="item.link" class="block w-full hover:bg-gray-700 rounded transition">
               <div class="flex items-center px-5 py-2 text-sm">
                 <i [class]="item.icon + ' mr-2 text-white text-xs'"></i>
                 <span [class.hidden]="!isSidebarOpen && !isMobileView">
@@ -156,33 +167,25 @@
           <!-- 📌 Stock Management Heading -->
           <div class="block w-full">
             <div class="px-5 pt-1 pb-1">
-              <h1 class="text-xs text-slate-400 font-medium tracking-wide">
-                Stock Management
-              </h1>
+              <h1 class="text-xs text-slate-400 font-medium tracking-wide">Stock Management</h1>
             </div>
           </div>
 
           <!-- 📦 Stock Management Items (StockIn, StockOut, StockIn Category, Stockout Category, Stock Transactions) -->
-          <a
-            routerLink="/admin/StockIn"
-            class="block w-full hover:bg-gray-700 rounded transition"
-          >
+          <a routerLink="/admin/StockIn" class="block w-full hover:bg-gray-700 rounded transition">
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-arrow-circle-down mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
             </div>
           </a>
-          
-          <a
-            routerLink="/admin/stockout"
-            class="block w-full hover:bg-gray-700 rounded transition"
-          >
+
+          <a routerLink="/admin/stockout" class="block w-full hover:bg-gray-700 rounded transition">
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-arrow-circle-up mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
             </div>
           </a>
-          
+
           <a
             routerLink="/admin/stockIn_category"
             class="block w-full hover:bg-gray-700 rounded transition"
@@ -192,7 +195,7 @@
               <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn Category</span>
             </div>
           </a>
-          
+
           <a
             routerLink="/admin/stockout_category"
             class="block w-full hover:bg-gray-700 rounded transition"
@@ -202,7 +205,6 @@
               <span [class.hidden]="!isSidebarOpen && !isMobileView">Stockout Category</span>
             </div>
           </a>
-          
         </div>
       </div>
     </li>

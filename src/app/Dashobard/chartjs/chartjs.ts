@@ -15,8 +15,8 @@ export interface chartStockOutResponse {
 
 export interface chartStockOut {
   _id: string;
-  itemId: string[]; // Agar itemId bhi populate hoga to isko update karna padega
-  stockOutCategoryId: StockOutCategory; // Ab ye object hai
+  itemId: string[];
+  stockOutCategoryId: StockOutCategory;
   Total_sale: number;
   quantity: number[];
   stockOutDate: string;
@@ -36,7 +36,6 @@ export interface StockOutCategory {
   id: string;
 }
 
-
 @Component({
   selector: 'app-chartjs',
   standalone: true,
@@ -51,6 +50,9 @@ export class Chartjs implements AfterViewInit, OnInit {
   pieChart: Chart | undefined;
   isLoading: boolean = false;
   error: string | null = null;
+  
+  // Format toggle
+  showFullNumbers: boolean = false;
   
   // Period selection
   selectedPeriod: string = new Date().getFullYear().toString();
@@ -85,6 +87,16 @@ export class Chartjs implements AfterViewInit, OnInit {
     '#46BDC6', '#7B1FA2', '#C2185B', '#1E88E5', '#FFB300'
   ];
 
+  tableheader: string[] = [
+    'Date',
+    'Invoice No',
+    'Category',
+    'Total Sale ($)',
+    'Quantity',
+    'Profit',
+    'status'
+  ];
+
   constructor(private http: HttpClient, private service: ServiceData) {}
 
   ngOnInit(): void {
@@ -93,6 +105,55 @@ export class Chartjs implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
     this.fetchStockOutData();
+  }
+
+  // Toggle between compact and full number formats
+  toggleFormat(): void {
+    this.showFullNumbers = !this.showFullNumbers;
+    // Update charts with new format
+    this.createCharts();
+  }
+
+  // Format numbers with K/M/B suffixes or full numbers based on toggle
+  formatNumber(value: number, type: 'currency' | 'number' = 'number'): string {
+    if (value === null || value === undefined || isNaN(value)) {
+      return type === 'currency' ? '$0' : '0';
+    }
+
+    // Return full numbers if toggle is on
+    if (this.showFullNumbers) {
+      if (type === 'currency') {
+        return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+      return value.toLocaleString('en-US');
+    }
+
+    // Compact format with K/M/B
+    const absValue = Math.abs(value);
+    const sign = value < 0 ? '-' : '';
+
+    // Define thresholds and suffixes
+    if (absValue >= 1e9) {
+      return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e9).toFixed(2)}B`;
+    }
+    if (absValue >= 1e7) {
+      return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e7).toFixed(2)}Cr`;
+    }
+    if (absValue >= 1e6) {
+      return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e6).toFixed(2)}M`;
+    }
+    if (absValue >= 1e5) {
+      return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e5).toFixed(2)}L`;
+    }
+    if (absValue >= 1e3) {
+      return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e3).toFixed(1)}K`;
+    }
+
+    // For small numbers, show full value
+    if (type === 'currency') {
+      return `${sign}$${value.toFixed(2)}`;
+    }
+    return `${sign}${value.toFixed(0)}`;
   }
 
   fetchStockOutData(): void {
@@ -276,9 +337,9 @@ export class Chartjs implements AfterViewInit, OnInit {
                 const label = context.dataset.label || 'Value';
                 if (context.parsed.y !== null) {
                   if (label.includes('Sale') || label.includes('Profit')) {
-                    return `${label}: $${context.parsed.y.toFixed(2)}`;
+                    return `${label}: ${this.formatNumber(context.parsed.y, 'currency')}`;
                   }
-                  return `${label}: ${context.parsed.y.toLocaleString()} units`;
+                  return `${label}: ${this.formatNumber(context.parsed.y, 'number')}`;
                 }
                 return label + ': 0';
               }
@@ -290,14 +351,22 @@ export class Chartjs implements AfterViewInit, OnInit {
             type: 'linear',
             position: 'left',
             title: { display: true, text: 'Amount ($)' },
-            ticks: { callback: (value) => '$' + value }
+            ticks: { 
+              callback: (value) => {
+                return this.formatNumber(value as number, 'currency');
+              }
+            }
           },
           y1: {
             type: 'linear',
             position: 'right',
             title: { display: true, text: 'Quantity' },
             grid: { drawOnChartArea: false },
-            ticks: { callback: (value) => value + ' units' }
+            ticks: { 
+              callback: (value) => {
+                return this.formatNumber(value as number, 'number');
+              }
+            }
           }
         }
       }
@@ -364,9 +433,9 @@ export class Chartjs implements AfterViewInit, OnInit {
                 const label = context.dataset.label || 'Value';
                 if (context.parsed.y !== null) {
                   if (label.includes('Sale') || label.includes('Profit')) {
-                    return `${label}: $${context.parsed.y.toFixed(2)}`;
+                    return `${label}: ${this.formatNumber(context.parsed.y, 'currency')}`;
                   }
-                  return `${label}: ${context.parsed.y.toLocaleString()} units`;
+                  return `${label}: ${this.formatNumber(context.parsed.y, 'number')}`;
                 }
                 return label + ': 0';
               }
@@ -378,14 +447,22 @@ export class Chartjs implements AfterViewInit, OnInit {
             type: 'linear',
             position: 'left',
             title: { display: true, text: 'Amount ($)' },
-            ticks: { callback: (value) => '$' + value }
+            ticks: { 
+              callback: (value) => {
+                return this.formatNumber(value as number, 'currency');
+              }
+            }
           },
           y1: {
             type: 'linear',
             position: 'right',
             title: { display: true, text: 'Quantity' },
             grid: { drawOnChartArea: false },
-            ticks: { callback: (value) => value + ' units' }
+            ticks: { 
+              callback: (value) => {
+                return this.formatNumber(value as number, 'number');
+              }
+            }
           }
         }
       }
@@ -451,9 +528,9 @@ export class Chartjs implements AfterViewInit, OnInit {
                 
                 return [
                   `${year}:`,
-                  `  Sales: $${saleValue.toFixed(2)} (${percentage}%)`,
-                  `  Quantity: ${quantity.toLocaleString()} units`,
-                  `  Profit: $${profit.toFixed(2)}`
+                  `  Sales: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`,
+                  `  Quantity: ${this.formatNumber(quantity, 'number')}`,
+                  `  Profit: ${this.formatNumber(profit, 'currency')}`
                 ];
               }
             }
@@ -531,9 +608,9 @@ export class Chartjs implements AfterViewInit, OnInit {
                 
                 return [
                   `${month}:`,
-                  `  Sales: $${saleValue.toFixed(2)} (${percentage}%)`,
-                  `  Quantity: ${quantity.toLocaleString()} units`,
-                  `  Profit: $${profit.toFixed(2)}`
+                  `  Sales: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`,
+                  `  Quantity: ${this.formatNumber(quantity, 'number')}`,
+                  `  Profit: ${this.formatNumber(profit, 'currency')}`
                 ];
               }
             }
@@ -587,41 +664,4 @@ export class Chartjs implements AfterViewInit, OnInit {
       return this.productsList.reduce((total, product) => total + product.totalRemainingStock, 0);
     }
   }
-
-
-
-
-
-
-tableheader:string[] = [
-  'Date',
-  'Invoice No',
-  'Category',
-  'Total Sale ($)',
-  'Quantity',
-  'Profit',
-  'status'
-]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

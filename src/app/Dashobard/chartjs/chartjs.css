@@ -53,3 +53,12 @@ canvas {
 .bg-white:hover {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
+
+/* Toggle button hover effect */
+button.bg-blue-600:hover {
+  background-color: #2563eb;
+}
+
+button.bg-gray-100:hover {
+  background-color: #e5e7eb;
+}
