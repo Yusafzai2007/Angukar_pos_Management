@@ -54,13 +54,10 @@ export class Chartjs implements AfterViewInit, OnInit {
   // Format toggle
   showFullNumbers: boolean = false;
   
-  // Period selection
-  selectedPeriod: string = new Date().getFullYear().toString();
+  // Period selection - will be set to current year after data loads
+  selectedPeriod: string = '';
   availableYears: number[] = [];
   
-  // Comparison years for All Time view
-  selectedYears: string[] = ['', '', ''];
-
   // Products data
   productsList: StockItem[] = [];
   filteredProducts: StockItem[] = [];
@@ -94,7 +91,7 @@ export class Chartjs implements AfterViewInit, OnInit {
     'Total Sale ($)',
     'Quantity',
     'Profit',
-    'status'
+    'Status'
   ];
 
   constructor(private http: HttpClient, private service: ServiceData) {}
@@ -111,7 +108,9 @@ export class Chartjs implements AfterViewInit, OnInit {
   toggleFormat(): void {
     this.showFullNumbers = !this.showFullNumbers;
     // Update charts with new format
-    this.createCharts();
+    if (this.displayData.length > 0) {
+      this.createCharts();
+    }
   }
 
   // Format numbers with K/M/B suffixes or full numbers based on toggle
@@ -132,7 +131,6 @@ export class Chartjs implements AfterViewInit, OnInit {
     const absValue = Math.abs(value);
     const sign = value < 0 ? '-' : '';
 
-    // Define thresholds and suffixes
     if (absValue >= 1e9) {
       return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e9).toFixed(2)}B`;
     }
@@ -149,7 +147,6 @@ export class Chartjs implements AfterViewInit, OnInit {
       return `${sign}${type === 'currency' ? '$' : ''}${(value / 1e3).toFixed(1)}K`;
     }
 
-    // For small numbers, show full value
     if (type === 'currency') {
       return `${sign}$${value.toFixed(2)}`;
     }
@@ -162,26 +159,71 @@ export class Chartjs implements AfterViewInit, OnInit {
     
     const apiUrl = 'http://localhost:4000/api/v1/pos/dashboard_stockOut'; 
     
+    console.log('Fetching data from:', apiUrl);
+    
     this.http.get<chartStockOutResponse>(apiUrl).subscribe({
       next: (response) => {
-        if (response.success && response.message.length > 0) {
+        console.log('Full API Response:', response);
+        
+        if (response && response.success && response.message && response.message.length > 0) {
           this.stockOutData = response.message;
+          console.log('Stock Out Data received:', this.stockOutData);
+          console.log('First item sample:', this.stockOutData[0]);
+          
           this.extractAvailableYears();
+          
+          // Set default to current year after years are extracted
+          this.setDefaultToCurrentYear();
+          
           this.updateDisplayData();
+          
+          // Force change detection by creating a new reference
+          this.displayData = [...this.displayData];
+          
+          console.log('Final Display Data:', this.displayData);
+          console.log('Display Data length:', this.displayData.length);
+          console.log('Selected Period:', this.selectedPeriod);
+          
           setTimeout(() => {
             this.createCharts();
-          }, 100);
+          }, 200);
         } else {
+          console.log('No data in response or invalid response structure');
           this.error = 'No data available';
+          this.stockOutData = [];
+          this.displayData = [];
         }
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Failed to fetch stock-out data';
-        this.isLoading = false;
         console.error('Error fetching stock-out data:', err);
+        this.error = 'Failed to fetch stock-out data. Please try again.';
+        this.isLoading = false;
+        this.stockOutData = [];
+        this.displayData = [];
       }
     });
+  }
+
+  // New method to set default to current year
+  setDefaultToCurrentYear(): void {
+    const currentYear = new Date().getFullYear();
+    console.log('Current year:', currentYear);
+    console.log('Available years:', this.availableYears);
+    
+    // Check if current year exists in available years
+    if (this.availableYears.includes(currentYear)) {
+      this.selectedPeriod = currentYear.toString();
+      console.log('Setting default to current year:', currentYear);
+    } else if (this.availableYears.length > 0) {
+      // If current year not available, set to the most recent year
+      this.selectedPeriod = this.availableYears[0].toString();
+      console.log('Current year not available, setting to most recent:', this.availableYears[0]);
+    } else {
+      // If no years available, set to 'all'
+      this.selectedPeriod = 'all';
+      console.log('No years available, setting to "all"');
+    }
   }
 
   getProducts(): void {
@@ -190,12 +232,15 @@ export class Chartjs implements AfterViewInit, OnInit {
 
     this.service.products().subscribe({
       next: (res: StockApiResponse) => {
-        this.productsList = res.data;
-        this.filteredProducts = [...this.productsList];
+        console.log('Products received:', res);
+        if (res && res.data) {
+          this.productsList = res.data;
+          this.filteredProducts = [...this.productsList];
+        }
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error loading products:', err);
         this.errordata = 'Failed to load products';
         this.loading = false;
       },
@@ -205,47 +250,76 @@ export class Chartjs implements AfterViewInit, OnInit {
   extractAvailableYears(): void {
     const years = new Set<number>();
     this.stockOutData.forEach(item => {
-      const year = new Date(item.stockOutDate).getFullYear();
-      years.add(year);
+      if (item.stockOutDate) {
+        const year = new Date(item.stockOutDate).getFullYear();
+        years.add(year);
+      }
     });
-    this.availableYears = Array.from(years).sort((a, b) => b - a);
-    
-    // Set default year if current year not available
-    if (!this.availableYears.includes(parseInt(this.selectedPeriod)) && this.availableYears.length > 0) {
-      this.selectedPeriod = this.availableYears[0].toString();
-    }
+    this.availableYears = Array.from(years).sort((a, b) => b - a); // Sort descending (newest first)
+    console.log('Available years (sorted):', this.availableYears);
   }
 
   onPeriodChange(event: any): void {
     this.selectedPeriod = event.target.value;
+    console.log('Period changed to:', this.selectedPeriod);
     this.updateDisplayData();
-    this.createCharts();
-  }
-
-  onComparisonYearsChange(): void {
-    this.updateDisplayData();
-    this.createCharts();
+    
+    // Force change detection
+    this.displayData = [...this.displayData];
+    
+    setTimeout(() => {
+      this.createCharts();
+    }, 100);
   }
 
   updateDisplayData(): void {
+    console.log('Updating display data. Selected period:', this.selectedPeriod);
+    console.log('StockOutData length:', this.stockOutData.length);
+    
+    if (!this.stockOutData || this.stockOutData.length === 0) {
+      console.log('No stockOutData available');
+      this.displayData = [];
+      return;
+    }
+
     if (this.selectedPeriod === 'all') {
       // For All Time, show all data
       this.displayData = [...this.stockOutData];
+      console.log('Showing all data. Count:', this.displayData.length);
     } else {
       // Filter by selected year
       const year = parseInt(this.selectedPeriod);
+      console.log('Filtering for year:', year);
+      
       this.displayData = this.stockOutData.filter(item => {
+        if (!item.stockOutDate) {
+          console.log('Item missing stockOutDate:', item);
+          return false;
+        }
         const itemYear = new Date(item.stockOutDate).getFullYear();
         return itemYear === year;
       });
+      
+      console.log(`Filtered data for ${year}:`, this.displayData.length, 'items');
+    }
+    
+    // Log first few items for debugging
+    if (this.displayData.length > 0) {
+      console.log('First display item:', this.displayData[0]);
+      console.log('Sample date:', this.displayData[0].stockOutDate);
+      console.log('Sample Total_sale:', this.displayData[0].Total_sale);
+    } else {
+      console.log('No items to display after filtering');
     }
   }
 
   getTotalQuantity(quantities: number[]): number {
-    return quantities.reduce((sum, qty) => sum + qty, 0);
+    if (!quantities || !Array.isArray(quantities)) return 0;
+    return quantities.reduce((sum, qty) => sum + (qty || 0), 0);
   }
 
   calculateProfit(item: chartStockOut): number {
+    if (!item || !item.Total_sale) return 0;
     const totalQty = this.getTotalQuantity(item.quantity);
     if (totalQty > 100) return item.Total_sale * 0.30;
     if (totalQty > 50) return item.Total_sale * 0.25;
@@ -253,6 +327,11 @@ export class Chartjs implements AfterViewInit, OnInit {
   }
 
   createCharts(): void {
+    if (!this.displayData || this.displayData.length === 0) {
+      console.log('No data to create charts');
+      return;
+    }
+    
     if (this.selectedPeriod === 'all') {
       this.createAllTimeBarChart();
       this.createAllTimePieChart();
@@ -265,7 +344,10 @@ export class Chartjs implements AfterViewInit, OnInit {
   createAllTimeBarChart(): void {
     const ctx = document.getElementById('barChart') as HTMLCanvasElement;
     
-    if (!ctx) return;
+    if (!ctx) {
+      console.log('Bar chart canvas not found');
+      return;
+    }
 
     if (this.barChart) {
       this.barChart.destroy();
@@ -275,11 +357,13 @@ export class Chartjs implements AfterViewInit, OnInit {
     const yearData = new Map<number, { sales: number; quantity: number; profit: number }>();
     
     this.displayData.forEach(item => {
+      if (!item.stockOutDate) return;
+      
       const year = new Date(item.stockOutDate).getFullYear();
       const current = yearData.get(year) || { sales: 0, quantity: 0, profit: 0 };
       
       yearData.set(year, {
-        sales: current.sales + item.Total_sale,
+        sales: current.sales + (item.Total_sale || 0),
         quantity: current.quantity + this.getTotalQuantity(item.quantity),
         profit: current.profit + this.calculateProfit(item)
       });
@@ -387,8 +471,9 @@ export class Chartjs implements AfterViewInit, OnInit {
     }));
 
     this.displayData.forEach(item => {
+      if (!item.stockOutDate) return;
       const month = new Date(item.stockOutDate).getMonth();
-      monthlyData[month].sales += item.Total_sale;
+      monthlyData[month].sales += item.Total_sale || 0;
       monthlyData[month].quantity += this.getTotalQuantity(item.quantity);
       monthlyData[month].profit += this.calculateProfit(item);
     });
@@ -482,11 +567,13 @@ export class Chartjs implements AfterViewInit, OnInit {
     const yearMap = new Map<string, { sales: number; quantity: number; profit: number }>();
     
     this.displayData.forEach(item => {
+      if (!item.stockOutDate) return;
+      
       const year = new Date(item.stockOutDate).getFullYear().toString();
       const current = yearMap.get(year) || { sales: 0, quantity: 0, profit: 0 };
       
       yearMap.set(year, {
-        sales: current.sales + item.Total_sale,
+        sales: current.sales + (item.Total_sale || 0),
         quantity: current.quantity + this.getTotalQuantity(item.quantity),
         profit: current.profit + this.calculateProfit(item)
       });
@@ -494,8 +581,6 @@ export class Chartjs implements AfterViewInit, OnInit {
 
     const years = Array.from(yearMap.keys()).sort();
     const salesData = years.map(y => yearMap.get(y)!.sales);
-    const quantityData = years.map(y => yearMap.get(y)!.quantity);
-    const profitData = years.map(y => yearMap.get(y)!.profit);
 
     this.pieChart = new Chart(ctx, {
       type: 'pie',
@@ -522,16 +607,7 @@ export class Chartjs implements AfterViewInit, OnInit {
                 const total = salesData.reduce((a, b) => a + b, 0);
                 const percentage = total > 0 ? ((saleValue / total) * 100).toFixed(1) : '0';
                 
-                const index = context.dataIndex;
-                const quantity = quantityData[index] || 0;
-                const profit = profitData[index] || 0;
-                
-                return [
-                  `${year}:`,
-                  `  Sales: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`,
-                  `  Quantity: ${this.formatNumber(quantity, 'number')}`,
-                  `  Profit: ${this.formatNumber(profit, 'currency')}`
-                ];
+                return `${year}: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`;
               }
             }
           }
@@ -550,29 +626,22 @@ export class Chartjs implements AfterViewInit, OnInit {
     }
 
     const monthlySales = new Array(12).fill(0);
-    const monthlyQuantity = new Array(12).fill(0);
-    const monthlyProfit = new Array(12).fill(0);
     
     this.displayData.forEach(item => {
+      if (!item.stockOutDate) return;
       const month = new Date(item.stockOutDate).getMonth();
-      monthlySales[month] += item.Total_sale;
-      monthlyQuantity[month] += this.getTotalQuantity(item.quantity);
-      monthlyProfit[month] += this.calculateProfit(item);
+      monthlySales[month] += item.Total_sale || 0;
     });
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const activeMonths: string[] = [];
     const activeSales: number[] = [];
-    const activeQuantities: number[] = [];
-    const activeProfits: number[] = [];
     const activeColors: string[] = [];
 
     months.forEach((month, index) => {
       if (monthlySales[index] > 0) {
         activeMonths.push(month);
         activeSales.push(monthlySales[index]);
-        activeQuantities.push(monthlyQuantity[index]);
-        activeProfits.push(monthlyProfit[index]);
         activeColors.push(this.monthColors[index]);
       }
     });
@@ -602,16 +671,7 @@ export class Chartjs implements AfterViewInit, OnInit {
                 const total = activeSales.reduce((a, b) => a + b, 0);
                 const percentage = total > 0 ? ((saleValue / total) * 100).toFixed(1) : '0';
                 
-                const index = context.dataIndex;
-                const quantity = activeQuantities[index] || 0;
-                const profit = activeProfits[index] || 0;
-                
-                return [
-                  `${month}:`,
-                  `  Sales: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`,
-                  `  Quantity: ${this.formatNumber(quantity, 'number')}`,
-                  `  Profit: ${this.formatNumber(profit, 'currency')}`
-                ];
+                return `${month}: ${this.formatNumber(saleValue, 'currency')} (${percentage}%)`;
               }
             }
           }
@@ -622,46 +682,41 @@ export class Chartjs implements AfterViewInit, OnInit {
 
   refreshData(): void {
     this.fetchStockOutData();
-    this.getProducts(); // Refresh products data too
+    this.getProducts();
   }
 
   // Summary statistics
   get totalSales(): number {
-    return this.displayData.reduce((sum, item) => sum + item.Total_sale, 0);
+    if (!this.displayData || this.displayData.length === 0) return 0;
+    return this.displayData.reduce((sum, item) => sum + (item.Total_sale || 0), 0);
   }
 
   get totalQuantity(): number {
+    if (!this.displayData || this.displayData.length === 0) return 0;
     return this.displayData.reduce((sum, item) => 
       sum + this.getTotalQuantity(item.quantity), 0
     );
   }
 
   get averageSale(): number {
-    return this.displayData.length > 0 
-      ? this.totalSales / this.displayData.length 
-      : 0;
+    if (!this.displayData || this.displayData.length === 0) return 0;
+    return this.totalSales / this.displayData.length;
   }
 
   get totalProfit(): number {
+    if (!this.displayData || this.displayData.length === 0) return 0;
     return this.displayData.reduce((sum, item) => 
       sum + this.calculateProfit(item), 0
     );
   }
 
-  // Get active products count
   getActiveProductsCount(): number {
-    return this.productsList.filter((product) => product.product.isActive).length;
+    if (!this.productsList) return 0;
+    return this.productsList.filter((product) => product.product?.isActive).length;
   }
 
-  // Get total stock count with filter respect
   getTotalStockCount(): number {
-    if (this.selectedPeriod === 'all') {
-      // For All Time, show all products stock
-      return this.productsList.reduce((total, product) => total + product.totalRemainingStock, 0);
-    } else {
-      // For specific year, filter products by date if needed
-      // You can add year-based filtering logic here
-      return this.productsList.reduce((total, product) => total + product.totalRemainingStock, 0);
-    }
+    if (!this.productsList) return 0;
+    return this.productsList.reduce((total, product) => total + (product.totalRemainingStock || 0), 0);
   }
 }
