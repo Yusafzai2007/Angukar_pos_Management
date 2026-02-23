@@ -43,7 +43,7 @@
   <!-- ✅ Sidebar Header -->
   <div class="flex justify-between items-center p-4 border-b border-gray-700">
     <div class="flex items-center space-x-2">
-      <i class="fas fa-globe text-white text-xl"></i>
+      <i class="fas fa-globe text-white text-xl animate-spin"></i>
       <span class="text-xl font-bold" [class.hidden]="!isSidebarOpen && !isMobileView">POS</span>
     </div>
 
@@ -69,15 +69,22 @@
   <ul class="flex flex-col w-[200px] mt-5 space-y-2 overflow-y-auto flex-grow">
     <!-- 📊 Dashboard Link (at the top) -->
     <li>
-      <a routerLink="/admin/dashboard" class="block hover:bg-gray-700 rounded transition">
+      <!-- Dashboard Link with click handler -->
+      <a 
+        routerLink="/admin/dashboard" 
+        (click)="closeSidebarOnMobile()"
+        class="block hover:bg-gray-700 rounded transition"
+      >
         <div class="flex items-center px-5 py-2">
           <i class="fas fa-tachometer-alt text-white mr-2 text-xs"></i>
           <span [class.hidden]="!isSidebarOpen && !isMobileView">Dashboard</span>
         </div>
       </a>
 
+      <!-- Stock Transaction Link with click handler -->
       <a
         routerLink="/admin/stock_transaction"
+        (click)="closeSidebarOnMobile()"
         class="block w-full hover:bg-gray-700 rounded transition"
       >
         <div class="flex items-center px-5 py-2 text-sm">
@@ -85,8 +92,11 @@
           <span [class.hidden]="!isSidebarOpen && !isMobileView">Stock Transactions</span>
         </div>
       </a>
+
+      <!-- Item Transaction Link with click handler -->
       <a
         routerLink="/admin/Item_transaction"
+        (click)="closeSidebarOnMobile()"
         class="block w-full hover:bg-gray-700 rounded transition group"
       >
         <div class="flex items-center px-5 py-2 text-sm">
@@ -131,8 +141,12 @@
             </div>
           </div>
 
-          <!-- 👥 Users Link -->
-          <a routerLink="/admin/users" class="block w-full hover:bg-gray-700 rounded transition">
+          <!-- 👥 Users Link with click handler -->
+          <a 
+            routerLink="/admin/users" 
+            (click)="closeSidebarOnMobile()"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-users mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">Users</span>
@@ -149,9 +163,13 @@
             </div>
           </div>
 
-          <!-- 📦 All Inventory Items (Product_group, Add_Product, Products) -->
+          <!-- 📦 All Inventory Items (Product_group, Add_Product, Products) with click handlers -->
           <ng-container *ngFor="let item of getInventoryItems()">
-            <a [routerLink]="item.link" class="block w-full hover:bg-gray-700 rounded transition">
+            <a 
+              [routerLink]="item.link" 
+              (click)="closeSidebarOnMobile()"
+              class="block w-full hover:bg-gray-700 rounded transition"
+            >
               <div class="flex items-center px-5 py-2 text-sm">
                 <i [class]="item.icon + ' mr-2 text-white text-xs'"></i>
                 <span [class.hidden]="!isSidebarOpen && !isMobileView">
@@ -171,23 +189,35 @@
             </div>
           </div>
 
-          <!-- 📦 Stock Management Items (StockIn, StockOut, StockIn Category, Stockout Category, Stock Transactions) -->
-          <a routerLink="/admin/StockIn" class="block w-full hover:bg-gray-700 rounded transition">
+          <!-- 📦 Stock Management Items with click handlers -->
+          <!-- StockIn Link -->
+          <a 
+            routerLink="/admin/StockIn" 
+            (click)="closeSidebarOnMobile()"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-arrow-circle-down mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">StockIn</span>
             </div>
           </a>
 
-          <a routerLink="/admin/stockout" class="block w-full hover:bg-gray-700 rounded transition">
+          <!-- StockOut Link -->
+          <a 
+            routerLink="/admin/stockout" 
+            (click)="closeSidebarOnMobile()"
+            class="block w-full hover:bg-gray-700 rounded transition"
+          >
             <div class="flex items-center px-5 py-2 text-sm">
               <i class="fas fa-arrow-circle-up mr-2 text-white text-xs"></i>
               <span [class.hidden]="!isSidebarOpen && !isMobileView">StockOut</span>
             </div>
           </a>
 
+          <!-- StockIn Category Link -->
           <a
             routerLink="/admin/stockIn_category"
+            (click)="closeSidebarOnMobile()"
             class="block w-full hover:bg-gray-700 rounded transition"
           >
             <div class="flex items-center px-5 py-2 text-sm">
@@ -196,8 +226,10 @@
             </div>
           </a>
 
+          <!-- StockOut Category Link -->
           <a
             routerLink="/admin/stockout_category"
+            (click)="closeSidebarOnMobile()"
             class="block w-full hover:bg-gray-700 rounded transition"
           >
             <div class="flex items-center px-5 py-2 text-sm">
@@ -210,7 +242,7 @@
     </li>
   </ul>
 
-  <!-- ✅ Log Out Button -->
+  <!-- ✅ Log Out Button with click handler -->
   <div class="p-4 border-t border-gray-700">
     <button
       class="w-full flex justify-center items-center bg-gradient-to-r from-blue-600 to-gray-900 text-gray-100 font-semibold px-5 py-2 rounded-full hover:bg-white hover:text-white transition-all shadow-md"

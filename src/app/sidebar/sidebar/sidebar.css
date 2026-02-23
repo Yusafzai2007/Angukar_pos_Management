@@ -43,31 +43,10 @@
     opacity: 0;
   }
 }
-/* Smooth transitions */
-.transition-all {
-  transition-property: all;
-}
 
-.duration-500 {
-  transition-duration: 500ms;
-}
-
-/* Opacity transitions */
-.opacity-0 {
-  opacity: 0;
-}
-
-.opacity-100 {
-  opacity: 1;
-}
-
-/* For better animation */
-.overflow-hidden {
-  overflow: hidden;
-}
 #divider {
   display: block;
   width: 100%;
-  ruby-align: 1px solid #94a3b8; /* slate-400 color jaisa */
+  ruby-align: 1px solid #94a3b8;
   box-sizing: border-box;
 }

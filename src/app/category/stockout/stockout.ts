@@ -4,7 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ServiceData } from '../../create_account/api_service/service-data';
-import { StockOutCategoryDisplay, StockOutCategoryRequest, StockOutCategoryResponse } from '../../Typescript/category/stockout_category';
+import {
+  StockOutCategoryDisplay,
+  StockOutCategoryRequest,
+  StockOutCategoryResponse,
+} from '../../Typescript/category/stockout_category';
 
 @Component({
   selector: 'app-stockout',
@@ -19,17 +23,17 @@ export class StockoutComponent implements OnInit {
   showEditModal: boolean = false;
   showDeleteModal: boolean = false;
   modalMode: 'create' | 'edit' = 'create';
-  
+
   // Data arrays
   stockOutCategories: StockOutCategoryDisplay[] = [];
   filteredCategories: StockOutCategoryDisplay[] = [];
-  
+
   // Form models
   stockOutCategory: StockOutCategoryRequest = {
     stockoutCategoryName: '',
-    stockout_category_description: ''
+    stockout_category_description: '',
   };
-  
+
   editStockOutCategory: StockOutCategoryDisplay = {
     _id: '',
     stockoutCategoryName: '',
@@ -38,32 +42,31 @@ export class StockoutComponent implements OnInit {
     createdAt: '',
     updatedAt: '',
     __v: 0,
-    id: ''
+    id: '',
   };
   clearFilter() {
-  this.searchQuery = '';
-  this.applySearch();
-}
+    this.searchQuery = '';
+    this.applySearch();
+  }
 
-  
   // Delete modal data
   deleteItemId: string = '';
   deleteItemName: string = '';
   deleteError: string = '';
-  
+
   // Filter variables - Simplified
   searchQuery: string = '';
   statusFilter: 'all' | 'active' | 'inactive' = 'all';
-  
+
   constructor(
     private http: HttpClient,
-    private stockoutService: ServiceData
+    private stockoutService: ServiceData,
   ) {}
-  
+
   ngOnInit() {
     this.fetchStockOutCategories();
   }
-  
+
   // Fetch all stock out categories
   fetchStockOutCategories() {
     this.isLoading = true;
@@ -84,33 +87,34 @@ export class StockoutComponent implements OnInit {
         console.error('Error fetching stock out categories:', error);
         this.isLoading = false;
         alert('Failed to load categories. Please try again.');
-      }
+      },
     });
   }
-  
+
   // Apply combined search and status filter
   applyFilters() {
     let filtered = [...this.stockOutCategories];
-    
+
     // Apply search filter (both name and description)
     if (this.searchQuery.trim()) {
       const searchTerm = this.searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(category => 
-        category.stockoutCategoryName.toLowerCase().includes(searchTerm) ||
-        category.stockout_category_description?.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        (category) =>
+          category.stockoutCategoryName.toLowerCase().includes(searchTerm) ||
+          category.stockout_category_description?.toLowerCase().includes(searchTerm),
       );
     }
-    
+
     // Apply status filter
     if (this.statusFilter !== 'all') {
-      filtered = filtered.filter(category => 
-        this.statusFilter === 'active' ? category.isActive : !category.isActive
+      filtered = filtered.filter((category) =>
+        this.statusFilter === 'active' ? category.isActive : !category.isActive,
       );
     }
-    
+
     this.filteredCategories = filtered;
   }
-  
+
   // Apply search when typing
   applySearch() {
     this.applyFilters();
@@ -128,24 +132,24 @@ export class StockoutComponent implements OnInit {
     }
     this.applyFilters();
   }
-  
+
   // Clear all filters
   clearFilters() {
     this.searchQuery = '';
     this.statusFilter = 'all';
     this.applyFilters();
   }
-  
+
   // Open create modal
   openCreateModal() {
     this.modalMode = 'create';
     this.stockOutCategory = {
       stockoutCategoryName: '',
-      stockout_category_description: ''
+      stockout_category_description: '',
     };
     this.showModal = true;
   }
-  
+
   // Open edit modal
   openEditModal(category: StockOutCategoryDisplay) {
     this.modalMode = 'edit';
@@ -157,11 +161,11 @@ export class StockoutComponent implements OnInit {
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
       __v: category.__v,
-      id: category.id
+      id: category.id,
     };
     this.showEditModal = true;
   }
-  
+
   // Submit create form
   onSubmit() {
     // Validation
@@ -169,15 +173,15 @@ export class StockoutComponent implements OnInit {
       alert('Please enter category name');
       return;
     }
-    
+
     if (!this.stockOutCategory.stockout_category_description.trim()) {
       alert('Please enter description');
       return;
     }
-    
+
     this.isLoading = true;
     console.log('Sending create data:', this.stockOutCategory);
-    
+
     this.stockoutService.create_stockout_category(this.stockOutCategory).subscribe({
       next: (response: any) => {
         console.log('Create response:', response);
@@ -191,10 +195,10 @@ export class StockoutComponent implements OnInit {
         const errorMessage = error.error?.message || error.message || 'Failed to create category';
         alert(errorMessage);
         this.isLoading = false;
-      }
+      },
     });
   }
-  
+
   // Submit edit form
   onEditSubmit() {
     // Validation
@@ -202,41 +206,43 @@ export class StockoutComponent implements OnInit {
       alert('Please enter category name');
       return;
     }
-    
+
     if (!this.editStockOutCategory.stockout_category_description.trim()) {
       alert('Please enter description');
       return;
     }
-    
+
     this.isLoading = true;
-    
+
     // Prepare update data
     const updateData = {
       stockoutCategoryName: this.editStockOutCategory.stockoutCategoryName,
       stockout_category_description: this.editStockOutCategory.stockout_category_description,
-      isActive: this.editStockOutCategory.isActive
+      isActive: this.editStockOutCategory.isActive,
     };
-    
+
     console.log('Updating with data:', updateData);
     console.log('Category ID:', this.editStockOutCategory._id);
-    
-    this.stockoutService.edit_stockout_category(this.editStockOutCategory._id, updateData).subscribe({
-      next: (response: any) => {
-        console.log('Update response:', response);
-        this.closeModal();
-        this.fetchStockOutCategories();
-        alert(response.message || 'Stock Out Category updated successfully!');
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error updating stock out category:', error);
-        const errorMessage = error.error?.message || error.message || 'Failed to update category';
-        alert(errorMessage);
-        this.isLoading = false;
-      }
-    });
+
+    this.stockoutService
+      .edit_stockout_category(this.editStockOutCategory._id, updateData)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Update response:', response);
+          this.closeModal();
+          this.fetchStockOutCategories();
+          alert(response.message || 'Stock Out Category updated successfully!');
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error updating stock out category:', error);
+          const errorMessage = error.error?.message || error.message || 'Failed to update category';
+          alert(errorMessage);
+          this.isLoading = false;
+        },
+      });
   }
-  
+
   // Open delete modal
   openDeleteModal(category: StockOutCategoryDisplay) {
     this.deleteItemId = category._id;
@@ -244,12 +250,12 @@ export class StockoutComponent implements OnInit {
     this.deleteError = '';
     this.showDeleteModal = true;
   }
-  
+
   // Confirm delete
   confirmDelete() {
     this.isLoading = true;
     console.log('Deleting category with ID:', this.deleteItemId);
-    
+
     this.stockoutService.delete_stockout_category(this.deleteItemId).subscribe({
       next: (response: any) => {
         console.log('Delete response:', response);
@@ -262,23 +268,23 @@ export class StockoutComponent implements OnInit {
         console.error('Error deleting stock out category:', error);
         this.deleteError = error.error?.message || error.message || 'Failed to delete category';
         this.isLoading = false;
-      }
+      },
     });
   }
-  
+
   // Close modals
   closeModal() {
     this.showModal = false;
     this.showEditModal = false;
   }
-  
+
   closeDeleteModal() {
     this.showDeleteModal = false;
     this.deleteItemId = '';
     this.deleteItemName = '';
     this.deleteError = '';
   }
-  
+
   // Format date
   formatDate(dateString: string) {
     if (!dateString) return 'N/A';
@@ -287,29 +293,22 @@ export class StockoutComponent implements OnInit {
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       });
     } catch (e) {
       return 'Invalid Date';
     }
   }
-  
+
   // Debug method
-  debugData() {
-    console.log('=== DEBUG STOCK OUT DATA ===');
-    console.log('Stock Out Categories:', this.stockOutCategories);
-    console.log('Create Form Data:', this.stockOutCategory);
-    console.log('Edit Form Data:', this.editStockOutCategory);
-    console.log('============================');
-  }
-  
+  // debugData() {
+  //   console.log('=== DEBUG STOCK OUT DATA ===');
+  //   console.log('Stock Out Categories:', this.stockOutCategories);
+  //   console.log('Create Form Data:', this.stockOutCategory);
+  //   console.log('Edit Form Data:', this.editStockOutCategory);
+  //   console.log('============================');
+  // }
+
   // Table headers
-  tableheader:string[] = [
-    '#',
-    'Category Name',
-    'Description',
-    'Status',
-    'Created At',
-    'Actions',
-  ]
+  tableheader: string[] = ['#', 'Category Name', 'Description', 'Status', 'Created At', 'Actions'];
 }

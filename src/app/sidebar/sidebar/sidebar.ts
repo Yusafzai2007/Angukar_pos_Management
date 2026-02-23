@@ -91,4 +91,11 @@ export class Sidebar implements OnInit {
       },
     });
   }
+
+  // ✅ New method to close sidebar on mobile when any link is clicked
+  closeSidebarOnMobile() {
+    if (this.isMobileView) {
+      this.isSidebarOpen = false;
+    }
+  }
 }
